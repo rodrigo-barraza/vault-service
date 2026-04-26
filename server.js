@@ -23,10 +23,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ── Configuration ──────────────────────────────────────────────
 // Container mount: ./env/.env + ./env/vault.key  (Docker)
-// Local fallback:  ../.env    + ./vault.key      (development)
+// Local:           ./.env     + ./vault.key      (development)
 const ENV_FILE_PATH = existsSync(resolve(__dirname, "env/.env"))
   ? resolve(__dirname, "env/.env")
-  : resolve(__dirname, "../.env");
+  : resolve(__dirname, ".env");
 
 const KEY_FILE_PATH = existsSync(resolve(__dirname, "env/vault.key"))
   ? resolve(__dirname, "env/vault.key")

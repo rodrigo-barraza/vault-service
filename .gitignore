@@ -2,3 +2,5 @@ node_modules/
 secrets.js
 vault.key
 env/
+.env
+!.env.example

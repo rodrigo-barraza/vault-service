@@ -24,7 +24,7 @@ NAS_SMB_DIR="/mnt/k/vault"               # Fallback: Windows SMB mount
 DOCKER_BIN="/usr/local/bin/docker"        # Synology puts docker outside default PATH
 
 # Source files to deploy alongside the image
-MASTER_ENV="${SCRIPT_DIR}/../.env"
+MASTER_ENV="${SCRIPT_DIR}/.env"
 VAULT_KEY="${SCRIPT_DIR}/vault.key"
 
 # ── Flags ─────────────────────────────────────────────────────

@@ -8,13 +8,17 @@ Self-hosted secrets service for the Sun ecosystem. Reads the master `.env` file 
 # 1. Install dependencies
 npm install
 
-# 2. Generate a bearer token
+# 2. Create your master .env from the template
+cp .env.example .env
+# Fill in your real values.
+
+# 3. Generate a bearer token
 npm run generate-key > vault.key
 
-# 3. Copy the token into the master .env
+# 4. Copy the token into .env
 #    Set VAULT_TOKEN="<contents of vault.key>"
 
-# 4. Start the server
+# 5. Start the server
 npm run dev
 ```
 
@@ -72,7 +76,7 @@ Force-reload the `.env` file without restarting.
 // In any service's secrets.js:
 import { createVaultClient } from "../shared/vault-client.js";
 
-const vault = createVaultClient({ fallbackEnvFile: "../.env" });
+const vault = createVaultClient({ fallbackEnvFile: "../vault/.env" });
 const secrets = await vault.fetch();
 
 export const OPENAI_API_KEY = secrets.OPENAI_API_KEY || "";
