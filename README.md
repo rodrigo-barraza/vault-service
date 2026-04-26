@@ -1,6 +1,6 @@
 # Vault — Centralized Secrets Server
 
-Self-hosted secrets service for the Sun ecosystem. Reads the master `.env` file and serves secrets over HTTP to all services on the LAN.
+Self-hosted secrets service. Reads the master `.env` file and serves secrets over HTTP to all services on the LAN.
 
 ## Quick Start
 

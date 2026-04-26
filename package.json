@@ -1,7 +1,7 @@
 {
   "name": "vault",
   "version": "1.0.0",
-  "description": "Sun Ecosystem — Centralized Secrets Server",
+  "description": "Sun — Centralized Secrets Server",
   "type": "module",
   "scripts": {
     "dev": "node --watch server.js",
