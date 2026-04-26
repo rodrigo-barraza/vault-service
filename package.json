@@ -1,0 +1,20 @@
+{
+  "name": "vault",
+  "version": "1.0.0",
+  "description": "Sun Ecosystem — Centralized Secrets Server",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "deploy": "bash deploy.sh",
+    "lint": "eslint .",
+    "generate-key": "node -e \"import('crypto').then(c => console.log(c.randomBytes(48).toString('base64url')))\""
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.27.0",
+    "prettier": "^3.5.3"
+  }
+}

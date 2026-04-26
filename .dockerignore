@@ -1,0 +1,14 @@
+node_modules
+vault.key
+.env
+env/
+.git
+.gitignore
+.vscode
+.prettierrc
+eslint.config.js
+deploy.sh
+docker-compose.yml
+Dockerfile
+README.md
+*.md
