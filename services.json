@@ -57,7 +57,7 @@
       "urlEnv": "CLOCK_CREW_SERVICE_URL",
       "description": "Clock Crew + Newgrounds community archive, scraping, asset management",
       "db": "clockcrew",
-      "repo": null,
+      "repo": "rodrigo-barraza/clock-crew-service",
       "deployTier": 1
     },
     {
