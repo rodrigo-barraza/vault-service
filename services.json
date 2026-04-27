@@ -1,0 +1,136 @@
+{
+  "services": [
+    {
+      "name": "vault-service",
+      "label": "Vault",
+      "type": "infra",
+      "port": 5599,
+      "portEnv": "VAULT_SERVICE_PORT",
+      "urlEnv": "VAULT_SERVICE_URL",
+      "description": "Centralized secret store — .env management, HTTP secret resolution",
+      "db": null,
+      "repo": "rodrigo-barraza/vault-service",
+      "deployTier": 0
+    },
+    {
+      "name": "tools-service",
+      "label": "Tools",
+      "type": "service",
+      "port": 5590,
+      "portEnv": "TOOLS_SERVICE_PORT",
+      "urlEnv": "TOOLS_SERVICE_URL",
+      "description": "Tool execution hub — agentic tools, data fetchers, caches, compute",
+      "db": "tools",
+      "repo": "rodrigo-barraza/tools-service",
+      "deployTier": 1
+    },
+    {
+      "name": "portal-service",
+      "label": "Portal API",
+      "type": "service",
+      "port": 4001,
+      "portEnv": "PORTAL_SERVICE_PORT",
+      "urlEnv": "PORTAL_SERVICE_URL",
+      "description": "Portal backend API — user data, content management",
+      "db": "portal",
+      "repo": "rodrigo-barraza/portal-service",
+      "deployTier": 1
+    },
+    {
+      "name": "lights-service",
+      "label": "Lights",
+      "type": "service",
+      "port": 4444,
+      "portEnv": "LIGHTS_SERVICE_PORT",
+      "urlEnv": "LIGHTS_SERVICE_URL",
+      "description": "Smart light control — Philips Hue, LIFX",
+      "db": null,
+      "repo": "rodrigo-barraza/lights-service",
+      "deployTier": 1
+    },
+    {
+      "name": "clock-crew-service",
+      "label": "Clock Crew API",
+      "type": "service",
+      "port": 5593,
+      "portEnv": "CLOCK_CREW_SERVICE_PORT",
+      "urlEnv": "CLOCK_CREW_SERVICE_URL",
+      "description": "Clock Crew + Newgrounds community archive, scraping, asset management",
+      "db": "clockcrew",
+      "repo": null,
+      "deployTier": 1
+    },
+    {
+      "name": "prism-service",
+      "label": "Prism",
+      "type": "gateway",
+      "port": 7777,
+      "portEnv": "PRISM_SERVICE_PORT",
+      "urlEnv": "PRISM_SERVICE_URL",
+      "description": "AI Gateway — 9 provider routing, agentic loop, memory, multi-agent coordination",
+      "db": "prism",
+      "repo": "rodrigo-barraza/prism-service",
+      "deployTier": 2
+    },
+    {
+      "name": "retina-client",
+      "label": "Retina",
+      "type": "client",
+      "port": 3333,
+      "portEnv": "RETINA_CLIENT_PORT",
+      "urlEnv": "RETINA_CLIENT_URL",
+      "description": "Developer playground — chat, agents, admin dashboard, benchmarks",
+      "db": null,
+      "repo": "rodrigo-barraza/retina-client",
+      "deployTier": 3
+    },
+    {
+      "name": "portal-client",
+      "label": "Portal",
+      "type": "client",
+      "port": 4000,
+      "portEnv": "PORTAL_CLIENT_PORT",
+      "urlEnv": "PORTAL_CLIENT_URL",
+      "description": "Portal frontend — public-facing website",
+      "db": null,
+      "repo": "rodrigo-barraza/portal-client",
+      "deployTier": 3
+    },
+    {
+      "name": "clock-crew-client",
+      "label": "Clock Crew",
+      "type": "client",
+      "port": 3001,
+      "portEnv": "CLOCK_CREW_CLIENT_PORT",
+      "urlEnv": "CLOCK_CREW_CLIENT_URL",
+      "description": "Clock Crew community portal — wiki, member profiles, Flash archive",
+      "db": null,
+      "repo": "rodrigo-barraza/clock-crew-client",
+      "deployTier": 3
+    },
+    {
+      "name": "rod-dev-client",
+      "label": "Rod Dev",
+      "type": "client",
+      "port": 3000,
+      "portEnv": "ROD_DEV_CLIENT_PORT",
+      "urlEnv": "ROD_DEV_CLIENT_URL",
+      "description": "Personal portfolio / dev site",
+      "db": null,
+      "repo": "rodrigo-barraza/rod-dev-client",
+      "deployTier": 3
+    },
+    {
+      "name": "lupos-bot",
+      "label": "Lupos",
+      "type": "bot",
+      "port": 1337,
+      "portEnv": "LUPOS_BOT_PORT",
+      "urlEnv": "LUPOS_BOT_URL",
+      "description": "Discord bot — AI chat, memory, media archival, guild management",
+      "db": "lupos",
+      "repo": "rodrigo-barraza/lupos-bot",
+      "deployTier": 3
+    }
+  ]
+}

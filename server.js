@@ -32,7 +32,7 @@ const KEY_FILE_PATH = existsSync(resolve(__dirname, "env/vault.key"))
   ? resolve(__dirname, "env/vault.key")
   : resolve(__dirname, "vault.key");
 
-const PORT = parseInt(process.env.VAULT_PORT || "5599", 10);
+const PORT = parseInt(process.env.VAULT_SERVICE_PORT || "5599", 10);
 const RELOAD_INTERVAL_MS = 5_000;
 
 // ── Load Bearer Token ──────────────────────────────────────────
@@ -101,7 +101,7 @@ function loadSecrets() {
     const parsed = parseEnvFile(content);
 
     // Never expose the vault's own bearer token
-    delete parsed.VAULT_TOKEN;
+    delete parsed.VAULT_SERVICE_TOKEN;
 
     secrets = parsed;
     lastLoadedAt = new Date().toISOString();

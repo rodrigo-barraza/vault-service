@@ -1,5 +1,5 @@
 {
-  "name": "vault",
+  "name": "vault-service",
   "version": "1.0.0",
   "description": "Sun — Centralized Secrets Server",
   "type": "module",
