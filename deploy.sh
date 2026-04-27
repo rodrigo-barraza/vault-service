@@ -13,7 +13,7 @@
 # ============================================================
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-IMAGE_NAME="vault"
+IMAGE_NAME="vault-service"
 DISPLAY_NAME="🔐 Vault"
 SKIP_ENV_DEPLOY="true"   # Vault uses master .env, not .env.deploy
 

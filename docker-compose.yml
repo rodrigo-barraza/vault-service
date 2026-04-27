@@ -1,6 +1,6 @@
 services:
-  vault:
-    image: vault:latest
+  vault-service:
+    image: vault-service:latest
     container_name: vault
     restart: unless-stopped
     ports:
