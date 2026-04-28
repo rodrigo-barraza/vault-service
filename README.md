@@ -16,7 +16,7 @@ cp .env.example .env
 npm run generate-key > vault.key
 
 # 4. Copy the token into .env
-#    Set VAULT_TOKEN="<contents of vault.key>"
+#    Set VAULT_SERVICE_TOKEN="<contents of vault.key>"
 
 # 5. Start the server
 npm run dev
@@ -68,7 +68,7 @@ Force-reload the `.env` file without restarting.
 - **Bearer token auth** — every request must include the token from `vault.key`
 - **LAN-only** — bind to your local network, not the public internet
 - **vault.key is gitignored** — never committed to source control
-- **VAULT_TOKEN is stripped** — Vault never exposes its own token in responses
+- **VAULT_SERVICE_TOKEN is stripped** — Vault never exposes its own token in responses
 
 ## Client Usage
 
@@ -84,5 +84,5 @@ export const MONGO_URI = secrets.MONGO_URI || "";
 ```
 
 Each service only needs two environment variables to reach Vault:
-- `VAULT_URL` — where Vault is running (default: `http://localhost:5599`)
-- `VAULT_TOKEN` — the bearer token from `vault.key`
+- `VAULT_SERVICE_URL` — where Vault is running (default: `http://localhost:5599`)
+- `VAULT_SERVICE_TOKEN` — the bearer token from `vault.key`
