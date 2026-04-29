@@ -98,7 +98,7 @@
       "id": "messages-service",
       "label": "Messages Service",
       "type": "service",
-      "port": 5588,
+      "port": 5601,
       "portEnv": "MESSAGES_SERVICE_PORT",
       "urlEnv": "MESSAGES_SERVICE_URL",
       "healthPath": "/health",
