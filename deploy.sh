@@ -2,7 +2,7 @@
 # ============================================================
 # Vault — Build & Deploy to Synology NAS
 #
-# Thin wrapper — all logic lives in ../deploy/lib.sh
+# Thin wrapper — all logic lives in ../deploy-kit/lib.sh
 # Hooks: validates vault.key, syncs master .env + vault.key
 #
 # Usage:
@@ -53,4 +53,4 @@ EXTRA_SMB_SYNC() {
   cp "${SCRIPT_DIR}/vault.key" "${NAS_SMB_DIR}/env/vault.key"
 }
 
-source "${SCRIPT_DIR}/../deploy/lib.sh"
+source "${SCRIPT_DIR}/../deploy-kit/lib.sh"

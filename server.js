@@ -1,8 +1,10 @@
 // ============================================================
-// Vault — Centralized Secrets Server
+// Vault — Centralized Secrets Server + Service Registry
 // ============================================================
 // Reads the master .env file and serves secrets over HTTP.
-// Services on the LAN fetch their config at boot time.
+// Also serves the infrastructure manifest (services.json) as
+// a service registry — the single source of truth for ports,
+// URLs, dependencies, and topology.
 //
 // Auth: Bearer token from vault.key file.
 // Fallback: Services can read the .env file directly if Vault
@@ -31,6 +33,8 @@ const ENV_FILE_PATH = existsSync(resolve(__dirname, "env/.env"))
 const KEY_FILE_PATH = existsSync(resolve(__dirname, "env/vault.key"))
   ? resolve(__dirname, "env/vault.key")
   : resolve(__dirname, "vault.key");
+
+const SERVICES_FILE_PATH = resolve(__dirname, "services.json");
 
 const PORT = parseInt(process.env.VAULT_SERVICE_PORT || "5599", 10);
 const RELOAD_INTERVAL_MS = 5_000;
@@ -120,6 +124,59 @@ watchFile(ENV_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
   loadSecrets();
 });
 
+// ── Load Service Registry ──────────────────────────────────────
+let registry = { version: 0, services: [], infrastructure: [] };
+let registryLoadedAt = null;
+
+function loadRegistry() {
+  try {
+    const content = readFileSync(SERVICES_FILE_PATH, "utf-8");
+    registry = JSON.parse(content);
+    registryLoadedAt = new Date().toISOString();
+    console.log(`📋 Loaded registry — ${registry.services?.length || 0} services, ${registry.infrastructure?.length || 0} infrastructure`);
+  } catch (err) {
+    console.error(`❌ Failed to load services.json: ${err.message}`);
+  }
+}
+
+loadRegistry();
+
+// Watch for manifest changes and auto-reload
+watchFile(SERVICES_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
+  console.log("🔄 services.json changed — reloading registry");
+  loadRegistry();
+});
+
+/**
+ * Enrich a service entry with its resolved URL from the secrets store.
+ * Falls back to http://localhost:{port} if no URL is configured.
+ */
+function enrichService(service) {
+  const enriched = { ...service };
+
+  // Resolve URL from secrets (env vars loaded from master .env)
+  if (service.urlEnv && secrets[service.urlEnv]) {
+    enriched.url = secrets[service.urlEnv];
+  } else if (service.port) {
+    enriched.url = `http://localhost:${service.port}`;
+  }
+
+  return enriched;
+}
+
+/**
+ * Enrich an infrastructure entry with its resolved URL from the secrets store.
+ */
+function enrichInfrastructure(infra) {
+  const enriched = { ...infra };
+
+  if (infra.urlEnv && secrets[infra.urlEnv]) {
+    enriched.url = secrets[infra.urlEnv];
+  }
+
+  return enriched;
+}
+
 // ── Express App ────────────────────────────────────────────────
 const app = express();
 
@@ -149,7 +206,9 @@ app.get("/health", (_req, res) => {
     status: "ok",
     service: "vault",
     secretCount: Object.keys(secrets).length,
+    serviceCount: registry.services?.length || 0,
     lastLoadedAt,
+    registryLoadedAt,
     uptime: Math.floor(process.uptime()),
   });
 });
@@ -217,10 +276,13 @@ app.get("/secrets", requireAuth, (req, res) => {
  */
 app.post("/reload", requireAuth, (_req, res) => {
   loadSecrets();
+  loadRegistry();
   res.json({
     status: "reloaded",
     secretCount: Object.keys(secrets).length,
+    serviceCount: registry.services?.length || 0,
     lastLoadedAt,
+    registryLoadedAt,
   });
 });
 
@@ -233,6 +295,98 @@ app.get("/keys", requireAuth, (_req, res) => {
   res.json(Object.keys(secrets));
 });
 
+
+// ── Registry Routes ────────────────────────────────────────────
+
+/**
+ * GET /registry
+ * Returns the full infrastructure manifest with URLs resolved
+ * from the loaded secrets. This is the single source of truth
+ * for service topology, ports, and dependency graphs.
+ *
+ * Query params (optional):
+ *   ?resolve=false   — skip URL enrichment, return raw manifest
+ */
+app.get("/registry", requireAuth, (req, res) => {
+  const shouldResolve = req.query.resolve !== "false";
+
+  const result = {
+    version: registry.version,
+    services: shouldResolve
+      ? (registry.services || []).map(enrichService)
+      : (registry.services || []),
+    infrastructure: shouldResolve
+      ? (registry.infrastructure || []).map(enrichInfrastructure)
+      : (registry.infrastructure || []),
+  };
+
+  res.json(result);
+});
+
+/**
+ * GET /registry/services
+ * Returns the services array, optionally filtered.
+ *
+ * Query params (all optional, combinable):
+ *   ?id=prism-service       — return only this service
+ *   ?type=client            — filter by type (service, client, gateway, bot, infra)
+ *   ?deployTier=1           — filter by deploy tier
+ *   ?resolve=false          — skip URL enrichment
+ */
+app.get("/registry/services", requireAuth, (req, res) => {
+  const { id, type, deployTier, resolve: shouldResolveParam } = req.query;
+  const shouldResolve = shouldResolveParam !== "false";
+
+  let services = registry.services || [];
+
+  if (id) {
+    services = services.filter((s) => s.id === id);
+  }
+
+  if (type) {
+    const types = type.split(",").map((t) => t.trim());
+    services = services.filter((s) => types.includes(s.type));
+  }
+
+  if (deployTier !== undefined) {
+    const tier = parseInt(deployTier, 10);
+    services = services.filter((s) => s.deployTier === tier);
+  }
+
+  if (shouldResolve) {
+    services = services.map(enrichService);
+  }
+
+  res.json(services);
+});
+
+/**
+ * GET /registry/services/:id
+ * Returns a single service by ID with its URL resolved.
+ */
+app.get("/registry/services/:id", requireAuth, (req, res) => {
+  const service = (registry.services || []).find((s) => s.id === req.params.id);
+
+  if (!service) {
+    return res.status(404).json({ error: `Service "${req.params.id}" not found` });
+  }
+
+  const shouldResolve = req.query.resolve !== "false";
+  res.json(shouldResolve ? enrichService(service) : service);
+});
+
+/**
+ * GET /registry/infrastructure
+ * Returns the infrastructure entries (databases, object stores, etc.)
+ * with URLs resolved from the secrets store.
+ */
+app.get("/registry/infrastructure", requireAuth, (req, res) => {
+  const shouldResolve = req.query.resolve !== "false";
+  const infra = registry.infrastructure || [];
+
+  res.json(shouldResolve ? infra.map(enrichInfrastructure) : infra);
+});
+
 // ── Start Server ───────────────────────────────────────────────
 app.listen(PORT, "0.0.0.0", () => {
   console.log("");
@@ -240,8 +394,9 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("║                                                          ║");
   console.log(`║  🔐  Vault listening on port ${String(PORT).padEnd(28)}║`);
   console.log(`║  📄  Serving ${String(Object.keys(secrets).length).padEnd(3)} secrets from master .env             ║`);
+  console.log(`║  📋  Registry: ${String((registry.services || []).length).padEnd(3)} services, ${String((registry.infrastructure || []).length).padEnd(1)} infrastructure    ║`);
   console.log("║  🔑  Bearer token loaded from vault.key                  ║");
-  console.log("║  👁️   Watching .env for live changes                      ║");
+  console.log("║  👁️   Watching .env + services.json for live changes      ║");
   console.log("║                                                          ║");
   console.log("╚══════════════════════════════════════════════════════════╝");
   console.log("");

@@ -14,7 +14,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
 # Copy application
-COPY server.js ./
+COPY server.js services.json ./
 
 # Non-root user for security
 RUN addgroup --system --gid 1001 vault && \

@@ -1,136 +1,278 @@
 {
+  "version": 1,
+
   "services": [
     {
-      "name": "vault-service",
+      "id": "vault-service",
       "label": "Vault",
       "type": "infra",
       "port": 5599,
       "portEnv": "VAULT_SERVICE_PORT",
       "urlEnv": "VAULT_SERVICE_URL",
-      "description": "Centralized secret store — .env management, HTTP secret resolution",
+      "healthPath": "/health",
+      "description": "Centralized secret store and service registry",
       "db": null,
-      "repo": "rodrigo-barraza/vault-service",
-      "deployTier": 0
+      "repo": "vault-service",
+      "dockerProject": "vault-service",
+      "deployTier": 0,
+      "dependsOn": []
     },
     {
-      "name": "tools-service",
+      "id": "tools-service",
       "label": "Tools",
       "type": "service",
       "port": 5590,
       "portEnv": "TOOLS_SERVICE_PORT",
       "urlEnv": "TOOLS_SERVICE_URL",
+      "healthPath": "/health",
       "description": "Tool execution hub — agentic tools, data fetchers, caches, compute",
       "db": "tools",
-      "repo": "rodrigo-barraza/tools-service",
-      "deployTier": 1
+      "repo": "tools-service",
+      "dockerProject": "tools-service",
+      "deployTier": 1,
+      "dependsOn": [
+        { "id": "mongodb", "criticality": "required" },
+        { "id": "vault-service", "criticality": "required" },
+        { "id": "prism-service", "criticality": "optional" }
+      ]
     },
     {
-      "name": "portal-service",
+      "id": "portal-service",
       "label": "Portal API",
       "type": "service",
       "port": 4001,
       "portEnv": "PORTAL_SERVICE_PORT",
       "urlEnv": "PORTAL_SERVICE_URL",
+      "healthPath": "/health",
       "description": "Portal backend API — user data, content management",
       "db": "portal",
-      "repo": "rodrigo-barraza/portal-service",
-      "deployTier": 1
+      "repo": "portal-service",
+      "dockerProject": "portal-service",
+      "deployTier": 1,
+      "dependsOn": [
+        { "id": "mongodb", "criticality": "required" },
+        { "id": "vault-service", "criticality": "required" },
+        { "id": "prism-service", "criticality": "optional" },
+        { "id": "tools-service", "criticality": "optional" },
+        { "id": "minio", "criticality": "optional" }
+      ]
     },
     {
-      "name": "lights-service",
+      "id": "lights-service",
       "label": "Lights",
       "type": "service",
       "port": 4444,
       "portEnv": "LIGHTS_SERVICE_PORT",
       "urlEnv": "LIGHTS_SERVICE_URL",
-      "description": "Smart light control — Philips Hue, LIFX",
+      "healthPath": "/health",
+      "description": "Smart light control — LIFX, Philips Hue",
       "db": null,
-      "repo": "rodrigo-barraza/lights-service",
-      "deployTier": 1
+      "repo": "lights-service",
+      "dockerProject": "lights-service",
+      "deployTier": 1,
+      "dependsOn": [
+        { "id": "vault-service", "criticality": "required" },
+        { "id": "mongodb", "criticality": "required" }
+      ]
     },
     {
-      "name": "clock-crew-service",
+      "id": "clock-crew-service",
       "label": "Clock Crew API",
       "type": "service",
       "port": 5593,
       "portEnv": "CLOCK_CREW_SERVICE_PORT",
       "urlEnv": "CLOCK_CREW_SERVICE_URL",
+      "healthPath": "/health",
       "description": "Clock Crew + Newgrounds community archive, scraping, asset management",
       "db": "clockcrew",
-      "repo": "rodrigo-barraza/clock-crew-service",
-      "deployTier": 1
+      "repo": "clock-crew-service",
+      "dockerProject": "clock-crew-service",
+      "deployTier": 1,
+      "dependsOn": [
+        { "id": "mongodb", "criticality": "required" },
+        { "id": "vault-service", "criticality": "required" }
+      ]
     },
     {
-      "name": "prism-service",
+      "id": "messages-service",
+      "label": "Messages",
+      "type": "service",
+      "port": 5601,
+      "portEnv": "MESSAGES_SERVICE_PORT",
+      "urlEnv": "MESSAGES_SERVICE_URL",
+      "healthPath": "/health",
+      "description": "Twilio messaging gateway — SMS/MMS with threading",
+      "db": "messages",
+      "repo": "messages-service",
+      "dockerProject": "messages-service",
+      "deployTier": 1,
+      "dependsOn": [
+        { "id": "mongodb", "criticality": "required" },
+        { "id": "vault-service", "criticality": "required" }
+      ]
+    },
+    {
+      "id": "prism-service",
       "label": "Prism",
       "type": "gateway",
       "port": 7777,
       "portEnv": "PRISM_SERVICE_PORT",
       "urlEnv": "PRISM_SERVICE_URL",
-      "description": "AI Gateway — 9 provider routing, agentic loop, memory, multi-agent coordination",
+      "healthPath": "/health",
+      "description": "AI Gateway — multi-provider routing, agentic loop, memory, coordination",
       "db": "prism",
-      "repo": "rodrigo-barraza/prism-service",
-      "deployTier": 2
+      "repo": "prism-service",
+      "dockerProject": "prism-service",
+      "deployTier": 2,
+      "dependsOn": [
+        { "id": "mongodb", "criticality": "required" },
+        { "id": "vault-service", "criticality": "required" },
+        { "id": "tools-service", "criticality": "optional" },
+        { "id": "minio", "criticality": "optional" }
+      ]
     },
     {
-      "name": "retina-client",
+      "id": "retina-client",
       "label": "Retina",
       "type": "client",
       "port": 3333,
       "portEnv": "RETINA_CLIENT_PORT",
       "urlEnv": "RETINA_CLIENT_URL",
+      "healthPath": "/",
       "description": "Developer playground — chat, agents, admin dashboard, benchmarks",
       "db": null,
-      "repo": "rodrigo-barraza/retina-client",
-      "deployTier": 3
+      "repo": "retina-client",
+      "dockerProject": "retina-client",
+      "deployTier": 3,
+      "dependsOn": [
+        { "id": "prism-service", "criticality": "required" },
+        { "id": "vault-service", "criticality": "optional" }
+      ]
     },
     {
-      "name": "portal-client",
+      "id": "portal-client",
       "label": "Portal",
       "type": "client",
       "port": 4000,
       "portEnv": "PORTAL_CLIENT_PORT",
       "urlEnv": "PORTAL_CLIENT_URL",
+      "healthPath": "/",
       "description": "Portal frontend — public-facing website",
       "db": null,
-      "repo": "rodrigo-barraza/portal-client",
-      "deployTier": 3
+      "repo": "portal-client",
+      "dockerProject": "portal-client",
+      "deployTier": 3,
+      "dependsOn": [
+        { "id": "portal-service", "criticality": "required" }
+      ]
     },
     {
-      "name": "clock-crew-client",
+      "id": "clock-crew-client",
       "label": "Clock Crew",
       "type": "client",
       "port": 3001,
       "portEnv": "CLOCK_CREW_CLIENT_PORT",
       "urlEnv": "CLOCK_CREW_CLIENT_URL",
+      "healthPath": "/",
       "description": "Clock Crew community portal — wiki, member profiles, Flash archive",
       "db": null,
-      "repo": "rodrigo-barraza/clock-crew-client",
-      "deployTier": 3
+      "repo": "clock-crew-client",
+      "dockerProject": "clock-crew-client",
+      "deployTier": 3,
+      "dependsOn": [
+        { "id": "vault-service", "criticality": "required" },
+        { "id": "tools-service", "criticality": "optional" }
+      ]
     },
     {
-      "name": "rod-dev-client",
+      "id": "messages-client",
+      "label": "Messages",
+      "type": "client",
+      "port": 5602,
+      "portEnv": "MESSAGES_CLIENT_PORT",
+      "urlEnv": "MESSAGES_CLIENT_URL",
+      "healthPath": "/",
+      "description": "SMS dashboard — messaging, phone lookup, account management",
+      "db": null,
+      "repo": "messages-client",
+      "dockerProject": "messages-client",
+      "deployTier": 3,
+      "dependsOn": [
+        { "id": "messages-service", "criticality": "required" }
+      ]
+    },
+    {
+      "id": "lights-client",
+      "label": "Lights",
+      "type": "client",
+      "port": 4445,
+      "portEnv": "LIGHTS_CLIENT_PORT",
+      "urlEnv": "LIGHTS_CLIENT_URL",
+      "healthPath": "/",
+      "description": "Smart lighting dashboard — controls, scenes, automation",
+      "db": null,
+      "repo": "lights-client",
+      "dockerProject": "lights-client",
+      "deployTier": 3,
+      "dependsOn": [
+        { "id": "lights-service", "criticality": "required" }
+      ]
+    },
+    {
+      "id": "rod-dev-client",
       "label": "Rod Dev",
       "type": "client",
       "port": 3000,
       "portEnv": "ROD_DEV_CLIENT_PORT",
       "urlEnv": "ROD_DEV_CLIENT_URL",
+      "healthPath": "/",
       "description": "Personal portfolio / dev site",
       "db": null,
-      "repo": "rodrigo-barraza/rod-dev-client",
-      "deployTier": 3
+      "repo": "rod-dev-client",
+      "dockerProject": "rod-dev-client",
+      "deployTier": 3,
+      "dependsOn": [
+        { "id": "prism-service", "criticality": "required" },
+        { "id": "vault-service", "criticality": "optional" }
+      ]
     },
     {
-      "name": "lupos-bot",
+      "id": "lupos-bot",
       "label": "Lupos",
       "type": "bot",
       "port": 1337,
       "portEnv": "LUPOS_BOT_PORT",
       "urlEnv": "LUPOS_BOT_URL",
+      "healthPath": "/health",
       "description": "Discord bot — AI chat, memory, media archival, guild management",
       "db": "lupos",
-      "repo": "rodrigo-barraza/lupos-bot",
-      "deployTier": 3
+      "repo": "lupos-bot",
+      "dockerProject": "lupos-bot",
+      "deployTier": 3,
+      "dependsOn": [
+        { "id": "prism-service", "criticality": "required" },
+        { "id": "mongodb", "criticality": "required" },
+        { "id": "vault-service", "criticality": "optional" }
+      ]
+    }
+  ],
+
+  "infrastructure": [
+    {
+      "id": "mongodb",
+      "label": "MongoDB",
+      "type": "database",
+      "defaultPort": 27017,
+      "urlEnv": "MONGO_URI",
+      "description": "Primary data store — shared across all services"
+    },
+    {
+      "id": "minio",
+      "label": "MinIO",
+      "type": "object-store",
+      "defaultPort": 9000,
+      "urlEnv": "MINIO_ENDPOINT",
+      "description": "S3-compatible object storage for media and files"
     }
   ]
 }
