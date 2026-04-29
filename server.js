@@ -149,15 +149,23 @@ watchFile(SERVICES_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
 
 /**
  * Enrich a service entry with its resolved URL from the secrets store.
- * Falls back to http://localhost:{port} if no URL is configured.
+ *
+ * Resolution order:
+ *   1. Explicit per-service URL override (e.g. PRISM_SERVICE_URL in .env)
+ *   2. Auto-constructed from DEFAULT_HOST + service port
+ *   3. Localhost fallback (dev-only, no DEFAULT_HOST set)
  */
 function enrichService(service) {
   const enriched = { ...service };
 
-  // Resolve URL from secrets (env vars loaded from master .env)
   if (service.urlEnv && secrets[service.urlEnv]) {
+    // 1. Explicit per-service URL override
     enriched.url = secrets[service.urlEnv];
+  } else if (service.port && secrets.DEFAULT_HOST) {
+    // 2. Auto-construct from DEFAULT_HOST + manifest port
+    enriched.url = `http://${secrets.DEFAULT_HOST}:${service.port}`;
   } else if (service.port) {
+    // 3. Localhost fallback (local dev, no DEFAULT_HOST)
     enriched.url = `http://localhost:${service.port}`;
   }
 
@@ -166,12 +174,17 @@ function enrichService(service) {
 
 /**
  * Enrich an infrastructure entry with its resolved URL from the secrets store.
+ * Infrastructure items (MongoDB, MinIO) often have complex URLs with auth,
+ * so the explicit override is the primary path. DEFAULT_HOST is a fallback
+ * for simple http://{host}:{port} cases.
  */
 function enrichInfrastructure(infra) {
   const enriched = { ...infra };
 
   if (infra.urlEnv && secrets[infra.urlEnv]) {
     enriched.url = secrets[infra.urlEnv];
+  } else if (infra.defaultPort && secrets.DEFAULT_HOST) {
+    enriched.url = `http://${secrets.DEFAULT_HOST}:${infra.defaultPort}`;
   }
 
   return enriched;
