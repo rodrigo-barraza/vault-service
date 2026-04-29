@@ -4,7 +4,7 @@
   "services": [
     {
       "id": "vault-service",
-      "label": "Vault",
+      "label": "Vault Service",
       "type": "infra",
       "port": 5599,
       "portEnv": "VAULT_SERVICE_PORT",
@@ -19,7 +19,7 @@
     },
     {
       "id": "tools-service",
-      "label": "Tools",
+      "label": "Tools Service",
       "type": "service",
       "port": 5590,
       "portEnv": "TOOLS_SERVICE_PORT",
@@ -38,7 +38,7 @@
     },
     {
       "id": "portal-service",
-      "label": "Portal API",
+      "label": "Portal Service",
       "type": "service",
       "port": 4001,
       "portEnv": "PORTAL_SERVICE_PORT",
@@ -59,7 +59,7 @@
     },
     {
       "id": "lights-service",
-      "label": "Lights",
+      "label": "Lights Service",
       "type": "service",
       "port": 4444,
       "portEnv": "LIGHTS_SERVICE_PORT",
@@ -77,7 +77,7 @@
     },
     {
       "id": "clock-crew-service",
-      "label": "Clock Crew API",
+      "label": "Clock Crew Service",
       "type": "service",
       "port": 5593,
       "portEnv": "CLOCK_CREW_SERVICE_PORT",
@@ -95,7 +95,7 @@
     },
     {
       "id": "messages-service",
-      "label": "Messages",
+      "label": "Messages Service",
       "type": "service",
       "port": 5601,
       "portEnv": "MESSAGES_SERVICE_PORT",
@@ -113,7 +113,7 @@
     },
     {
       "id": "prism-service",
-      "label": "Prism",
+      "label": "Prism Gateway",
       "type": "gateway",
       "port": 7777,
       "portEnv": "PRISM_SERVICE_PORT",
@@ -133,7 +133,7 @@
     },
     {
       "id": "retina-client",
-      "label": "Retina",
+      "label": "Retina Client",
       "type": "client",
       "port": 3333,
       "portEnv": "RETINA_CLIENT_PORT",
@@ -151,7 +151,7 @@
     },
     {
       "id": "portal-client",
-      "label": "Portal",
+      "label": "Portal Client",
       "type": "client",
       "port": 4000,
       "portEnv": "PORTAL_CLIENT_PORT",
@@ -168,7 +168,7 @@
     },
     {
       "id": "clock-crew-client",
-      "label": "Clock Crew",
+      "label": "Clock Crew Client",
       "type": "client",
       "port": 3001,
       "portEnv": "CLOCK_CREW_CLIENT_PORT",
@@ -186,7 +186,7 @@
     },
     {
       "id": "messages-client",
-      "label": "Messages",
+      "label": "Messages Client",
       "type": "client",
       "port": 5602,
       "portEnv": "MESSAGES_CLIENT_PORT",
@@ -203,7 +203,7 @@
     },
     {
       "id": "lights-client",
-      "label": "Lights",
+      "label": "Lights Client",
       "type": "client",
       "port": 4445,
       "portEnv": "LIGHTS_CLIENT_PORT",
@@ -220,7 +220,7 @@
     },
     {
       "id": "rod-dev-client",
-      "label": "Rod Dev",
+      "label": "Rod Dev Client",
       "type": "client",
       "port": 3000,
       "portEnv": "ROD_DEV_CLIENT_PORT",
@@ -238,7 +238,7 @@
     },
     {
       "id": "lupos-bot",
-      "label": "Lupos",
+      "label": "Lupos Bot",
       "type": "bot",
       "port": 1337,
       "portEnv": "LUPOS_BOT_PORT",
