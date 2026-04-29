@@ -122,6 +122,7 @@
       "healthPath": "/health",
       "description": "AI Gateway — multi-provider routing, agentic loop, memory, coordination",
       "db": "prism",
+      "minioBucket": "prism",
       "repo": "prism-service",
       "dockerProject": "prism-service",
       "deployTier": 2,
@@ -247,6 +248,7 @@
       "healthPath": "/health",
       "description": "Discord bot — AI chat, memory, media archival, guild management",
       "db": "lupos",
+      "minioBucket": "discord-media",
       "repo": "lupos-bot",
       "dockerProject": "lupos-bot",
       "deployTier": 3,
@@ -274,6 +276,43 @@
       "defaultPort": 9000,
       "urlEnv": "MINIO_ENDPOINT",
       "description": "S3-compatible object storage for media and files"
+    }
+  ],
+
+  "devices": [
+    {
+      "id": "workstation",
+      "label": "Workstation",
+      "type": "Desktop",
+      "hostname": "192.168.86.99",
+      "os": "Windows 11 (WSL2)",
+      "notes": "Primary development machine — runs most services locally."
+    },
+    {
+      "id": "workstation2",
+      "label": "Workstation 2",
+      "type": "Desktop",
+      "hostname": "192.168.86.178",
+      "os": "Windows 11",
+      "notes": "Secondary workstation — runs LM Studio for local inference."
+    },
+    {
+      "id": "raspi",
+      "label": "Raspberry Pi",
+      "type": "SBC",
+      "hostname": "192.168.86.247",
+      "os": "Raspberry Pi OS",
+      "notes": "Always-on LAN device — runs Lupos Discord bot."
+    },
+    {
+      "id": "synology",
+      "label": "Synology NAS",
+      "type": "NAS",
+      "hostname": "192.168.86.2",
+      "os": "DSM 7",
+      "sshAlias": "nas",
+      "dockerBin": "/usr/local/bin/docker",
+      "notes": "Self-hosted production server — runs containerized services."
     }
   ]
 }

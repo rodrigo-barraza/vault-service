@@ -125,7 +125,7 @@ watchFile(ENV_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
 });
 
 // ── Load Service Registry ──────────────────────────────────────
-let registry = { version: 0, services: [], infrastructure: [] };
+let registry = { version: 0, services: [], infrastructure: [], devices: [] };
 let registryLoadedAt = null;
 
 function loadRegistry() {
@@ -133,7 +133,7 @@ function loadRegistry() {
     const content = readFileSync(SERVICES_FILE_PATH, "utf-8");
     registry = JSON.parse(content);
     registryLoadedAt = new Date().toISOString();
-    console.log(`📋 Loaded registry — ${registry.services?.length || 0} services, ${registry.infrastructure?.length || 0} infrastructure`);
+    console.log(`📋 Loaded registry — ${registry.services?.length || 0} services, ${registry.infrastructure?.length || 0} infrastructure, ${registry.devices?.length || 0} devices`);
   } catch (err) {
     console.error(`❌ Failed to load services.json: ${err.message}`);
   }
@@ -331,6 +331,7 @@ app.get("/registry", requireAuth, (req, res) => {
     infrastructure: shouldResolve
       ? (registry.infrastructure || []).map(enrichInfrastructure)
       : (registry.infrastructure || []),
+    devices: registry.devices || [],
   };
 
   res.json(result);
@@ -407,7 +408,7 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("║                                                          ║");
   console.log(`║  🔐  Vault listening on port ${String(PORT).padEnd(28)}║`);
   console.log(`║  📄  Serving ${String(Object.keys(secrets).length).padEnd(3)} secrets from master .env             ║`);
-  console.log(`║  📋  Registry: ${String((registry.services || []).length).padEnd(3)} services, ${String((registry.infrastructure || []).length).padEnd(1)} infrastructure    ║`);
+  console.log(`║  📋  Registry: ${String((registry.services || []).length).padEnd(3)} services, ${String((registry.infrastructure || []).length).padEnd(1)} infrastructure, ${String((registry.devices || []).length).padEnd(1)} devices  ║`);
   console.log("║  🔑  Bearer token loaded from vault.key                  ║");
   console.log("║  👁️   Watching .env + services.json for live changes      ║");
   console.log("║                                                          ║");
