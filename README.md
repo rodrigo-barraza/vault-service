@@ -78,7 +78,7 @@ All endpoints except `/health` require a `Authorization: Bearer <token>` header.
 
 ### URL Resolution
 
-Registry endpoints automatically **enrich** each service with its resolved URL by looking up the service's `urlEnv` key (e.g., `PRISM_SERVICE_URL`) in the loaded secrets. If no URL is configured, it falls back to `http://localhost:{port}`.
+Registry endpoints automatically **enrich** each service with its resolved URL by looking up the service's `urlEnv` key (e.g., `PRISM_SERVICE_URL`) in the loaded secrets. If no explicit URL is configured, it auto-constructs one from `DEFAULT_HOST` (env var) + port. Falls back to `localhost` when no host is set.
 
 ```json
 // GET /registry/services/prism-service
@@ -87,7 +87,7 @@ Registry endpoints automatically **enrich** each service with its resolved URL b
   "label": "Prism",
   "type": "gateway",
   "port": 7777,
-  "url": "http://192.168.86.2:7777",
+  "url": "http://<host>:7777",
   "healthPath": "/health",
   "description": "AI Gateway — multi-provider routing, agentic loop, memory, coordination",
   "dependsOn": [
@@ -163,7 +163,7 @@ const registry = await vault.fetchRegistry();
 
 // Resolve a single service URL (with fallback chain)
 const prismUrl = await vault.resolveServiceUrl("prism-service");
-// → "http://192.168.86.2:7777" (or localhost fallback)
+// → "http://<host>:7777" (or localhost fallback)
 
 const mongoUri = await vault.resolveInfraUrl("mongodb");
 // → "mongodb://user:pass@host:27017/..."
