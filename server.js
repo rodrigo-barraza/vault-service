@@ -156,6 +156,14 @@ function resolveDefaultHost() {
 }
 
 /**
+ * Derive the env var prefix from a service ID.
+ * E.g. "prism-service" → "PRISM_SERVICE", "lupos-bot" → "LUPOS_BOT"
+ */
+function envPrefix(id) {
+  return id.toUpperCase().replace(/-/g, "_");
+}
+
+/**
  * Enrich a service entry with its resolved URL from the secrets store.
  *
  * Resolution order:
@@ -165,12 +173,11 @@ function resolveDefaultHost() {
  */
 function enrichService(service) {
   const enriched = { ...service };
+  const urlEnv = `${envPrefix(service.id)}_URL`;
 
-  if (service.urlEnv && secrets[service.urlEnv]) {
-    // 1. Explicit per-service URL override
-    enriched.url = secrets[service.urlEnv];
+  if (secrets[urlEnv]) {
+    enriched.url = secrets[urlEnv];
   } else if (service.port) {
-    // 2. Auto-construct from resolved host + manifest port
     enriched.url = `http://${resolveDefaultHost()}:${service.port}`;
   }
 
@@ -193,6 +200,51 @@ function enrichInfrastructure(infra) {
   }
 
   return enriched;
+}
+
+/**
+ * Derive env-var-shaped key-value pairs from the services.json registry.
+ *
+ * All env var names are derived from the service ID using the convention:
+ *   {ID_UPPERCASED}_PORT, {ID_UPPERCASED}_URL, {ID_UPPERCASED}_MONGO_DB_NAME, etc.
+ *
+ * This lets services receive ports, auto-constructed URLs, and database/bucket
+ * names via the normal /secrets → boot.js → process.env pipeline, even when
+ * those values are not explicitly set in the master .env file.
+ *
+ * These are returned as a flat object to be merged as fallbacks (never
+ * overwriting explicit .env entries).
+ */
+function deriveRegistrySecrets() {
+  const derived = {};
+  const host = resolveDefaultHost();
+
+  for (const service of registry.services || []) {
+    const prefix = envPrefix(service.id);
+
+    // Port
+    if (service.port) {
+      derived[`${prefix}_PORT`] = String(service.port);
+    }
+
+    // URL — auto-construct if not explicitly overridden in .env
+    const urlKey = `${prefix}_URL`;
+    if (!secrets[urlKey] && service.port) {
+      derived[urlKey] = `http://${host}:${service.port}`;
+    }
+
+    // Database name
+    if (service.db) {
+      derived[`${prefix}_MONGO_DB_NAME`] = service.db;
+    }
+
+    // MinIO bucket name (single string only; arrays use custom env var naming)
+    if (service.minioBucket && typeof service.minioBucket === "string") {
+      derived[`${prefix}_MINIO_BUCKET_NAME`] = service.minioBucket;
+    }
+  }
+
+  return derived;
 }
 
 // ── Express App ────────────────────────────────────────────────
@@ -244,7 +296,10 @@ app.get("/health", (_req, res) => {
 app.get("/secrets", requireAuth, (req, res) => {
   const { keys, prefix, exclude } = req.query;
 
-  let result = { ...secrets };
+  // Start with registry-derived values as the base layer (lowest priority),
+  // then layer .env secrets on top (explicit values always win).
+  const registryDerived = deriveRegistrySecrets();
+  let result = { ...registryDerived, ...secrets };
 
   // Filter by specific keys
   if (keys) {
@@ -307,10 +362,13 @@ app.post("/reload", requireAuth, (_req, res) => {
 /**
  * GET /keys
  * Returns the list of available secret key names (not values).
+ * Includes both .env keys and registry-derived keys.
  * Useful for debugging and client bootstrapping.
  */
 app.get("/keys", requireAuth, (_req, res) => {
-  res.json(Object.keys(secrets));
+  const registryDerived = deriveRegistrySecrets();
+  const merged = { ...registryDerived, ...secrets };
+  res.json(Object.keys(merged));
 });
 
 
