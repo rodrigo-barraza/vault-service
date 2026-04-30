@@ -406,7 +406,7 @@ app.get("/registry", requireAuth, (req, res) => {
  *
  * Query params (all optional, combinable):
  *   ?id=prism-service       — return only this service
- *   ?type=client            — filter by type (service, client, gateway, bot, infra)
+ *   ?type=client            — filter by type (service, client, bot, infra)
  *   ?deployTier=1           — filter by deploy tier
  *   ?resolve=false          — skip URL enrichment
  */

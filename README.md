@@ -72,7 +72,7 @@ All endpoints except `/health` require a `Authorization: Bearer <token>` header.
 
 **`GET /registry/services` query params** (all optional):
 - `?id=prism-service` — filter by service ID
-- `?type=client` — filter by type (`service`, `client`, `gateway`, `bot`, `infra`)
+- `?type=client` — filter by type (`service`, `client`, `bot`, `infra`)
 - `?deployTier=1` — filter by deploy tier
 - `?resolve=false` — skip URL enrichment, return raw manifest
 
@@ -84,8 +84,8 @@ Registry endpoints automatically **enrich** each service with its resolved URL b
 // GET /registry/services/prism-service
 {
   "id": "prism-service",
-  "label": "Prism",
-  "type": "gateway",
+  "label": "Prism Service",
+  "type": "service",
   "port": 7777,
   "url": "http://<host>:7777",
   "healthPath": "/health",
@@ -107,15 +107,14 @@ The `services.json` file defines the structural skeleton of your infrastructure.
   "services": [
     {
       "id": "prism-service",     // Canonical ID
-      "label": "Prism",          // Human-readable name
-      "type": "gateway",         // service | client | gateway | bot | infra
+      "label": "Prism Service",  // Human-readable name
+      "type": "service",         // service | client | bot | infra
       "port": 7777,              // Default port
-      "portEnv": "PRISM_SERVICE_PORT",   // Env var for port override
-      "urlEnv": "PRISM_SERVICE_URL",     // Env var for URL override
       "healthPath": "/health",   // Health check endpoint path
       "db": "prism",             // MongoDB database name (null if none)
-      "repo": "prism-service",   // Repository name
-      "deployTier": 2,           // Boot order (0 = infra, 1 = services, 2 = gateways, 3 = clients)
+      "repo": "https://github.com/rodrigo-barraza/prism-service",
+      "dockerProject": "prism-service",
+      "deployTier": 2,           // Boot order (0 = infra, 1 = services, 2 = clients/bots)
       "dependsOn": [...]         // Service/infra dependencies with criticality
     }
   ],
