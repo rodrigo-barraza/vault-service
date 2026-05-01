@@ -8,13 +8,18 @@
     "start": "node server.js",
     "deploy": "bash deploy.sh",
     "lint": "eslint .",
+    "format": "prettier --write \"**/*.js\"",
+    "format:check": "prettier --check \"**/*.js\"",
     "generate-key": "node -e \"import('crypto').then(c => console.log(c.randomBytes(48).toString('base64url')))\""
   },
   "dependencies": {
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.5.0",
     "prettier": "^3.5.3"
   }
 }
