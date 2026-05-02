@@ -379,6 +379,25 @@
           "criticality": "optional"
         }
       ]
+    },
+    {
+      "id": "meepothegeomancer-client",
+      "label": "Meepo Client",
+      "port": 5570,
+      "healthPath": "/",
+      "description": "Meepothegeomancer — Dota 2 Meepo fan site with chat interface",
+      "db": null,
+      "visibility": "external",
+      "hostname": "meepothegeomancer.com",
+      "repo": "https://github.com/rodrigo-barraza/meepothegeomancer-client",
+      "dockerProject": "meepothegeomancer-client",
+      "deployTier": 3,
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        }
+      ]
     }
   ],
   "infrastructure": [
