@@ -233,6 +233,10 @@
           "criticality": "required"
         },
         {
+          "id": "clock-crew-service",
+          "criticality": "required"
+        },
+        {
           "id": "tools-service",
           "criticality": "optional"
         }
