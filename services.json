@@ -421,6 +421,54 @@
           "criticality": "optional"
         }
       ]
+    },
+    {
+      "id": "buzzer-service",
+      "label": "Buzzer Service",
+      "port": 5602,
+      "healthPath": "/health",
+      "description": "Intercom backend — real-time visitor chat, operator dashboard, AI agent auto-replies",
+      "db": "buzzer",
+      "visibility": "external",
+      "repo": "https://github.com/rodrigo-barraza/buzzer-service",
+      "dockerProject": "buzzer-service",
+      "deployTier": 1,
+      "dependsOn": [
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "prism-service",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "buzzer-client",
+      "label": "Buzzer Client",
+      "port": 3003,
+      "healthPath": "/",
+      "description": "Buzzer admin dashboard — operator chat, widget config, AI agent management",
+      "db": null,
+      "visibility": "internal",
+      "repo": "https://github.com/rodrigo-barraza/buzzer-client",
+      "dockerProject": "buzzer-client",
+      "deployTier": 3,
+      "dependsOn": [
+        {
+          "id": "buzzer-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        }
+      ]
     }
   ],
   "infrastructure": [
