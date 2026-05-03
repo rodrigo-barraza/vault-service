@@ -175,16 +175,16 @@
       ]
     },
     {
-      "id": "retina-client",
-      "label": "Retina Client",
+      "id": "prism-client",
+      "label": "Prism Client",
       "port": 3333,
       "healthPath": "/",
       "description": "Developer playground — chat, agents, admin dashboard, benchmarks",
       "db": null,
       "visibility": "external",
-      "hostname": "retina.rod.dev",
-      "repo": "https://github.com/rodrigo-barraza/retina-client",
-      "dockerProject": "retina-client",
+      "hostname": "prism.rod.dev",
+      "repo": "https://github.com/rodrigo-barraza/prism-client",
+      "dockerProject": "prism-client",
       "deployTier": 3,
       "dependsOn": [
         {
