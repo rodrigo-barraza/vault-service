@@ -4,3 +4,6 @@ vault.key
 env/
 .env
 !.env.example
+
+# logs
+*.log
