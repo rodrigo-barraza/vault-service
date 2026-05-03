@@ -398,6 +398,29 @@
           "criticality": "optional"
         }
       ]
+    },
+    {
+      "id": "classic-whitemane-client",
+      "label": "Classic Whitemane Client",
+      "port": 3002,
+      "healthPath": "/",
+      "description": "Classic Whitemane — WoW Classic community Discord portal",
+      "db": null,
+      "visibility": "external",
+      "hostname": "classicwhitemane.com",
+      "repo": "git@github.com:rodrigo-barraza/classic-whitemane-client.git",
+      "dockerProject": "classic-whitemane-client",
+      "deployTier": 3,
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "tools-service",
+          "criticality": "optional"
+        }
+      ]
     }
   ],
   "infrastructure": [
