@@ -453,5 +453,26 @@
       "dockerBin": "/usr/local/bin/docker",
       "notes": "Self-hosted production server — runs containerized services."
     }
+  ],
+  "domains": [
+    "barraza.me",
+    "clankerbox.com",
+    "classicwhitemane.com",
+    "clock-crew.com",
+    "clocktopia.com",
+    "cocatea.ca",
+    "digestem.com",
+    "digestible.me",
+    "digestu.com",
+    "dygest.me",
+    "ewachruscicka.com",
+    "meepothegeomancer.com",
+    "monochro.me",
+    "onfilm.me",
+    "predigest.me",
+    "rod.dev",
+    "rodrigobarraza.com",
+    "thegoldkid.com",
+    "thygest.com"
   ]
 }
