@@ -430,7 +430,7 @@
       "description": "Intercom backend — real-time visitor chat, operator dashboard, AI agent auto-replies",
       "db": "buzzer",
       "visibility": "external",
-      "repo": "https://github.com/rodrigo-barraza/buzzer-service",
+      "repo": "git@github.com:rodrigo-barraza/buzzer-service.git",
       "dockerProject": "buzzer-service",
       "deployTier": 1,
       "dependsOn": [
@@ -456,12 +456,56 @@
       "description": "Buzzer admin dashboard — operator chat, widget config, AI agent management",
       "db": null,
       "visibility": "internal",
-      "repo": "https://github.com/rodrigo-barraza/buzzer-client",
+      "repo": "git@github.com:rodrigo-barraza/buzzer-client.git",
       "dockerProject": "buzzer-client",
       "deployTier": 3,
       "dependsOn": [
         {
           "id": "buzzer-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "ledger-service",
+      "label": "Ledger Service",
+      "port": 5603,
+      "healthPath": "/health",
+      "description": "Tax management backend — fiscal years, contracts, invoices, expenses, CCPC tax calculations",
+      "db": "ledger",
+      "visibility": "internal",
+      "repo": "git@github.com:rodrigo-barraza/ledger-service.git",
+      "dockerProject": "ledger-service",
+      "deployTier": 1,
+      "dependsOn": [
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        }
+      ]
+    },
+    {
+      "id": "ledger-client",
+      "label": "Ledger Client",
+      "port": 3004,
+      "healthPath": "/",
+      "description": "Tax management dashboard — invoices, expenses, GST/corporate tax tracking",
+      "db": null,
+      "visibility": "internal",
+      "repo": "git@github.com:rodrigo-barraza/ledger-client.git",
+      "dockerProject": "ledger-client",
+      "deployTier": 3,
+      "dependsOn": [
+        {
+          "id": "ledger-service",
           "criticality": "required"
         },
         {
