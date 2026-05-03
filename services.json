@@ -154,7 +154,7 @@
       "hostname": "prism.rod.dev",
       "repo": "https://github.com/rodrigo-barraza/prism-service",
       "dockerProject": "prism-service",
-      "deployTier": 2,
+      "deployTier": 1,
       "dependsOn": [
         {
           "id": "mongodb",
@@ -185,7 +185,7 @@
       "hostname": "prism.rod.dev",
       "repo": "https://github.com/rodrigo-barraza/prism-client",
       "dockerProject": "prism-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "prism-service",
@@ -207,7 +207,7 @@
       "visibility": "internal",
       "repo": "https://github.com/rodrigo-barraza/portal-client",
       "dockerProject": "portal-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "portal-service",
@@ -226,7 +226,7 @@
       "hostname": "clock-crew.com",
       "repo": "https://github.com/rodrigo-barraza/clock-crew-client",
       "dockerProject": "clock-crew-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "vault-service",
@@ -252,7 +252,7 @@
       "visibility": "internal",
       "repo": "https://github.com/rodrigo-barraza/messages-client",
       "dockerProject": "messages-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "messages-service",
@@ -270,7 +270,7 @@
       "visibility": "internal",
       "repo": "https://github.com/rodrigo-barraza/lights-client",
       "dockerProject": "lights-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "lights-service",
@@ -293,7 +293,7 @@
       "hostname": "rod.dev",
       "repo": "https://github.com/rodrigo-barraza/rod-dev-client",
       "dockerProject": "rod-dev-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "prism-service",
@@ -316,66 +316,18 @@
       "visibility": "internal",
       "repo": "https://github.com/rodrigo-barraza/lupos-bot",
       "dockerProject": "lupos-bot",
-      "deployTier": 3,
-      "dependsOn": [
-        {
-          "id": "prism-service",
-          "criticality": "required"
-        },
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        }
-      ]
-    },
-    {
-      "id": "sessions",
-      "label": "Sessions Service",
-      "port": 5580,
-      "healthPath": "/health",
-      "description": "Session management and persistence",
-      "db": "sessions",
-      "visibility": "internal",
-      "repo": "sessions",
-      "dockerProject": "sessions",
-      "deployTier": 1,
-      "dependsOn": [
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        }
-      ]
-    },
-    {
-      "id": "stickers",
-      "label": "Stickers Service",
-      "port": 7100,
-      "healthPath": "/health",
-      "description": "Discord sticker bot — generation, management, guild sync",
-      "db": "stickers",
-      "visibility": "internal",
-      "repo": "stickers",
-      "dockerProject": "stickers",
       "deployTier": 2,
       "dependsOn": [
         {
+          "id": "prism-service",
+          "criticality": "required"
+        },
+        {
           "id": "mongodb",
           "criticality": "required"
         },
         {
           "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "prism-service",
           "criticality": "optional"
         }
       ]
@@ -391,7 +343,7 @@
       "hostname": "meepothegeomancer.com",
       "repo": "https://github.com/rodrigo-barraza/meepothegeomancer-client",
       "dockerProject": "meepothegeomancer-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "vault-service",
@@ -410,7 +362,7 @@
       "hostname": "classicwhitemane.com",
       "repo": "git@github.com:rodrigo-barraza/classic-whitemane-client.git",
       "dockerProject": "classic-whitemane-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "vault-service",
@@ -458,7 +410,7 @@
       "visibility": "internal",
       "repo": "git@github.com:rodrigo-barraza/buzzer-client.git",
       "dockerProject": "buzzer-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "buzzer-service",
@@ -502,7 +454,7 @@
       "visibility": "internal",
       "repo": "git@github.com:rodrigo-barraza/ledger-client.git",
       "dockerProject": "ledger-client",
-      "deployTier": 3,
+      "deployTier": 2,
       "dependsOn": [
         {
           "id": "ledger-service",
