@@ -185,17 +185,16 @@ function enrichService(service) {
 }
 
 /**
- * Enrich an infrastructure entry with its resolved URL from the secrets store.
- * Infrastructure items (MongoDB, MinIO) often have complex URLs with auth,
- * so the explicit override is the primary path. resolveDefaultHost() is a
- * fallback for simple http://{host}:{port} cases.
+ * Enrich an infrastructure entry with its display URL.
+ * Uses the same resolveDefaultHost() + port pattern as services.
+ * The urlEnv field exists for services that need the actual connection
+ * string — it is NOT used here to avoid leaking credentials into the
+ * registry response.
  */
 function enrichInfrastructure(infra) {
   const enriched = { ...infra };
 
-  if (infra.urlEnv && secrets[infra.urlEnv]) {
-    enriched.url = secrets[infra.urlEnv];
-  } else if (infra.defaultPort) {
+  if (infra.defaultPort) {
     enriched.url = `http://${resolveDefaultHost()}:${infra.defaultPort}`;
   }
 

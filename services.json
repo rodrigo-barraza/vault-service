@@ -543,5 +543,12 @@
     "rodrigobarraza.com",
     "thegoldkid.com",
     "thygest.com"
-  ]
+  ],
+  "serviceTypeColors": {
+    "Service":  { "color": "#3b82f6", "subtle": "rgba(59, 130, 246, 0.12)" },
+    "Client":   { "color": "#22c55e", "subtle": "rgba(34, 197, 94, 0.12)" },
+    "Bot":      { "color": "#eab308", "subtle": "rgba(234, 179, 8, 0.12)" },
+    "Database": { "color": "#a855f7", "subtle": "rgba(168, 85, 247, 0.12)" },
+    "Store":    { "color": "#f97316", "subtle": "rgba(249, 115, 22, 0.12)" }
+  }
 }
