@@ -151,7 +151,7 @@
       "db": "prism",
       "minioBucket": "prism",
       "visibility": "external",
-      "hostname": "prism.rod.dev",
+      "hostname": "api.prism.rod.dev",
       "repo": "https://github.com/rodrigo-barraza/prism-service",
       "dockerProject": "prism-service",
       "deployTier": 1,
