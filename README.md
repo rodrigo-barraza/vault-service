@@ -237,6 +237,204 @@ Both `services.json` and `.env` are **gitignored** — only the `.example` templ
 
 Any key in `services.json` `config` can be overridden by setting the same key in `.env`. The `.env` value always wins. This lets you use `services.json` as defaults while allowing per-deployment overrides.
 
+## Adding a New Service
+
+Every service in the ecosystem follows the same pattern. Here's the full checklist:
+
+### 1. Register in `services.json`
+
+Add an entry to the `services` array:
+
+```jsonc
+{
+  "id": "my-service",              // Used to derive env var prefix: MY_SERVICE
+  "label": "My Service",
+  "port": 5610,                    // Pick an unused port
+  "healthPath": "/health",
+  "description": "What this service does",
+  "db": "myservice",               // MongoDB database name (null if no DB)
+  "minioBucket": "my-media",       // MinIO bucket (null if no object storage)
+  "visibility": "internal",        // "internal" (LAN only) or "external" (has a domain)
+  "domain": "",                    // Public domain (external services only)
+  "repo": "",
+  "dockerProject": "my-service",   // Docker image/container name
+  "deployTier": 1,                 // 0 = vault, 1 = backend services, 2 = clients/bots
+  "dependsOn": [
+    { "id": "mongodb", "criticality": "required" },
+    { "id": "vault-service", "criticality": "required" }
+  ],
+  "config": {                      // Non-secret config (optional)
+    "MY_CUSTOM_FLAG": "true"
+  }
+}
+```
+
+This auto-derives: `MY_SERVICE_PORT=5610`, `MY_SERVICE_URL=http://{defaultHost}:5610`, `MY_SERVICE_MONGO_DB_NAME=myservice`, `MY_SERVICE_MINIO_BUCKET_NAME=my-media`.
+
+### 2. Create `boot.js` — Vault Client Bootstrap
+
+Every service uses `boot.js` as its entry point. It fetches secrets from Vault, hydrates `process.env`, then imports the actual server:
+
+```js
+import { createVaultClient } from "@rodrigo-barraza/utilities/vault";
+
+const vault = createVaultClient({
+  localEnvFile: "./.env",
+  fallbackEnvFile: "../vault-service/.env",
+});
+
+const secrets = await vault.fetch();
+
+for (const [key, value] of Object.entries(secrets)) {
+  if (process.env[key] === undefined) {
+    process.env[key] = value;
+  }
+}
+
+await import("./server.js");
+```
+
+### 3. Create `config.js` — Typed Accessor
+
+A clean accessor over `process.env`. No defaults, no secrets — Vault is the single source of truth:
+
+```js
+const CONFIG = {
+  MY_SERVICE_PORT: process.env.MY_SERVICE_PORT,
+  MONGODB_URI: process.env.MONGO_URI,
+  MY_CUSTOM_FLAG: process.env.MY_CUSTOM_FLAG,
+};
+
+export default CONFIG;
+```
+
+### 4. Create `Dockerfile`
+
+#### Service (Express)
+
+```dockerfile
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN apk add --no-cache git && npm ci --omit=dev
+
+COPY . .
+
+RUN addgroup --system --gid 1001 myservice && \
+    adduser --system --uid 1001 myservice
+USER myservice
+
+EXPOSE 5610
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 -O /dev/null http://127.0.0.1:5610/health || exit 1
+
+CMD ["node", "boot.js"]
+```
+
+#### Client (Next.js)
+
+```dockerfile
+FROM node:22-alpine AS base
+
+# --- Dependencies ---
+FROM base AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN apk add --no-cache git && npm ci
+
+# --- Build ---
+FROM base AS builder
+WORKDIR /app
+
+ARG VAULT_SERVICE_URL
+ENV VAULT_SERVICE_URL=${VAULT_SERVICE_URL}
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN --mount=type=secret,id=VAULT_SERVICE_TOKEN \
+  export VAULT_SERVICE_TOKEN=$(cat /run/secrets/VAULT_SERVICE_TOKEN 2>/dev/null) && \
+  npx next build --webpack
+
+# --- Production ---
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3005
+ENV HOSTNAME=0.0.0.0
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3005
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 -O /dev/null http://127.0.0.1:3005/ || exit 1
+
+CMD ["node", "server.js"]
+```
+
+### 5. Create `docker-compose.yml`
+
+```yaml
+services:
+  my-service:
+    image: my-service:latest
+    container_name: my-service
+    restart: unless-stopped
+    ports:
+      - "5610:5610"
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Los_Angeles
+    volumes:
+      - /usr/share/zoneinfo/America/Los_Angeles:/etc/localtime:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "-O", "/dev/null", "http://localhost:5610/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+```
+
+### 6. Create `deploy.sh`
+
+All deploy logic lives in `deploy-kit/lib.sh` — each service just sources it:
+
+```bash
+#!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+IMAGE_NAME="my-service"
+DISPLAY_NAME="🚀 My Service"
+
+source "${SCRIPT_DIR}/../deploy-kit/lib.sh"
+```
+
+### 7. Add Secrets (if any)
+
+If your service needs new API keys or credentials, add them to:
+- `.env` — your real values
+- `.env.example` — empty placeholders for other deployments
+
 ## Deploy
 
 ```bash
