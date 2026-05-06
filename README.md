@@ -1,28 +1,25 @@
 # Vault — Centralized Secrets Server + Service Registry
 
-Self-hosted secrets service and **service registry**. Reads the master `.env` file and `services.json` manifest, then serves both over HTTP to all services on the LAN. The single source of truth for secrets, ports, URLs, and service topology.
+Self-hosted secrets service and **service registry** — the single source of truth for all secrets, ports, URLs, and service topology across the Sun ecosystem. Reads the master `.env` file and `services.json` manifest at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
 
-## Quick Start
+**Port:** `5599` · **Runtime:** Node.js (ES Modules) · **Framework:** Express 5 · **DB:** None · **Zero runtime dependencies** (Express only)
 
-```bash
-# 1. Install dependencies
-npm install
+## Architecture
 
-# 2. Create your master .env from the template
-cp .env.example .env
-# Fill in your real values.
+### Directory Structure
 
-# 3. Generate a bearer token
-npm run generate-key > vault.key
-
-# 4. Copy the token into .env
-#    Set VAULT_SERVICE_TOKEN="<contents of vault.key>"
-
-# 5. Start the server
-npm run dev
+```
+vault-service/
+├── server.js              # Express app — route handlers, .env parser, file watcher, URL resolver
+├── services.json          # Deployment-agnostic service manifest (ports, deps, topology)
+├── vault.key              # Bearer token for auth (gitignored)
+├── deploy.sh              # Deploy to Synology NAS
+├── Dockerfile             # Node 22 Alpine container
+├── docker-compose.yml     # Docker Compose config
+└── package.json
 ```
 
-## How It Works
+### How It Works
 
 ```
 ┌───────────────────────────────────────────────────┐
@@ -41,81 +38,55 @@ npm run dev
   (services)      (services)      (containers)
 ```
 
-Services use the **vault client** (`@rodrigo-barraza/utilities/vault`) to fetch secrets and service config at boot time. If Vault is unreachable, they fall back to reading the `.env` file directly.
+### Dual Role
 
-## API
-
-All endpoints except `/health` require a `Authorization: Bearer <token>` header.
-
-### Secrets
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/health` | Public health check (no auth) |
-| `GET` | `/secrets` | Returns all secrets as a JSON object |
-| `GET` | `/keys` | Returns the list of key names (no values) |
-| `POST` | `/reload` | Force-reload `.env` and `services.json` |
-
-**`GET /secrets` query params** (all optional, combinable):
-- `?keys=KEY1,KEY2` — return only these keys
-- `?prefix=PRISM_` — return keys starting with this prefix
-- `?exclude=VAULT_` — exclude keys matching these prefixes
-
-### Registry
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/registry` | Full manifest — services + infrastructure with resolved URLs |
-| `GET` | `/registry/services` | All services, optionally filtered |
-| `GET` | `/registry/services/:id` | Single service by ID |
-| `GET` | `/registry/infrastructure` | Infrastructure entries (MongoDB, MinIO, etc.) |
-
-**`GET /registry/services` query params** (all optional):
-- `?id=prism-service` — filter by service ID
-- `?type=client` — filter by type (`service`, `client`, `bot`, `infra`)
-- `?deployTier=1` — filter by deploy tier
-- `?resolve=false` — skip URL enrichment, return raw manifest
+1. **Secrets Server** — Parses the master `.env` and serves key-value secrets via `GET /secrets` with filtering by keys, prefix, and exclusion.
+2. **Service Registry** — Loads `services.json` and serves it via `GET /registry`. Each service entry is enriched with its resolved URL from the loaded secrets.
 
 ### URL Resolution
 
-Registry endpoints automatically **enrich** each service with its resolved URL by looking up the service's `urlEnv` key (e.g., `PRISM_SERVICE_URL`) in the loaded secrets. If no explicit URL is configured, it auto-constructs one from `DEFAULT_HOST` (env var) + port. Falls back to `localhost` when no host is set.
+Service URLs are resolved with the following priority:
 
-```json
-// GET /registry/services/prism-service
-{
-  "id": "prism-service",
-  "label": "Prism Service",
-  "type": "service",
-  "port": 7777,
-  "url": "http://<host>:7777",
-  "healthPath": "/health",
-  "description": "AI Gateway — multi-provider routing, agentic loop, memory, coordination",
-  "dependsOn": [
-    { "id": "mongodb", "criticality": "required" },
-    { "id": "vault-service", "criticality": "required" }
-  ]
-}
-```
+1. **Explicit per-service URL override** — e.g. `PRISM_SERVICE_URL` set in `.env`
+2. **Auto-constructed** from `DEFAULT_HOST` env var + service port
+3. **`localhost` fallback** (dev-only)
+
+## API Endpoints
+
+### Secrets
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/health` | No | Public health check (secret count, service count, uptime) |
+| `GET` | `/secrets` | Yes | All secrets as JSON, filterable by `?keys`, `?prefix`, `?exclude` |
+| `GET` | `/keys` | Yes | List of secret key names (no values) |
+| `POST` | `/reload` | Yes | Force-reload `.env` and `services.json` |
+
+### Registry
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/registry` | Yes | Full manifest — services + infrastructure with resolved URLs |
+| `GET` | `/registry/services` | Yes | All services, filterable by `?id`, `?type`, `?deployTier` |
+| `GET` | `/registry/services/:id` | Yes | Single service by ID with resolved URL |
+| `GET` | `/registry/infrastructure` | Yes | Infrastructure entries (MongoDB, MinIO, etc.) |
 
 ## services.json — The Manifest
 
-The `services.json` file defines the structural skeleton of your infrastructure. It is **deployment-agnostic** — it contains no hardcoded IPs, hostnames, or device-specific values. All environment-specific configuration (URLs, credentials) comes from the `.env` file.
+The manifest is **deployment-agnostic** — no hardcoded IPs, hostnames, or device-specific values. All environment-specific configuration comes from `.env`.
 
 ```jsonc
 {
-  "version": 1,
   "services": [
     {
-      "id": "prism-service",     // Canonical ID
-      "label": "Prism Service",  // Human-readable name
-      "type": "service",         // service | client | bot | infra
-      "port": 7777,              // Default port
-      "healthPath": "/health",   // Health check endpoint path
-      "db": "prism",             // MongoDB database name (null if none)
-      "repo": "https://github.com/rodrigo-barraza/prism-service",
-      "dockerProject": "prism-service",
-      "deployTier": 2,           // Boot order (0 = infra, 1 = services, 2 = clients/bots)
-      "dependsOn": [...]         // Service/infra dependencies with criticality
+      "id": "prism-service",
+      "label": "Prism Service",
+      "type": "service",
+      "port": 7777,
+      "healthPath": "/health",
+      "db": "prism",
+      "deployTier": 2,
+      "dependsOn": [...]
     }
   ],
   "infrastructure": [
@@ -132,15 +103,12 @@ The `services.json` file defines the structural skeleton of your infrastructure.
 
 ### Fork-Friendly
 
-To set up the vault for your own project:
-
+To deploy on your own infrastructure:
 1. Clone this repo
 2. Edit `services.json` to list your services
-3. Create your `.env` with the actual URLs and secrets
+3. Create your `.env` with actual URLs and secrets
 4. Generate a `vault.key`
 5. Your services pull config from the vault at boot
-
-No code changes needed — the manifest is data, not code.
 
 ## Client Usage
 
@@ -152,20 +120,17 @@ const vault = createVaultClient({
   fallbackEnvFile: "../vault-service/.env",
 });
 
-// Fetch secrets (existing behavior)
+// Fetch secrets
 const secrets = await vault.fetch();
 
 // Fetch the full infrastructure registry
 const registry = await vault.fetchRegistry();
-// registry.services        → [{id, label, port, url, ...}, ...]
-// registry.infrastructure  → [{id, label, type, url, ...}, ...]
 
-// Resolve a single service URL (with fallback chain)
+// Resolve a single service URL
 const prismUrl = await vault.resolveServiceUrl("prism-service");
-// → "http://<host>:7777" (or localhost fallback)
 
+// Resolve an infrastructure URL
 const mongoUri = await vault.resolveInfraUrl("mongodb");
-// → "mongodb://user:pass@host:27017/..."
 ```
 
 Each service only needs two environment variables to reach Vault:
@@ -178,3 +143,30 @@ Each service only needs two environment variables to reach Vault:
 - **LAN-only** — bind to your local network, not the public internet
 - **vault.key is gitignored** — never committed to source control
 - **VAULT_SERVICE_TOKEN is stripped** — Vault never exposes its own token in responses
+
+## Setup
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Create your master .env
+cp .env.example .env
+# Fill in your real values
+
+# 3. Generate a bearer token
+npm run generate-key > vault.key
+
+# 4. Set the token in .env
+#    VAULT_SERVICE_TOKEN="<contents of vault.key>"
+
+# 5. Start the server
+npm run dev
+```
+
+## Deploy
+
+```bash
+npm run deploy          # Full deploy to Synology NAS
+npm run deploy:dry      # Validate without deploying
+```
