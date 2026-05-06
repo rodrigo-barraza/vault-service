@@ -167,7 +167,7 @@ The manifest defines service topology **and** non-secret configuration. The `con
 ## Client Usage
 
 ```js
-import { createVaultClient } from "@rodrigo-barraza/utilities/vault";
+import { createVaultClient } from "@rodrigo-barraza/utilities-library/vault";
 
 const vault = createVaultClient({
   localEnvFile: "./.env",
@@ -276,7 +276,7 @@ This auto-derives: `MY_SERVICE_PORT=5610`, `MY_SERVICE_URL=http://{defaultHost}:
 Every service uses `boot.js` as its entry point. It fetches secrets from Vault, hydrates `process.env`, then imports the actual server:
 
 ```js
-import { createVaultClient } from "@rodrigo-barraza/utilities/vault";
+import { createVaultClient } from "@rodrigo-barraza/utilities-library/vault";
 
 const vault = createVaultClient({
   localEnvFile: "./.env",
