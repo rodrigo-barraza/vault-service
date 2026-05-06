@@ -408,6 +408,7 @@
       "type": "object-store",
       "defaultPort": 9000,
       "urlEnv": "MINIO_ENDPOINT",
+      "domain": "",
       "description": "S3-compatible object storage for media and files",
       "config": {
         "MINIO_PUBLIC_URL": ""
