@@ -232,6 +232,14 @@ function deriveRegistrySecrets() {
       derived[urlKey] = `http://${host}:${service.port}`;
     }
 
+    // WebSocket URL — auto-construct from wsPort if defined
+    if (service.wsPort) {
+      const wsKey = `${prefix}_WS_URL`;
+      if (!secrets[wsKey]) {
+        derived[wsKey] = `ws://${host}:${service.wsPort}`;
+      }
+    }
+
     // Database name
     if (service.db) {
       derived[`${prefix}_MONGO_DB_NAME`] = service.db;
@@ -240,6 +248,35 @@ function deriveRegistrySecrets() {
     // MinIO bucket name (single string only; arrays use custom env var naming)
     if (service.minioBucket && typeof service.minioBucket === "string") {
       derived[`${prefix}_MINIO_BUCKET_NAME`] = service.minioBucket;
+    }
+
+    // Per-service config — non-secret settings (IDs, flags, model names, etc.)
+    if (service.config) {
+      for (const [key, value] of Object.entries(service.config)) {
+        if (secrets[key] === undefined) {
+          derived[key] = String(value);
+        }
+      }
+    }
+  }
+
+  // Infrastructure config (e.g. MinIO public URL)
+  for (const infra of registry.infrastructure || []) {
+    if (infra.config) {
+      for (const [key, value] of Object.entries(infra.config)) {
+        if (secrets[key] === undefined) {
+          derived[key] = String(value);
+        }
+      }
+    }
+  }
+
+  // Top-level config — entries not tied to a specific service (e.g. stickers)
+  if (registry.config) {
+    for (const [key, value] of Object.entries(registry.config)) {
+      if (secrets[key] === undefined) {
+        derived[key] = String(value);
+      }
     }
   }
 

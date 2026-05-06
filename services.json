@@ -1,6 +1,16 @@
 {
   "version": 1,
   "defaultHost": "192.168.86.2",
+  "config": {
+    "STICKERS_CLIENT_ID": "1449211370783641691",
+    "STICKERS_GUILD_ID": "1448040050737680547",
+    "OPENAI_VISION_MODEL": "gpt-4o",
+    "STICKERS_NODE_SERVER": "https://backend.clankerbox.com",
+    "STICKERS_NODE_SERVER_WEBSOCKET": "wss://backend.clankerbox.com/ws",
+    "STICKERS_PYTHON_SERVER": "https://neural.clankerbox.com",
+    "STICKERS_PYTHON_SERVER_WEBSOCKET": "wss://neural.clankerbox.com/ws",
+    "STICKERS_PRISM_SERVER": "https://prism.clankerbox.com"
+  },
   "services": [
     {
       "id": "vault-service",
@@ -39,7 +49,12 @@
           "id": "prism-service",
           "criticality": "optional"
         }
-      ]
+      ],
+      "config": {
+        "WORKSPACE_ROOTS": "/home/rodrigo/development/sun/workspace,/home/rodrigo/development/sun/workspace2",
+        "WORKTREE_DIR": "/home/rodrigo/development/sun/worktree",
+        "REDDIT_USER_AGENT": "sun:tools:v0.1.0 (by /u/YOUR_USERNAME)"
+      }
     },
     {
       "id": "portal-service",
@@ -74,7 +89,11 @@
           "id": "minio",
           "criticality": "optional"
         }
-      ]
+      ],
+      "config": {
+        "AUTH_ALLOWED_EMAILS": "hello@rod.dev",
+        "AUTH_URL": "https://portal.rod.dev"
+      }
     },
     {
       "id": "lights-service",
@@ -96,7 +115,11 @@
           "id": "mongodb",
           "criticality": "required"
         }
-      ]
+      ],
+      "config": {
+        "DST_ENABLED": "false",
+        "PRIMARY_LIGHT_ID": "d073d523f763"
+      }
     },
     {
       "id": "clock-crew-service",
@@ -146,6 +169,7 @@
       "id": "prism-service",
       "label": "Prism Service",
       "port": 7777,
+      "wsPort": 7777,
       "healthPath": "/health",
       "description": "AI Gateway — multi-provider routing, agentic loop, memory, coordination",
       "db": "prism",
@@ -172,7 +196,17 @@
           "id": "minio",
           "criticality": "optional"
         }
-      ]
+      ],
+      "config": {
+        "PROVIDER_LM_STUDIO_1_URL": "http://192.168.86.99:1234",
+        "PROVIDER_LM_STUDIO_1_CONCURRENCY": "2",
+        "PROVIDER_LM_STUDIO_1_NICKNAME": "Desktop",
+        "PROVIDER_LM_STUDIO_2_URL": "http://192.168.86.178:1234",
+        "PROVIDER_LM_STUDIO_2_CONCURRENCY": "2",
+        "PROVIDER_LM_STUDIO_2_NICKNAME": "Server",
+        "PROVIDER_VLLM_1_URL": "http://192.168.86.99:8000",
+        "PROVIDER_VLLM_1_CONCURRENCY": "4"
+      }
     },
     {
       "id": "prism-client",
@@ -303,7 +337,13 @@
           "id": "vault-service",
           "criticality": "optional"
         }
-      ]
+      ],
+      "config": {
+        "ROD_DEV_MINIO_BUCKET_NAME": "rod-dev-generations",
+        "ROD_DEV_ASSETS_MINIO_BUCKET_NAME": "rod-dev-assets",
+        "NEXT_PUBLIC_RODRIGO_SERVICE": "http://192.168.86.99:6666",
+        "RENDER_API": "https://render.digestem.com"
+      }
     },
     {
       "id": "lupos-bot",
@@ -330,7 +370,54 @@
           "id": "vault-service",
           "criticality": "optional"
         }
-      ]
+      ],
+      "config": {
+        "UNDER_MAINTENANCE": "false",
+        "ROLES_IDS_IGNORE": "1394148043153997935",
+        "USER_IDS_IGNORE": "123456789012345678,1387618309071048745,679626713310691358,274558094896529408",
+        "CHANNEL_IDS_JUKEBOX": "1389725795869786284",
+        "GUILD_ID_PRIMARY": "609471635308937237",
+        "GUILD_ID_TESTING": "1357934319879979170",
+        "GUILD_ID_GROBBULUS": "1388329197260505262",
+        "GUILD_ID_CLOCK_CREW": "249010731910037507",
+        "EMOJI_ID_FLAG": "1377425518520959067",
+        "ROLE_ID_BIRTHDAY_MONTH": "733730630935904276",
+        "ROLE_ID_YAPPER": "1250937112493035561",
+        "ROLE_ID_REACTOR": "1256806802465493022",
+        "ROLE_ID_BOT_CHATTER": "1353101921681936456",
+        "ROLE_ID_STREAMER": "1392951318951231629",
+        "ROLE_ID_VOICE_CHATTER": "1392631838521954335",
+        "ROLE_ID_FLAG": "1354926676714328154",
+        "ROLE_ID_POLITICS_MUTE": "765201362358239252",
+        "ROLE_ID_SPOTIFY_LISTENER": "1392632930957918239",
+        "CHANNEL_ID_POLITICS": "762734438375096380",
+        "CHANNEL_ID_SELF_ROLES": "1392993431172681848",
+        "CHANNEL_ID_LEAVERS": "1392636842645520415",
+        "CHANNEL_ID_HIGHLIGHTS": "1295184997006708807",
+        "CHANNEL_ID_BOOTY_BAE": "718520315721810030",
+        "CHANNEL_ID_STREAMERS": "609498307626008576",
+        "CHANNEL_ID_DELETED_MESSAGES": "1392636842645520416",
+        "CHANNEL_ID_BOT_STATUS": "1198326193984913470",
+        "CHANNEL_ID_JUKEBOX_EXCEPTION": "835237008691560528",
+        "USER_IDS_DISALLOWED": "108079833283604480,150025324095209472",
+        "USER_IDS_TIMED_OUT": "523687983417786379,243173972743553024,450668181359427584,183511447924375552,1021825192923779193",
+        "USER_IDS_POLITICS_MUTED": "1349125934506053722",
+        "USER_IDS_NEW_ACCOUNT_WHITELIST": "",
+        "DEATHROLL_SEASON": "1",
+        "ASSISTANT_MESSAGE": "",
+        "LANGUAGE_MODEL_PERFORMANCE": "POWERFUL",
+        "ANTHROPIC_LANGUAGE_MODEL_SMART": "claude-sonnet-4-6",
+        "ANTHROPIC_LANGUAGE_MODEL_FAST": "claude-haiku-4-5-20251001",
+        "OPENAI_LANGUAGE_MODEL_GPT4_1_NANO": "gpt-4.1-nano",
+        "LANGUAGE_MODEL_OPENAI": "gpt-4",
+        "LANGUAGE_MODEL_LOCAL": "deepseek-r1-distill-qwen-32b-abliterated@q3_k_s",
+        "LANGUAGE_MODEL_TYPE": "ANTHROPIC",
+        "LANGUAGE_MODEL_MAX_TOKENS": "1000",
+        "LANGUAGE_MODEL_TEMPERATURE": "0.55",
+        "LANGUAGE_MODEL_OPENAI_LOW": "gpt-4.1-nano",
+        "FAST_LANGUAGE_MODEL_OPENAI": "gpt-4o",
+        "FAST_LANGUAGE_MODEL_LOCAL": "deepseek-r1-distill-qwen-32b-abliterated@q3_k_s"
+      }
     },
     {
       "id": "meepothegeomancer-client",
@@ -484,7 +571,10 @@
       "type": "object-store",
       "defaultPort": 9000,
       "urlEnv": "MINIO_ENDPOINT",
-      "description": "S3-compatible object storage for media and files"
+      "description": "S3-compatible object storage for media and files",
+      "config": {
+        "MINIO_PUBLIC_URL": "http://192.168.86.2:9000/prism"
+      }
     }
   ],
   "devices": [
