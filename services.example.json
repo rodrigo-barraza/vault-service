@@ -107,22 +107,7 @@
         { "id": "vault-service", "criticality": "required" }
       ]
     },
-    {
-      "id": "messages-service",
-      "label": "Messages Service",
-      "port": 5601,
-      "healthPath": "/health",
-      "description": "Twilio messaging gateway — SMS/MMS with threading",
-      "db": "messages",
-      "visibility": "internal",
-      "repo": "",
-      "dockerProject": "messages-service",
-      "deployTier": 1,
-      "dependsOn": [
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "required" }
-      ]
-    },
+
     {
       "id": "prism-service",
       "label": "Prism Service",
@@ -199,21 +184,7 @@
         { "id": "tools-service", "criticality": "optional" }
       ]
     },
-    {
-      "id": "messages-client",
-      "label": "Messages Client",
-      "port": 5589,
-      "healthPath": "/",
-      "description": "SMS dashboard — messaging, phone lookup, account management",
-      "db": null,
-      "visibility": "internal",
-      "repo": "",
-      "dockerProject": "messages-client",
-      "deployTier": 2,
-      "dependsOn": [
-        { "id": "messages-service", "criticality": "required" }
-      ]
-    },
+
     {
       "id": "lights-client",
       "label": "Lights Client",
@@ -355,16 +326,16 @@
       ]
     },
     {
-      "id": "buzzer-service",
-      "label": "Buzzer Service",
+      "id": "messages-service",
+      "label": "Messages Service",
       "port": 5602,
       "healthPath": "/health",
-      "description": "Intercom backend — real-time visitor chat, operator dashboard, AI agent auto-replies",
-      "db": "buzzer",
+      "description": "Omnichannel messaging backend — web chat, SMS (Twilio), AI agent auto-replies",
+      "db": "messages",
       "visibility": "external",
       "domain": "",
       "repo": "",
-      "dockerProject": "buzzer-service",
+      "dockerProject": "messages-service",
       "deployTier": 1,
       "dependsOn": [
         { "id": "mongodb", "criticality": "required" },
@@ -373,19 +344,19 @@
       ]
     },
     {
-      "id": "buzzer-client",
-      "label": "Buzzer Client",
+      "id": "messages-client",
+      "label": "Messages Client",
       "port": 3003,
       "healthPath": "/",
-      "description": "Buzzer admin dashboard — operator chat, widget config, AI agent management",
+      "description": "Omnichannel messaging dashboard — web chat, SMS, AI agent config",
       "db": null,
       "visibility": "external",
       "domain": "",
       "repo": "",
-      "dockerProject": "buzzer-client",
+      "dockerProject": "messages-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "buzzer-service", "criticality": "required" },
+        { "id": "messages-service", "criticality": "required" },
         { "id": "vault-service", "criticality": "optional" }
       ]
     },
