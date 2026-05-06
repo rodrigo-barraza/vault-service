@@ -134,7 +134,7 @@ The manifest defines service topology **and** non-secret configuration. The `con
       "defaultPort": 9000,
       "urlEnv": "MINIO_ENDPOINT",
       "config": {               // ← infra config works the same way
-        "MINIO_PUBLIC_URL": "https://storage.rod.dev/prism"
+        "MINIO_PUBLIC_URL": "https://storage.rod.dev"
       }
     }
   ],
