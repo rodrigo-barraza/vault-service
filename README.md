@@ -1,6 +1,6 @@
-# Vault — Centralized Secrets Server + Service Registry
+# Vault — Centralized Secrets + Config Server
 
-Self-hosted secrets service and **service registry** — the single source of truth for all secrets, ports, URLs, and service topology across the Sun ecosystem. Reads the master `.env` file and `services.json` manifest at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
+Self-hosted secrets and configuration service — the single source of truth for all credentials, non-secret config, ports, URLs, and service topology across the Sun ecosystem. Reads the master `.env` (secrets) and `services.json` (config + registry) at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
 
 **Port:** `5599` · **Runtime:** Node.js (ES Modules) · **Framework:** Express 5 · **DB:** None · **Zero runtime dependencies** (Express only)
 
@@ -11,7 +11,9 @@ Self-hosted secrets service and **service registry** — the single source of tr
 ```
 vault-service/
 ├── server.js              # Express app — route handlers, .env parser, file watcher, URL resolver
-├── services.json          # Deployment-agnostic service manifest (ports, deps, topology)
+├── services.json          # Service registry + non-secret config (ports, deps, topology, flags, IDs)
+├── .env                   # Master secrets file (gitignored) — API keys, tokens, passwords only
+├── .env.example           # Template for .env — copy and fill in your credentials
 ├── vault.key              # Bearer token for auth (gitignored)
 ├── deploy.sh              # Deploy to Synology NAS
 ├── Dockerfile             # Node 22 Alpine container
@@ -25,11 +27,11 @@ vault-service/
 ┌───────────────────────────────────────────────────┐
 │  Vault Service (Port 5599)                        │
 │                                                   │
-│  📄 Reads master .env at startup                  │
-│  📋 Reads services.json manifest at startup       │
+│  🔐 .env — API keys, tokens, passwords           │
+│  📋 services.json — registry + non-secret config  │
 │  👁️  Watches both files for live changes           │
 │  🔑 Bearer token auth via vault.key               │
-│  🌐 Serves secrets + registry over HTTP           │
+│  🌐 Merges & serves all values over HTTP          │
 └─────────────────────┬─────────────────────────────┘
                       │
      ┌────────────────┼────────────────┐
@@ -38,18 +40,35 @@ vault-service/
   (services)      (services)      (containers)
 ```
 
-### Dual Role
+### Two Files, One Response
 
-1. **Secrets Server** — Parses the master `.env` and serves key-value secrets via `GET /secrets` with filtering by keys, prefix, and exclusion.
-2. **Service Registry** — Loads `services.json` and serves it via `GET /registry`. Each service entry is enriched with its resolved URL from the loaded secrets.
+The Vault merges values from both files into a single flat `{ KEY: "value" }` response. **`.env` entries always take precedence** — registry-derived values are fallbacks only.
 
-### URL Resolution
+| File | Contains | Examples |
+|---|---|---|
+| `.env` | **Secrets** — credentials that must never be public | API keys, tokens, passwords, OAuth secrets, connection strings |
+| `services.json` | **Config** — user-configurable, non-secret settings | Discord IDs, model names, feature flags, provider URLs, workspace paths |
 
-Service URLs are resolved with the following priority:
+### What Gets Auto-Derived
 
-1. **Explicit per-service URL override** — e.g. `PRISM_SERVICE_URL` set in `.env`
-2. **Auto-constructed** from `DEFAULT_HOST` env var + service port
-3. **`localhost` fallback** (dev-only)
+From `services.json`, the vault automatically constructs:
+
+| Derived Key | Source | Example |
+|---|---|---|
+| `{SERVICE}_PORT` | `service.port` | `PRISM_SERVICE_PORT=7777` |
+| `{SERVICE}_URL` | `defaultHost + port` | `PRISM_SERVICE_URL=http://192.168.86.2:7777` |
+| `{SERVICE}_WS_URL` | `defaultHost + wsPort` | `PRISM_SERVICE_WS_URL=ws://192.168.86.2:7777` |
+| `{SERVICE}_MONGO_DB_NAME` | `service.db` | `PRISM_SERVICE_MONGO_DB_NAME=prism` |
+| `{SERVICE}_MINIO_BUCKET_NAME` | `service.minioBucket` | `PRISM_SERVICE_MINIO_BUCKET_NAME=prism` |
+| Any key in `service.config` | Flattened as-is | `GUILD_ID_PRIMARY=609471635308937237` |
+| Any key in `infrastructure[].config` | Flattened as-is | `MINIO_PUBLIC_URL=http://...` |
+| Any key in top-level `config` | Flattened as-is | `STICKERS_CLIENT_ID=...` |
+
+### URL Resolution Priority
+
+1. **Explicit override** in `.env` (e.g. `PRISM_SERVICE_URL=...`)
+2. **Auto-constructed** from `services.json` `defaultHost` + service `port`
+3. **Localhost fallback** (dev-only, no host configured)
 
 ## API Endpoints
 
@@ -58,8 +77,8 @@ Service URLs are resolved with the following priority:
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | `GET` | `/health` | No | Public health check (secret count, service count, uptime) |
-| `GET` | `/secrets` | Yes | All secrets as JSON, filterable by `?keys`, `?prefix`, `?exclude` |
-| `GET` | `/keys` | Yes | List of secret key names (no values) |
+| `GET` | `/secrets` | Yes | All secrets + derived config as JSON, filterable by `?keys`, `?prefix`, `?exclude` |
+| `GET` | `/keys` | Yes | List of all available key names (no values) |
 | `POST` | `/reload` | Yes | Force-reload `.env` and `services.json` |
 
 ### Registry
@@ -71,44 +90,79 @@ Service URLs are resolved with the following priority:
 | `GET` | `/registry/services/:id` | Yes | Single service by ID with resolved URL |
 | `GET` | `/registry/infrastructure` | Yes | Infrastructure entries (MongoDB, MinIO, etc.) |
 
+All registry endpoints accept `?resolve=false` to return raw manifest data without URL enrichment.
+
 ## services.json — The Manifest
 
-The manifest is **deployment-agnostic** — no hardcoded IPs, hostnames, or device-specific values. All environment-specific configuration comes from `.env`.
+The manifest defines service topology **and** non-secret configuration. The `config` object on each service entry holds values that would traditionally go in `.env` but aren't actually secrets — Discord IDs, feature flags, model names, workspace paths, etc.
 
 ```jsonc
 {
+  "version": 1,
+  "defaultHost": "192.168.86.2",
+
+  // Top-level config — for entries not tied to a specific service
+  "config": {
+    "STICKERS_CLIENT_ID": "...",
+    "OPENAI_VISION_MODEL": "gpt-4o"
+  },
+
   "services": [
     {
       "id": "prism-service",
       "label": "Prism Service",
-      "type": "service",
       "port": 7777,
+      "wsPort": 7777,           // ← auto-derives PRISM_SERVICE_WS_URL
       "healthPath": "/health",
       "db": "prism",
-      "deployTier": 2,
-      "dependsOn": [...]
+      "minioBucket": "prism",
+      "deployTier": 1,
+      "dependsOn": [...],
+      "config": {               // ← non-secret settings, flattened into /secrets response
+        "PROVIDER_LM_STUDIO_1_URL": "http://192.168.86.99:1234",
+        "PROVIDER_LM_STUDIO_1_CONCURRENCY": "2",
+        "PROVIDER_LM_STUDIO_1_NICKNAME": "Desktop"
+      }
     }
   ],
+
   "infrastructure": [
     {
-      "id": "mongodb",
-      "label": "MongoDB",
-      "type": "database",
-      "defaultPort": 27017,
-      "urlEnv": "MONGO_URI"
+      "id": "minio",
+      "label": "MinIO",
+      "type": "object-store",
+      "defaultPort": 9000,
+      "urlEnv": "MINIO_ENDPOINT",
+      "config": {               // ← infra config works the same way
+        "MINIO_PUBLIC_URL": "http://192.168.86.2:9000/prism"
+      }
     }
-  ]
+  ],
+
+  "devices": [
+    { "id": "workstation", "hostname": "192.168.86.99", "type": "Desktop" }
+  ],
+
+  "domains": ["rod.dev", "clankerbox.com", "..."]
 }
 ```
 
-### Fork-Friendly
+### Service Entry Fields
 
-To deploy on your own infrastructure:
-1. Clone this repo
-2. Edit `services.json` to list your services
-3. Create your `.env` with actual URLs and secrets
-4. Generate a `vault.key`
-5. Your services pull config from the vault at boot
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string` | Unique identifier, used to derive env var prefix (`prism-service` → `PRISM_SERVICE`) |
+| `label` | `string` | Human-readable display name |
+| `port` | `number` | HTTP port — used for auto-constructing URLs |
+| `wsPort` | `number?` | WebSocket port — auto-derives `{PREFIX}_WS_URL` |
+| `healthPath` | `string` | Health check endpoint path |
+| `db` | `string?` | MongoDB database name — auto-derives `{PREFIX}_MONGO_DB_NAME` |
+| `minioBucket` | `string\|string[]?` | MinIO bucket name(s) — string values auto-derive `{PREFIX}_MINIO_BUCKET_NAME` |
+| `visibility` | `string` | `"internal"` or `"external"` |
+| `domain` | `string?` | Public domain (external services only) |
+| `deployTier` | `number` | Deploy order (0 = first, higher = later) |
+| `dependsOn` | `array` | Service dependencies with criticality |
+| `config` | `object?` | Non-secret key-value pairs flattened into the `/secrets` response |
 
 ## Client Usage
 
@@ -120,7 +174,7 @@ const vault = createVaultClient({
   fallbackEnvFile: "../vault-service/.env",
 });
 
-// Fetch secrets
+// Fetch secrets + derived config (merged, flat object)
 const secrets = await vault.fetch();
 
 // Fetch the full infrastructure registry
@@ -143,6 +197,7 @@ Each service only needs two environment variables to reach Vault:
 - **LAN-only** — bind to your local network, not the public internet
 - **vault.key is gitignored** — never committed to source control
 - **VAULT_SERVICE_TOKEN is stripped** — Vault never exposes its own token in responses
+- **.env is gitignored** — secrets never enter version control
 
 ## Setup
 
@@ -150,19 +205,37 @@ Each service only needs two environment variables to reach Vault:
 # 1. Install dependencies
 npm install
 
-# 2. Create your master .env
-cp .env.example .env
-# Fill in your real values
-
-# 3. Generate a bearer token
+# 2. Generate a bearer token
 npm run generate-key > vault.key
 
-# 4. Set the token in .env
-#    VAULT_SERVICE_TOKEN="<contents of vault.key>"
+# 3. Create your master .env (secrets only)
+cp .env.example .env
+# Fill in your API keys, tokens, passwords, and connection strings.
+# Set VAULT_SERVICE_TOKEN to the contents of vault.key.
+
+# 4. Create your services.json (config + registry)
+cp services.example.json services.json
+# Set "defaultHost" to your server's LAN IP.
+# Fill in per-service config blocks (Discord IDs, model names, etc.).
+# Update "devices" with your machine hostnames.
 
 # 5. Start the server
 npm run dev
 ```
+
+Both `services.json` and `.env` are **gitignored** — only the `.example` templates are committed. This means each deployment gets its own config without risk of leaking values upstream.
+
+### What Goes Where
+
+| Put it in... | When it is... | Examples |
+|---|---|---|
+| `.env` | A credential, key, token, or password | `OPENAI_API_KEY`, `MONGO_URI`, `LUPOS_TOKEN` |
+| `services.json` → `config` | A non-secret setting anyone can see | `GUILD_ID_PRIMARY`, `LANGUAGE_MODEL_TYPE`, `DST_ENABLED` |
+| `services.json` → service entry | A structural property of the service | `port`, `db`, `minioBucket`, `dependsOn` |
+
+### Overriding Config with .env
+
+Any key in `services.json` `config` can be overridden by setting the same key in `.env`. The `.env` value always wins. This lets you use `services.json` as defaults while allowing per-deployment overrides.
 
 ## Deploy
 
