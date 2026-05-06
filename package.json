@@ -3,23 +3,30 @@
   "version": "1.0.0",
   "description": "Sun — Centralized Secrets Server",
   "type": "module",
+  "main": "server.js",
   "scripts": {
-    "dev": "node --watch server.js",
     "start": "node server.js",
-    "deploy": "bash deploy.sh",
+    "dev": "nodemon --legacy-watch server.js",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.js\"",
     "format:check": "prettier --check \"**/*.js\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "deploy": "bash deploy.sh",
+    "deploy:dry": "bash deploy.sh --dry-run",
     "generate-key": "node -e \"import('crypto').then(c => console.log(c.randomBytes(48).toString('base64url')))\""
   },
   "dependencies": {
     "express": "^5.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
-    "eslint": "^9.27.0",
+    "@eslint/js": "^9.39.3",
+    "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^16.5.0",
-    "prettier": "^3.5.3"
+    "globals": "^17.4.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.1",
+    "vitest": "^4.1.5"
   }
 }
