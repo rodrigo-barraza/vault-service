@@ -26,6 +26,21 @@
       "dependsOn": []
     },
     {
+      "id": "lm-studio",
+      "label": "LM Studio",
+      "port": 1234,
+      "healthPath": "/v1/models",
+      "description": "Local LLM inference server — primary workstation",
+      "db": null,
+      "visibility": "internal",
+      "repo": null,
+      "dockerProject": null,
+      "deployTier": 0,
+      "url": "http://localhost:1234",
+      "device": "workstation",
+      "dependsOn": []
+    },
+    {
       "id": "tools-service",
       "label": "Tools Service",
       "port": 5590,
@@ -126,7 +141,8 @@
         { "id": "mongodb", "criticality": "required" },
         { "id": "vault-service", "criticality": "required" },
         { "id": "tools-service", "criticality": "optional" },
-        { "id": "minio", "criticality": "optional" }
+        { "id": "minio", "criticality": "optional" },
+        { "id": "lm-studio", "criticality": "optional" }
       ],
       "config": {
         "PROVIDER_LM_STUDIO_1_URL": "http://localhost:1234",
@@ -393,6 +409,24 @@
         { "id": "ledger-service", "criticality": "required" },
         { "id": "vault-service", "criticality": "optional" }
       ]
+    },
+    {
+      "id": "workspace-service",
+      "label": "Workspace Service",
+      "port": null,
+      "healthPath": null,
+      "description": "Remote development sidecar \u2014 connects local workspace to tools-service via WebSocket",
+      "db": null,
+      "visibility": "internal",
+      "repo": "",
+      "dockerProject": null,
+      "deployTier": 2,
+      "dependsOn": [
+        { "id": "tools-service", "criticality": "required" }
+      ],
+      "config": {
+        "WORKSPACE_SERVICE_SECRET": ""
+      }
     }
   ],
   "infrastructure": [
