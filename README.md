@@ -1,6 +1,6 @@
 # Vault — Centralized Secrets + Config Server
 
-Self-hosted secrets and configuration service — the single source of truth for all credentials, non-secret config, ports, URLs, and service topology across the Sun ecosystem. Reads the master `.env` (secrets) and `services.json` (config + registry) at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
+Self-hosted secrets and configuration service — the single source of truth for all credentials, non-secret config, ports, URLs, and project topology across the Sun ecosystem. Reads the master `.env` (secrets) and `projects.json` (config + registry) at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
 
 **Port:** `5599` · **Runtime:** Node.js (ES Modules) · **Framework:** Express 5 · **DB:** None · **Zero runtime dependencies** (Express only)
 
@@ -11,7 +11,7 @@ Self-hosted secrets and configuration service — the single source of truth for
 ```
 vault-service/
 ├── server.js              # Express app — route handlers, .env parser, file watcher, URL resolver
-├── services.json          # Service registry + non-secret config (ports, deps, topology, flags, IDs)
+├── projects.json          # Project registry + non-secret config (ports, deps, topology, flags, IDs)
 ├── .env                   # Master secrets file (gitignored) — API keys, tokens, passwords only
 ├── .env.example           # Template for .env — copy and fill in your credentials
 ├── vault.key              # Bearer token for auth (gitignored)
@@ -28,7 +28,7 @@ vault-service/
 │  Vault Service (Port 5599)                        │
 │                                                   │
 │  🔐 .env — API keys, tokens, passwords           │
-│  📋 services.json — registry + non-secret config  │
+│  📋 projects.json — registry + non-secret config  │
 │  👁️  Watches both files for live changes           │
 │  🔑 Bearer token auth via vault.key               │
 │  🌐 Merges & serves all values over HTTP          │
@@ -47,11 +47,11 @@ The Vault merges values from both files into a single flat `{ KEY: "value" }` re
 | File | Contains | Examples |
 |---|---|---|
 | `.env` | **Secrets** — credentials that must never be public | API keys, tokens, passwords, OAuth secrets, connection strings |
-| `services.json` | **Config** — user-configurable, non-secret settings | Discord IDs, model names, feature flags, provider URLs, workspace paths |
+| `projects.json` | **Config** — user-configurable, non-secret settings | Discord IDs, model names, feature flags, provider URLs, workspace paths |
 
 ### What Gets Auto-Derived
 
-From `services.json`, the vault automatically constructs:
+From `projects.json`, the vault automatically constructs:
 
 | Derived Key | Source | Example |
 |---|---|---|
@@ -67,7 +67,7 @@ From `services.json`, the vault automatically constructs:
 ### URL Resolution Priority
 
 1. **Explicit override** in `.env` (e.g. `PRISM_SERVICE_URL=...`)
-2. **Auto-constructed** from `services.json` `defaultHost` + service `port`
+2. **Auto-constructed** from `projects.json` `defaultHost` + service `port`
 3. **Localhost fallback** (dev-only, no host configured)
 
 ## API Endpoints
@@ -76,25 +76,25 @@ From `services.json`, the vault automatically constructs:
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/health` | No | Public health check (secret count, service count, uptime) |
+| `GET` | `/health` | No | Public health check (secret count, project count, uptime) |
 | `GET` | `/secrets` | Yes | All secrets + derived config as JSON, filterable by `?keys`, `?prefix`, `?exclude` |
 | `GET` | `/keys` | Yes | List of all available key names (no values) |
-| `POST` | `/reload` | Yes | Force-reload `.env` and `services.json` |
+| `POST` | `/reload` | Yes | Force-reload `.env` and `projects.json` |
 
 ### Registry
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | `GET` | `/registry` | Yes | Full manifest — services + infrastructure with resolved URLs |
-| `GET` | `/registry/services` | Yes | All services, filterable by `?id`, `?type`, `?deployTier` |
-| `GET` | `/registry/services/:id` | Yes | Single service by ID with resolved URL |
+| `GET` | `/registry/projects` | Yes | All projects, filterable by `?id`, `?type`, `?deployTier` |
+| `GET` | `/registry/projects/:id` | Yes | Single project by ID with resolved URL |
 | `GET` | `/registry/infrastructure` | Yes | Infrastructure entries (MongoDB, MinIO, etc.) |
 
 All registry endpoints accept `?resolve=false` to return raw manifest data without URL enrichment.
 
-## services.json — The Manifest
+## projects.json — The Manifest
 
-The manifest defines service topology **and** non-secret configuration. The `config` object on each service entry holds values that would traditionally go in `.env` but aren't actually secrets — Discord IDs, feature flags, model names, workspace paths, etc.
+The manifest defines project topology **and** non-secret configuration. The `config` object on each project entry holds values that would traditionally go in `.env` but aren't actually secrets — Discord IDs, feature flags, model names, workspace paths, etc.
 
 ```jsonc
 {
@@ -107,7 +107,7 @@ The manifest defines service topology **and** non-secret configuration. The `con
     "OPENAI_VISION_MODEL": "gpt-4o"
   },
 
-  "services": [
+  "projects": [
     {
       "id": "prism-service",
       "label": "Prism Service",
@@ -147,7 +147,7 @@ The manifest defines service topology **and** non-secret configuration. The `con
 }
 ```
 
-### Service Entry Fields
+### Project Entry Fields
 
 | Field | Type | Description |
 |---|---|---|
@@ -213,8 +213,8 @@ cp .env.example .env
 # Fill in your API keys, tokens, passwords, and connection strings.
 # Set VAULT_SERVICE_TOKEN to the contents of vault.key.
 
-# 4. Create your services.json (config + registry)
-cp services.example.json services.json
+# 4. Create your projects.json (config + registry)
+cp projects.example.json projects.json
 # Set "defaultHost" to your server's LAN IP.
 # Fill in per-service config blocks (Discord IDs, model names, etc.).
 # Update "devices" with your machine hostnames.
@@ -223,27 +223,27 @@ cp services.example.json services.json
 npm run dev
 ```
 
-Both `services.json` and `.env` are **gitignored** — only the `.example` templates are committed. This means each deployment gets its own config without risk of leaking values upstream.
+Both `projects.json` and `.env` are **gitignored** — only the `.example` templates are committed. This means each deployment gets its own config without risk of leaking values upstream.
 
 ### What Goes Where
 
 | Put it in... | When it is... | Examples |
 |---|---|---|
 | `.env` | A credential, key, token, or password | `OPENAI_API_KEY`, `MONGO_URI`, `LUPOS_TOKEN` |
-| `services.json` → `config` | A non-secret setting anyone can see | `GUILD_ID_PRIMARY`, `LANGUAGE_MODEL_TYPE`, `DST_ENABLED` |
-| `services.json` → service entry | A structural property of the service | `port`, `db`, `minioBucket`, `dependsOn` |
+| `projects.json` → `config` | A non-secret setting anyone can see | `GUILD_ID_PRIMARY`, `LANGUAGE_MODEL_TYPE`, `DST_ENABLED` |
+| `projects.json` → project entry | A structural property of the project | `port`, `db`, `minioBucket`, `dependsOn` |
 
 ### Overriding Config with .env
 
-Any key in `services.json` `config` can be overridden by setting the same key in `.env`. The `.env` value always wins. This lets you use `services.json` as defaults while allowing per-deployment overrides.
+Any key in `projects.json` `config` can be overridden by setting the same key in `.env`. The `.env` value always wins. This lets you use `projects.json` as defaults while allowing per-deployment overrides.
 
-## Adding a New Service
+## Adding a New Project
 
 Every service in the ecosystem follows the same pattern. Here's the full checklist:
 
-### 1. Register in `services.json`
+### 1. Register in `projects.json`
 
-Add an entry to the `services` array:
+Add an entry to the `projects` array:
 
 ```jsonc
 {

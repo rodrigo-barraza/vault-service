@@ -7,9 +7,9 @@ node_modules/
 # Vault secrets (never commit)
 vault.key
 env/
-services.json
+projects.json
 !.env.example
-!services.example.json
+!projects.example.json
 
 # logs
 *.log

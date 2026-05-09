@@ -1,10 +1,10 @@
 // ============================================================
-// Vault — Centralized Secrets Server + Service Registry
+// Vault — Centralized Secrets Server + Project Registry
 // ============================================================
 // Reads the master .env file and serves secrets over HTTP.
-// Also serves the infrastructure manifest (services.json) as
-// a service registry — the single source of truth for ports,
-// URLs, dependencies, and topology.
+// Also serves the infrastructure manifest (projects.json) as
+// a project registry — the single source of truth for ports,
+// URLs, dependencies, and project topology.
 //
 // Auth: Bearer token from vault.key file.
 // Fallback: Services can read the .env file directly if Vault
@@ -34,7 +34,7 @@ const KEY_FILE_PATH = existsSync(resolve(__dirname, "env/vault.key"))
   ? resolve(__dirname, "env/vault.key")
   : resolve(__dirname, "vault.key");
 
-const SERVICES_FILE_PATH = resolve(__dirname, "services.json");
+const PROJECTS_FILE_PATH = resolve(__dirname, "projects.json");
 
 const PORT = parseInt(process.env.VAULT_SERVICE_PORT || "5599", 10);
 const RELOAD_INTERVAL_MS = 5_000;
@@ -124,32 +124,32 @@ watchFile(ENV_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
   loadSecrets();
 });
 
-// ── Load Service Registry ──────────────────────────────────────
-let registry = { version: 0, services: [], infrastructure: [], devices: [] };
+// ── Load Project Registry ────────────────────────────────────────
+let registry = { version: 0, projects: [], infrastructure: [], devices: [] };
 let registryLoadedAt = null;
 
 function loadRegistry() {
   try {
-    const content = readFileSync(SERVICES_FILE_PATH, "utf-8");
+    const content = readFileSync(PROJECTS_FILE_PATH, "utf-8");
     registry = JSON.parse(content);
     registryLoadedAt = new Date().toISOString();
-    console.log(`📋 Loaded registry — ${registry.services?.length || 0} services, ${registry.infrastructure?.length || 0} infrastructure, ${registry.devices?.length || 0} devices`);
+    console.log(`📋 Loaded registry — ${registry.projects?.length || 0} projects, ${registry.infrastructure?.length || 0} infrastructure, ${registry.devices?.length || 0} devices`);
   } catch (err) {
-    console.error(`❌ Failed to load services.json: ${err.message}`);
+    console.error(`❌ Failed to load projects.json: ${err.message}`);
   }
 }
 
 loadRegistry();
 
 // Watch for manifest changes and auto-reload
-watchFile(SERVICES_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
-  console.log("🔄 services.json changed — reloading registry");
+watchFile(PROJECTS_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
+  console.log("🔄 projects.json changed — reloading registry");
   loadRegistry();
 });
 
 /**
  * Resolve the effective host for auto-constructing service URLs.
- * Priority: services.json defaultHost → DEFAULT_HOST env var → localhost.
+ * Priority: projects.json defaultHost → DEFAULT_HOST env var → localhost.
  */
 function resolveDefaultHost() {
   return registry.defaultHost || process.env.DEFAULT_HOST || "localhost";
@@ -202,7 +202,7 @@ function enrichInfrastructure(infra) {
 }
 
 /**
- * Derive env-var-shaped key-value pairs from the services.json registry.
+ * Derive env-var-shaped key-value pairs from the projects.json registry.
  *
  * All env var names are derived from the service ID using the convention:
  *   {ID_UPPERCASED}_PORT, {ID_UPPERCASED}_URL, {ID_UPPERCASED}_MONGO_DB_NAME, etc.
@@ -218,7 +218,7 @@ function deriveRegistrySecrets() {
   const derived = {};
   const host = resolveDefaultHost();
 
-  for (const service of registry.services || []) {
+  for (const service of registry.projects || []) {
     const prefix = envPrefix(service.id);
 
     // Port
@@ -312,7 +312,7 @@ app.get("/health", (_req, res) => {
     status: "ok",
     service: "vault",
     secretCount: Object.keys(secrets).length,
-    serviceCount: registry.services?.length || 0,
+    projectCount: registry.projects?.length || 0,
     lastLoadedAt,
     registryLoadedAt,
     uptime: Math.floor(process.uptime()),
@@ -389,7 +389,7 @@ app.post("/reload", requireAuth, (_req, res) => {
   res.json({
     status: "reloaded",
     secretCount: Object.keys(secrets).length,
-    serviceCount: registry.services?.length || 0,
+    projectCount: registry.projects?.length || 0,
     lastLoadedAt,
     registryLoadedAt,
   });
@@ -414,7 +414,7 @@ app.get("/keys", requireAuth, (_req, res) => {
  * GET /registry
  * Returns the full infrastructure manifest with URLs resolved
  * from the loaded secrets. This is the single source of truth
- * for service topology, ports, and dependency graphs.
+ * for project topology, ports, and dependency graphs.
  *
  * Query params (optional):
  *   ?resolve=false   — skip URL enrichment, return raw manifest
@@ -424,9 +424,9 @@ app.get("/registry", requireAuth, (req, res) => {
 
   const result = {
     version: registry.version,
-    services: shouldResolve
-      ? (registry.services || []).map(enrichService)
-      : (registry.services || []),
+    projects: shouldResolve
+      ? (registry.projects || []).map(enrichService)
+      : (registry.projects || []),
     infrastructure: shouldResolve
       ? (registry.infrastructure || []).map(enrichInfrastructure)
       : (registry.infrastructure || []),
@@ -437,20 +437,20 @@ app.get("/registry", requireAuth, (req, res) => {
 });
 
 /**
- * GET /registry/services
- * Returns the services array, optionally filtered.
+ * GET /registry/projects
+ * Returns the projects array, optionally filtered.
  *
  * Query params (all optional, combinable):
- *   ?id=prism-service       — return only this service
+ *   ?id=prism-service       — return only this project
  *   ?type=client            — filter by type (service, client, bot, infra)
  *   ?deployTier=1           — filter by deploy tier
  *   ?resolve=false          — skip URL enrichment
  */
-app.get("/registry/services", requireAuth, (req, res) => {
+app.get("/registry/projects", requireAuth, (req, res) => {
   const { id, type, deployTier, resolve: shouldResolveParam } = req.query;
   const shouldResolve = shouldResolveParam !== "false";
 
-  let services = registry.services || [];
+  let services = registry.projects || [];
 
   if (id) {
     services = services.filter((s) => s.id === id);
@@ -474,14 +474,14 @@ app.get("/registry/services", requireAuth, (req, res) => {
 });
 
 /**
- * GET /registry/services/:id
- * Returns a single service by ID with its URL resolved.
+ * GET /registry/projects/:id
+ * Returns a single project by ID with its URL resolved.
  */
-app.get("/registry/services/:id", requireAuth, (req, res) => {
-  const service = (registry.services || []).find((s) => s.id === req.params.id);
+app.get("/registry/projects/:id", requireAuth, (req, res) => {
+  const service = (registry.projects || []).find((s) => s.id === req.params.id);
 
   if (!service) {
-    return res.status(404).json({ error: `Service "${req.params.id}" not found` });
+    return res.status(404).json({ error: `Project "${req.params.id}" not found` });
   }
 
   const shouldResolve = req.query.resolve !== "false";
@@ -507,9 +507,9 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log("║                                                          ║");
   console.log(`║  🔐  Vault listening on port ${String(PORT).padEnd(28)}║`);
   console.log(`║  📄  Serving ${String(Object.keys(secrets).length).padEnd(3)} secrets from master .env             ║`);
-  console.log(`║  📋  Registry: ${String((registry.services || []).length).padEnd(3)} services, ${String((registry.infrastructure || []).length).padEnd(1)} infrastructure, ${String((registry.devices || []).length).padEnd(1)} devices  ║`);
+  console.log(`║  📋  Registry: ${String((registry.projects || []).length).padEnd(3)} projects, ${String((registry.infrastructure || []).length).padEnd(1)} infrastructure, ${String((registry.devices || []).length).padEnd(1)} devices  ║`);
   console.log("║  🔑  Bearer token loaded from vault.key                  ║");
-  console.log("║  👁️   Watching .env + services.json for live changes      ║");
+  console.log("║  👁️   Watching .env + projects.json for live changes      ║");
   console.log("║                                                          ║");
   console.log("╚══════════════════════════════════════════════════════════╝");
   console.log("");
