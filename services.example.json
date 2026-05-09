@@ -213,6 +213,8 @@
       ],
       "visibility": "external",
       "domain": "",
+      "analyticsPropertyId": "",
+      "analyticsMeasurementId": "",
       "repo": "",
       "dockerProject": "rod-dev-client",
       "deployTier": 2,
