@@ -1,20 +1,4 @@
-// ============================================================
-// Vault — Centralized Secrets Server + Project Registry
-// ============================================================
-// Reads the master .env file and serves secrets over HTTP.
-// Also serves the infrastructure manifest (projects.json) as
-// a project registry — the single source of truth for ports,
-// URLs, dependencies, and project topology.
-//
-// Auth: Bearer token from vault.key file.
-// Fallback: Services can read the .env file directly if Vault
-//           is unreachable.
-//
-// Usage:
-//   npm run dev          (hot reload via --watch)
-//   npm start            (production)
-//   npm run generate-key (create a new vault.key)
-// ============================================================
+// ─── Vault — Centralized Secrets Server + Project Registry ───
 
 import express from "express";
 import { readFileSync, watchFile, existsSync } from "fs";
@@ -24,8 +8,6 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // ── Configuration ──────────────────────────────────────────────
-// Container mount: ./env/.env + ./env/vault.key  (Docker)
-// Local:           ./.env     + ./vault.key      (development)
 const ENV_FILE_PATH = existsSync(resolve(__dirname, "env/.env"))
   ? resolve(__dirname, "env/.env")
   : resolve(__dirname, ".env");
@@ -118,7 +100,7 @@ function loadSecrets() {
 
 loadSecrets();
 
-// Watch for file changes and auto-reload
+
 watchFile(ENV_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
   console.log("🔄 .env changed — reloading secrets");
   loadSecrets();
@@ -141,7 +123,7 @@ function loadRegistry() {
 
 loadRegistry();
 
-// Watch for manifest changes and auto-reload
+
 watchFile(PROJECTS_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
   console.log("🔄 projects.json changed — reloading registry");
   loadRegistry();
