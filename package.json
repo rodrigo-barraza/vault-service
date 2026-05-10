@@ -18,16 +18,16 @@
     "generate-key": "node -e \"import('crypto').then(c => console.log(c.randomBytes(48).toString('base64url')))\""
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@rodrigo-barraza/utilities-library": "git+https://github.com/rodrigo-barraza/utilities-library.git",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.4.0",
+    "globals": "^17.6.0",
     "nodemon": "^3.1.14",
-    "prettier": "^3.8.1",
+    "prettier": "^3.8.3",
     "vitest": "^4.1.5"
   }
 }
