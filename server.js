@@ -4,6 +4,9 @@ import express from "express";
 import { readFileSync, watchFile, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
+import { createLogger } from "@rodrigo-barraza/utilities-library/node";
+
+const logger = createLogger("vault");
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -30,14 +33,14 @@ function loadBearerToken() {
   }
 
   if (!BEARER_TOKEN) {
-    console.error("╔══════════════════════════════════════════════════════════╗");
-    console.error("║  ❌  vault.key not found or empty.                      ║");
-    console.error("║                                                          ║");
-    console.error("║  Generate one with:                                      ║");
-    console.error("║    npm run generate-key > vault.key                      ║");
-    console.error("║                                                          ║");
-    console.error("║  The vault.key file is gitignored.                       ║");
-    console.error("╚══════════════════════════════════════════════════════════╝");
+    logger.error("╔══════════════════════════════════════════════════════════╗");
+    logger.error("║  ❌  vault.key not found or empty.                      ║");
+    logger.error("║                                                          ║");
+    logger.error("║  Generate one with:                                      ║");
+    logger.error("║    npm run generate-key > vault.key                      ║");
+    logger.error("║                                                          ║");
+    logger.error("║  The vault.key file is gitignored.                       ║");
+    logger.error("╚══════════════════════════════════════════════════════════╝");
     process.exit(1);
   }
 }
@@ -92,9 +95,9 @@ function loadSecrets() {
     secrets = parsed;
     lastLoadedAt = new Date().toISOString();
 
-    console.log(`✅ Loaded ${Object.keys(secrets).length} secrets from .env`);
+    logger.success(`Loaded ${Object.keys(secrets).length} secrets from .env`);
   } catch (err) {
-    console.error(`❌ Failed to load .env: ${err.message}`);
+    logger.error(`Failed to load .env: ${err.message}`);
   }
 }
 
@@ -102,7 +105,7 @@ loadSecrets();
 
 
 watchFile(ENV_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
-  console.log("🔄 .env changed — reloading secrets");
+  logger.info(".env changed — reloading secrets");
   loadSecrets();
 });
 
@@ -115,9 +118,9 @@ function loadRegistry() {
     const content = readFileSync(PROJECTS_FILE_PATH, "utf-8");
     registry = JSON.parse(content);
     registryLoadedAt = new Date().toISOString();
-    console.log(`📋 Loaded registry — ${registry.projects?.length || 0} projects, ${registry.infrastructure?.length || 0} infrastructure, ${registry.devices?.length || 0} devices`);
+    logger.success(`Loaded registry — ${registry.projects?.length || 0} projects, ${registry.infrastructure?.length || 0} infrastructure, ${registry.devices?.length || 0} devices`);
   } catch (err) {
-    console.error(`❌ Failed to load projects.json: ${err.message}`);
+    logger.error(`Failed to load projects.json: ${err.message}`);
   }
 }
 
@@ -125,7 +128,7 @@ loadRegistry();
 
 
 watchFile(PROJECTS_FILE_PATH, { interval: RELOAD_INTERVAL_MS }, () => {
-  console.log("🔄 projects.json changed — reloading registry");
+  logger.info("projects.json changed — reloading registry");
   loadRegistry();
 });
 
@@ -484,15 +487,15 @@ app.get("/registry/infrastructure", requireAuth, (req, res) => {
 
 // ── Start Server ───────────────────────────────────────────────
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("");
-  console.log("╔══════════════════════════════════════════════════════════╗");
-  console.log("║                                                          ║");
-  console.log(`║  🔐  Vault listening on port ${String(PORT).padEnd(28)}║`);
-  console.log(`║  📄  Serving ${String(Object.keys(secrets).length).padEnd(3)} secrets from master .env             ║`);
-  console.log(`║  📋  Registry: ${String((registry.projects || []).length).padEnd(3)} projects, ${String((registry.infrastructure || []).length).padEnd(1)} infrastructure, ${String((registry.devices || []).length).padEnd(1)} devices  ║`);
-  console.log("║  🔑  Bearer token loaded from vault.key                  ║");
-  console.log("║  👁️   Watching .env + projects.json for live changes      ║");
-  console.log("║                                                          ║");
-  console.log("╚══════════════════════════════════════════════════════════╝");
-  console.log("");
+  logger.info("");
+  logger.info("╔══════════════════════════════════════════════════════════╗");
+  logger.info("║                                                          ║");
+  logger.info(`║  🔐  Vault listening on port ${String(PORT).padEnd(28)}║`);
+  logger.info(`║  📄  Serving ${String(Object.keys(secrets).length).padEnd(3)} secrets from master .env             ║`);
+  logger.info(`║  📋  Registry: ${String((registry.projects || []).length).padEnd(3)} projects, ${String((registry.infrastructure || []).length).padEnd(1)} infrastructure, ${String((registry.devices || []).length).padEnd(1)} devices  ║`);
+  logger.info("║  🔑  Bearer token loaded from vault.key                  ║");
+  logger.info("║  👁️   Watching .env + projects.json for live changes      ║");
+  logger.info("║                                                          ║");
+  logger.info("╚══════════════════════════════════════════════════════════╝");
+  logger.info("");
 });
