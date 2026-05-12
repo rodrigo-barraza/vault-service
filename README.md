@@ -1,6 +1,6 @@
 # Vault — Centralized Secrets + Config Server
 
-Self-hosted secrets and configuration service — the single source of truth for all credentials, non-secret config, ports, URLs, and project topology across the Sun ecosystem. Reads the master `.env` (secrets) and `projects.json` (config + registry) at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
+Self-hosted secrets and configuration service — the single source of truth for all credentials, non-secret config, ports, URLs, and project topology across the entire ecosystem. Reads the master `.env` (secrets) and `projects.json` (config + registry) at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
 
 **Port:** `5599` · **Runtime:** Node.js (ES Modules) · **Framework:** Express 5 · **DB:** None · **Zero runtime dependencies** (Express only)
 
