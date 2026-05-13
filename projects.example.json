@@ -23,7 +23,16 @@
       "repo": "",
       "dockerProject": "vault-service",
       "deployTier": 0,
-      "dependsOn": []
+      "dependsOn": [
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
     },
     {
       "id": "lm-studio",
@@ -38,7 +47,12 @@
       "deployTier": 0,
       "url": "http://localhost:1234",
       "device": "workstation",
-      "dependsOn": []
+      "dependsOn": [
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
     },
     {
       "id": "tools-service",
@@ -52,9 +66,26 @@
       "dockerProject": "tools-service",
       "deployTier": 1,
       "dependsOn": [
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "required" },
-        { "id": "prism-service", "criticality": "optional" }
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "prism-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ],
       "config": {
         "WORKSPACE_ROOTS": "",
@@ -75,11 +106,34 @@
       "dockerProject": "portal-service",
       "deployTier": 1,
       "dependsOn": [
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "required" },
-        { "id": "prism-service", "criticality": "optional" },
-        { "id": "tools-service", "criticality": "optional" },
-        { "id": "minio", "criticality": "optional" }
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "prism-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "tools-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "minio",
+          "criticality": "optional"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ],
       "config": {
         "AUTH_ALLOWED_EMAILS": "",
@@ -98,8 +152,22 @@
       "dockerProject": "lights-service",
       "deployTier": 1,
       "dependsOn": [
-        { "id": "vault-service", "criticality": "required" },
-        { "id": "mongodb", "criticality": "required" }
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ],
       "config": {
         "DST_ENABLED": "false",
@@ -118,11 +186,24 @@
       "dockerProject": "clock-crew-service",
       "deployTier": 1,
       "dependsOn": [
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "required" }
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
-
     {
       "id": "prism-service",
       "label": "Prism Service",
@@ -138,11 +219,38 @@
       "dockerProject": "prism-service",
       "deployTier": 1,
       "dependsOn": [
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "required" },
-        { "id": "tools-service", "criticality": "optional" },
-        { "id": "minio", "criticality": "optional" },
-        { "id": "lm-studio", "criticality": "optional" }
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "tools-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "minio",
+          "criticality": "optional"
+        },
+        {
+          "id": "lm-studio",
+          "criticality": "optional"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "service-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ],
       "config": {
         "PROVIDER_LM_STUDIO_1_URL": "http://localhost:1234",
@@ -163,8 +271,26 @@
       "dockerProject": "prism-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "prism-service", "criticality": "required" },
-        { "id": "vault-service", "criticality": "optional" }
+        {
+          "id": "prism-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -179,7 +305,22 @@
       "dockerProject": "portal-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "portal-service", "criticality": "required" }
+        {
+          "id": "portal-service",
+          "criticality": "required"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -195,12 +336,32 @@
       "dockerProject": "clock-crew-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "vault-service", "criticality": "required" },
-        { "id": "clock-crew-service", "criticality": "required" },
-        { "id": "tools-service", "criticality": "optional" }
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "clock-crew-service",
+          "criticality": "required"
+        },
+        {
+          "id": "tools-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
-
     {
       "id": "lights-client",
       "label": "Lights Client",
@@ -213,7 +374,22 @@
       "dockerProject": "lights-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "lights-service", "criticality": "required" }
+        {
+          "id": "lights-service",
+          "criticality": "required"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -223,10 +399,7 @@
       "healthPath": "/",
       "description": "Personal portfolio / dev site",
       "db": null,
-      "minioBucket": [
-        "rod-dev-generations",
-        "rod-dev-assets"
-      ],
+      "minioBucket": ["rod-dev-generations", "rod-dev-assets"],
       "visibility": "external",
       "domain": "",
       "analyticsPropertyId": "",
@@ -235,8 +408,26 @@
       "dockerProject": "rod-dev-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "prism-service", "criticality": "required" },
-        { "id": "vault-service", "criticality": "optional" }
+        {
+          "id": "prism-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ],
       "config": {
         "ROD_DEV_MINIO_BUCKET_NAME": "rod-dev-generations",
@@ -258,9 +449,26 @@
       "dockerProject": "lupos-bot",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "prism-service", "criticality": "required" },
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "optional" }
+        {
+          "id": "prism-service",
+          "criticality": "required"
+        },
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ],
       "config": {
         "UNDER_MAINTENANCE": "true",
@@ -323,7 +531,26 @@
       "dockerProject": "meepothegeomancer-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "vault-service", "criticality": "optional" }
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "chat-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -339,8 +566,26 @@
       "dockerProject": "classic-whitemane-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "vault-service", "criticality": "required" },
-        { "id": "tools-service", "criticality": "optional" }
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "tools-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -356,9 +601,30 @@
       "dockerProject": "messages-service",
       "deployTier": 1,
       "dependsOn": [
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "required" },
-        { "id": "prism-service", "criticality": "optional" }
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "prism-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "service-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -374,8 +640,26 @@
       "dockerProject": "messages-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "messages-service", "criticality": "required" },
-        { "id": "vault-service", "criticality": "optional" }
+        {
+          "id": "messages-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -390,8 +674,26 @@
       "dockerProject": "ledger-service",
       "deployTier": 1,
       "dependsOn": [
-        { "id": "mongodb", "criticality": "required" },
-        { "id": "vault-service", "criticality": "required" }
+        {
+          "id": "mongodb",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "service-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -406,8 +708,26 @@
       "dockerProject": "ledger-client",
       "deployTier": 2,
       "dependsOn": [
-        { "id": "ledger-service", "criticality": "required" },
-        { "id": "vault-service", "criticality": "optional" }
+        {
+          "id": "ledger-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ]
     },
     {
@@ -415,14 +735,25 @@
       "label": "Workspace Service",
       "port": null,
       "healthPath": null,
-      "description": "Remote development sidecar \u2014 connects local workspace to tools-service via WebSocket",
+      "description": "Remote development sidecar — connects local workspace to tools-service via WebSocket",
       "db": null,
       "visibility": "internal",
       "repo": "",
       "dockerProject": null,
       "deployTier": 2,
       "dependsOn": [
-        { "id": "tools-service", "criticality": "required" }
+        {
+          "id": "tools-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
       ],
       "config": {
         "WORKSPACE_SERVICE_SECRET": ""
@@ -464,10 +795,25 @@
   ],
   "domains": [],
   "projectTypeColors": {
-    "Service":  { "color": "#3b82f6", "subtle": "rgba(59, 130, 246, 0.12)" },
-    "Client":   { "color": "#22c55e", "subtle": "rgba(34, 197, 94, 0.12)" },
-    "Bot":      { "color": "#eab308", "subtle": "rgba(234, 179, 8, 0.12)" },
-    "Database": { "color": "#a855f7", "subtle": "rgba(168, 85, 247, 0.12)" },
-    "Store":    { "color": "#f97316", "subtle": "rgba(249, 115, 22, 0.12)" }
+    "Service": {
+      "color": "#3b82f6",
+      "subtle": "rgba(59, 130, 246, 0.12)"
+    },
+    "Client": {
+      "color": "#22c55e",
+      "subtle": "rgba(34, 197, 94, 0.12)"
+    },
+    "Bot": {
+      "color": "#eab308",
+      "subtle": "rgba(234, 179, 8, 0.12)"
+    },
+    "Database": {
+      "color": "#a855f7",
+      "subtle": "rgba(168, 85, 247, 0.12)"
+    },
+    "Store": {
+      "color": "#f97316",
+      "subtle": "rgba(249, 115, 22, 0.12)"
+    }
   }
 }
