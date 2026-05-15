@@ -236,6 +236,10 @@ function deriveRegistrySecrets() {
     }
 
     // Per-service config — non-secret settings (IDs, flags, model names, etc.)
+    // NOTE: When multiple projects define the same key (e.g. AUTH_URL) with
+    // different values, the last project in the list wins. Services that need
+    // project-specific values should use prefixed env vars (e.g. PORTAL_SERVICE_PUBLIC_URL)
+    // or explicit .env overrides to avoid collisions.
     if (service.config) {
       for (const [key, value] of Object.entries(service.config)) {
         if (secrets[key] === undefined) {
