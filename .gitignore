@@ -1,4 +1,5 @@
 node_modules/
+dist/
 .env
 .vscode/settings.json
 
@@ -13,3 +14,6 @@ projects.json
 
 # logs
 *.log
+
+# Old JS source (replaced by src/)
+server.js

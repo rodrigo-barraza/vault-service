@@ -579,10 +579,6 @@
           "criticality": "required"
         },
         {
-          "id": "chat-library",
-          "criticality": "required"
-        },
-        {
           "id": "deploy-kit",
           "criticality": "optional"
         }

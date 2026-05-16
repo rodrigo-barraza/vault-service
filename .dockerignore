@@ -12,7 +12,9 @@ docker-compose.yml
 Dockerfile
 eslint.config.js
 vitest.config.js
+tsconfig.json
 tests
+src
 *.md
 
 # Vault secrets (never include in image)

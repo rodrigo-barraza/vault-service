@@ -1,16 +1,29 @@
 {
   "name": "vault-service",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Sun — Centralized Secrets Server",
   "type": "module",
-  "main": "server.js",
+  "main": "dist/server.js",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon --legacy-watch server.js",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"**/*.js\"",
-    "format:check": "prettier --check \"**/*.js\"",
+    "start": "node dist/server.js",
+    "dev": "nodemon --legacy-watch --ext ts --exec 'node --import tsx src/server.ts'",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "deploy": "bash deploy.sh",
@@ -23,11 +36,16 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.15.21",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.6.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0",
     "vitest": "^4.1.5"
   }
 }
