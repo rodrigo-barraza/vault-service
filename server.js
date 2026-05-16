@@ -247,6 +247,13 @@ function deriveRegistrySecrets() {
         }
       }
     }
+
+    // AUTH_URL auto-derivation — for projects with a domain, derive
+    // AUTH_URL as https://{domain} unless explicitly overridden in
+    // the project's config block or the master .env.
+    if (service.domain && !secrets.AUTH_URL && !service.config?.AUTH_URL) {
+      derived.AUTH_URL = `https://${service.domain}`;
+    }
   }
 
   // Infrastructure config (e.g. MinIO public URL)
