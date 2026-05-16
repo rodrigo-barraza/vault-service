@@ -96,8 +96,8 @@ function loadSecrets() {
     lastLoadedAt = new Date().toISOString();
 
     logger.success(`Loaded ${Object.keys(secrets).length} secrets from .env`);
-  } catch (err) {
-    logger.error(`Failed to load .env: ${err.message}`);
+  } catch (error) {
+    logger.error(`Failed to load .env: ${error.message}`);
   }
 }
 
@@ -119,8 +119,8 @@ function loadRegistry() {
     registry = JSON.parse(content);
     registryLoadedAt = new Date().toISOString();
     logger.success(`Loaded registry — ${registry.projects?.length || 0} projects, ${registry.infrastructure?.length || 0} infrastructure, ${registry.devices?.length || 0} devices`);
-  } catch (err) {
-    logger.error(`Failed to load projects.json: ${err.message}`);
+  } catch (error) {
+    logger.error(`Failed to load projects.json: ${error.message}`);
   }
 }
 
