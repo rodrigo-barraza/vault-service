@@ -15,6 +15,7 @@
     {
       "id": "vault-service",
       "label": "Vault Service",
+      "essential": true,
       "port": 5599,
       "healthPath": "/health",
       "description": "Centralized secret store and project registry",
@@ -96,6 +97,7 @@
     {
       "id": "portal-service",
       "label": "Portal Service",
+      "essential": true,
       "port": 4001,
       "healthPath": "/health",
       "description": "Portal backend API — user data, content management",
@@ -296,6 +298,7 @@
     {
       "id": "portal-client",
       "label": "Portal Client",
+      "essential": true,
       "port": 4000,
       "healthPath": "/",
       "description": "Portal frontend — public-facing website",
@@ -733,6 +736,7 @@
     {
       "id": "workspace-service",
       "label": "Workspace Service",
+      "essential": true,
       "port": null,
       "healthPath": null,
       "description": "Remote development sidecar — connects local workspace to tools-service via WebSocket",
@@ -758,6 +762,64 @@
       "config": {
         "WORKSPACE_SERVICE_SECRET": ""
       }
+    },
+    {
+      "id": "components-library",
+      "label": "Components Library",
+      "essential": true,
+      "description": "Shared React component library — reusable UI primitives across all clients",
+      "projectType": "Library",
+      "repo": "",
+      "npmPackage": "@your-org/components-library",
+      "visibility": "internal",
+      "dependsOn": [
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        }
+      ]
+    },
+    {
+      "id": "utilities-library",
+      "label": "Utilities Library",
+      "essential": true,
+      "description": "Shared JavaScript utility functions — formatters, parsers, validators",
+      "projectType": "Library",
+      "repo": "",
+      "npmPackage": "@your-org/utilities-library",
+      "visibility": "internal",
+      "dependsOn": []
+    },
+    {
+      "id": "service-library",
+      "label": "Service Library",
+      "essential": true,
+      "description": "Service chassis — shared Express bootstrap, MongoDB, MinIO, auth, health, and graceful shutdown",
+      "projectType": "Library",
+      "repo": "",
+      "npmPackage": "@your-org/service-library",
+      "visibility": "internal",
+      "dependsOn": [
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        }
+      ]
+    },
+    {
+      "id": "deploy-kit",
+      "label": "Deploy Kit",
+      "essential": true,
+      "description": "Orchestrated multi-service deployment — builds, tests, and deploys containers to production",
+      "projectType": "Kit",
+      "repo": "",
+      "visibility": "internal",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        }
+      ]
     }
   ],
   "infrastructure": [
