@@ -44,6 +44,10 @@ EXTRA_SSH_SYNC() {
   info "Syncing vault.key..."
   cat "${SCRIPT_DIR}/vault.key" | ssh "$DEPLOY_SSH_HOST" "cat > '${DEPLOY_COMPOSE_DIR}/env/vault.key'"
   ok "vault.key synced"
+
+  info "Syncing projects.json..."
+  cat "${SCRIPT_DIR}/projects.json" | ssh "$DEPLOY_SSH_HOST" "cat > '${DEPLOY_COMPOSE_DIR}/projects.json'"
+  ok "projects.json synced"
 }
 
 # ── Vault-specific SMB fallback sync ──────────────────────────
@@ -51,6 +55,7 @@ EXTRA_SMB_SYNC() {
   mkdir -p "${DEPLOY_SMB_DIR}/env"
   cp "${SCRIPT_DIR}/.env" "${DEPLOY_SMB_DIR}/env/.env"
   cp "${SCRIPT_DIR}/vault.key" "${DEPLOY_SMB_DIR}/env/vault.key"
+  cp "${SCRIPT_DIR}/projects.json" "${DEPLOY_SMB_DIR}/projects.json"
 }
 
 source "${SCRIPT_DIR}/../deploy-kit/lib.sh"

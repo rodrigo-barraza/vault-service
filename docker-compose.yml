@@ -6,9 +6,10 @@ services:
     ports:
       - "5599:5599"
     volumes:
-      # Mount the master .env and vault.key into the container.
+      # Mount the master .env, vault.key, and project registry into the container.
       # These are copied to the NAS by deploy.sh.
       - ./env:/app/env:ro
+      - ./projects.json:/app/projects.json:ro
       - /usr/share/zoneinfo/America/Los_Angeles:/etc/localtime:ro
     environment:
       - VAULT_PORT=5599
