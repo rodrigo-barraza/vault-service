@@ -10,18 +10,16 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.json ./
 COPY src ./src
-RUN apk add --no-cache git openssh-client
-RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh npm ci
+RUN apk add --no-cache git
+RUN npm ci
 RUN npx tsc
 
 # ── Stage 2: Production dependencies ─────────────────────────
 FROM node:22-alpine AS prod-deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN apk add --no-cache git openssh-client
-RUN mkdir -p -m 0700 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh npm ci --omit=dev
+RUN apk add --no-cache git
+RUN npm ci --omit=dev
 
 # ── Stage 3: Runtime ─────────────────────────────────────────
 FROM node:22-alpine
