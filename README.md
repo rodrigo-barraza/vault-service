@@ -2,7 +2,7 @@
 
 Self-hosted secrets and configuration server — the single source of truth for all credentials, non-secret config, ports, URLs, and project topology. Reads `.env` (secrets) and `projects.json` (config + registry) at startup, watches both for live changes, and serves them over HTTP with bearer token authentication.
 
-**Port:** `5599` · **Runtime:** Node.js (ES Modules) · **Framework:** Express 5 · **Zero runtime dependencies** (Express only)
+**Port:** `5599` · **Runtime:** Node.js (TypeScript) · **Framework:** Express 5 · **Zero runtime dependencies** (Express only)
 
 ## Quick Start
 
@@ -74,7 +74,7 @@ All registry endpoints accept `?resolve=false` for raw manifest data.
 
 ## Client Usage
 
-```js
+```ts
 import { createVaultClient } from "@rodrigo-barraza/utilities-library/vault";
 
 const vault = createVaultClient({
@@ -100,7 +100,7 @@ Each service only needs `VAULT_SERVICE_URL` and `VAULT_SERVICE_TOKEN` to reach V
 
 ### 1. Register in `projects.json`
 
-```jsonc
+```tsonc
 {
   "id": "my-service",
   "label": "My Service",
@@ -120,11 +120,11 @@ Each service only needs `VAULT_SERVICE_URL` and `VAULT_SERVICE_TOKEN` to reach V
 
 This auto-derives: `MY_SERVICE_PORT`, `MY_SERVICE_URL`, `MY_SERVICE_MONGO_DB_NAME`, `MY_SERVICE_MINIO_BUCKET_NAME`.
 
-### 2. Create `boot.js`
+### 2. Create `boot.ts`
 
-Every service uses `boot.js` as entry point — fetches secrets from Vault, hydrates `process.env`, then imports the server:
+Every service uses `boot.ts` as entry point — fetches secrets from Vault, hydrates `process.env`, then imports the server:
 
-```js
+```ts
 import { createVaultClient } from "@rodrigo-barraza/utilities-library/vault";
 
 const vault = createVaultClient({ localEnvFile: "./.env", fallbackEnvFile: "../vault-service/.env" });
@@ -132,10 +132,10 @@ const secrets = await vault.fetch();
 for (const [key, value] of Object.entries(secrets)) {
   if (process.env[key] === undefined) process.env[key] = value;
 }
-await import("./server.js");
+await import("./server.js"); // Compiled JS file from server.ts
 ```
 
-### 3. Create `config.js`
+### 3. Create `config.ts`
 
 Clean accessor over `process.env` — no defaults, Vault is the source of truth.
 
