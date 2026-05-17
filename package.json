@@ -31,7 +31,7 @@
     "generate-key": "node -e \"import('crypto').then(c => console.log(c.randomBytes(48).toString('base64url')))\""
   },
   "dependencies": {
-    "@rodrigo-barraza/utilities-library": "git+https://github.com/rodrigo-barraza/utilities-library.git",
+    "@rodrigo-barraza/utilities-library": "github:rodrigo-barraza/utilities-library",
     "express": "^5.2.1"
   },
   "devDependencies": {
