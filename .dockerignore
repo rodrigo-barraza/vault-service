@@ -16,3 +16,5 @@ vitest.config.js
 # Vault secrets (never include in image)
 vault.key
 env/
+dist/
+*.tsbuildinfo

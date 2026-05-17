@@ -17,3 +17,6 @@ projects.json
 
 # Old JS source (replaced by src/)
 server.js
+
+# TypeScript build artifacts
+*.tsbuildinfo
