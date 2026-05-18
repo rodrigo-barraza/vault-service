@@ -6,7 +6,7 @@
 # ============================================================
 
 # ── Stage 1: Install dependencies + build TypeScript ──────────
-FROM node:22-alpine AS deps
+FROM node:26-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.json ./
 COPY src ./src
@@ -15,14 +15,14 @@ RUN npm ci
 RUN npx tsc
 
 # ── Stage 2: Production dependencies ─────────────────────────
-FROM node:22-alpine AS prod-deps
+FROM node:26-alpine AS prod-deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN apk add --no-cache git
 RUN npm ci --omit=dev
 
 # ── Stage 3: Runtime ─────────────────────────────────────────
-FROM node:22-alpine
+FROM node:26-alpine
 WORKDIR /app
 
 # Copy pre-built artifacts
