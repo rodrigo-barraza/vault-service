@@ -516,9 +516,8 @@
         "ROD_DEV_MINIO_BUCKET_NAME": "",
         "ROD_DEV_ASSETS_MINIO_BUCKET_NAME": "",
         "ASSETS_PUBLIC_URL": "",
-        "NEXT_PUBLIC_RODRIGO_SERVICE": "",
-        "NEXT_PUBLIC_PRISM_SERVICE": "",
-        "RENDER_API": "",
+        "ROD_DEV_SERVICE_URL": "",
+        "PRISM_SERVICE_PUBLIC_URL": "",
         "GA_MEASUREMENT_ID": ""
       }
     },
