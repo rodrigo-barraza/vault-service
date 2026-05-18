@@ -1,4 +1,4 @@
-// ─── Registry Store — Project Manifest Manager ──────────────
+// ─── Registry Store — Single Source of Truth ─────────────────
 
 import { readFileSync, watchFile } from "fs";
 import { createLogger } from "@rodrigo-barraza/utilities-library/node";
@@ -29,11 +29,11 @@ export interface RegistryStore {
   /** Resolve the effective default host */
   resolveDefaultHost(): string;
   /** Enrich a service entry with its resolved URL */
-  enrichService(service: RegistryProject, secrets: SecretsMap): RegistryProject;
+  enrichService(service: RegistryProject): RegistryProject;
   /** Enrich an infrastructure entry with its display URL */
   enrichInfrastructure(infra: RegistryInfrastructure): RegistryInfrastructure;
-  /** Derive env-var-shaped fallbacks from the registry */
-  deriveRegistrySecrets(secrets: SecretsMap): SecretsMap;
+  /** Flatten the registry into a key-value secrets map */
+  deriveSecrets(): SecretsMap;
 }
 
 const EMPTY_REGISTRY: Registry = {
@@ -68,7 +68,7 @@ export function createRegistryStore(
 
   function startWatching(): void {
     watchFile(filePath, { interval: reloadIntervalMs }, () => {
-      logger.info("projects.json changed — reloading registry");
+      logger.info("projects.json changed — reloading");
       reload();
     });
   }
@@ -82,22 +82,21 @@ export function createRegistryStore(
   }
 
   /**
-   * Enrich a service entry with its resolved URL from the secrets store.
+   * Enrich a service entry with its resolved URL.
    *
    * Resolution order:
-   *   1. Explicit per-service URL override (e.g. PRISM_SERVICE_URL in .env)
+   *   1. Explicit per-service URL in top-level or per-project config
    *   2. Auto-constructed from resolved host + service port
-   *   3. Localhost fallback (dev-only, no host configured)
    */
-  function enrichService(
-    service: RegistryProject,
-    secrets: SecretsMap,
-  ): RegistryProject {
+  function enrichService(service: RegistryProject): RegistryProject {
     const enriched = { ...service };
-    const urlEnv = `${envPrefix(service.id)}_URL`;
+    const urlKey = `${envPrefix(service.id)}_URL`;
 
-    if (secrets[urlEnv]) {
-      enriched.url = secrets[urlEnv];
+    // Check top-level config for explicit URL
+    if (registry.config?.[urlKey]) {
+      enriched.url = registry.config[urlKey];
+    } else if (service.config?.[urlKey]) {
+      enriched.url = service.config[urlKey];
     } else if (service.port) {
       enriched.url = `http://${resolveDefaultHost()}:${service.port}`;
     }
@@ -108,9 +107,6 @@ export function createRegistryStore(
   /**
    * Enrich an infrastructure entry with its display URL.
    * Uses the same resolveDefaultHost() + port pattern as services.
-   * The urlEnv field exists for services that need the actual connection
-   * string — it is NOT used here to avoid leaking credentials into the
-   * registry response.
    */
   function enrichInfrastructure(
     infra: RegistryInfrastructure,
@@ -125,96 +121,80 @@ export function createRegistryStore(
   }
 
   /**
-   * Derive env-var-shaped key-value pairs from the projects.json registry.
+   * Flatten the entire registry into a key-value secrets map.
    *
-   * All env var names are derived from the service ID using the convention:
-   *   {ID_UPPERCASED}_PORT, {ID_UPPERCASED}_URL, {ID_UPPERCASED}_MONGO_DB_NAME, etc.
-   *
-   * This lets services receive ports, auto-constructed URLs, and database/bucket
-   * names via the normal /secrets → boot.js → process.env pipeline, even when
-   * those values are not explicitly set in the master .env file.
-   *
-   * These are returned as a flat object to be merged as fallbacks (never
-   * overwriting explicit .env entries).
+   * Sources (in priority order, later wins):
+   *   1. Auto-derived from project metadata (ports, URLs, DB names, buckets)
+   *   2. Infrastructure config blocks
+   *   3. Per-project config blocks
+   *   4. Top-level config (highest priority — shared secrets live here)
    */
-  function deriveRegistrySecrets(secrets: SecretsMap): SecretsMap {
-    const derived: SecretsMap = {};
+  function deriveSecrets(): SecretsMap {
+    const result: SecretsMap = {};
     const host = resolveDefaultHost();
 
+    // Layer 1: Auto-derived from project metadata
     for (const service of registry.projects || []) {
       const prefix = envPrefix(service.id);
 
       // Port
       if (service.port) {
-        derived[`${prefix}_PORT`] = String(service.port);
+        result[`${prefix}_PORT`] = String(service.port);
       }
 
-      // URL — auto-construct if not explicitly overridden in .env
+      // URL — auto-construct from host + port
       const urlKey = `${prefix}_URL`;
-      if (!secrets[urlKey] && service.port) {
-        derived[urlKey] = `http://${host}:${service.port}`;
+      if (service.port) {
+        result[urlKey] = `http://${host}:${service.port}`;
       }
 
-      // WebSocket URL — auto-construct from wsPort if defined
+      // WebSocket URL
       if (service.wsPort) {
-        const wsKey = `${prefix}_WS_URL`;
-        if (!secrets[wsKey]) {
-          derived[wsKey] = `ws://${host}:${service.wsPort}`;
-        }
+        result[`${prefix}_WS_URL`] = `ws://${host}:${service.wsPort}`;
       }
 
       // Database name
       if (service.db) {
-        derived[`${prefix}_MONGO_DB_NAME`] = service.db;
+        result[`${prefix}_MONGO_DB_NAME`] = service.db;
       }
 
-      // MinIO bucket name (single string only; arrays use custom env var naming)
+      // MinIO bucket name (single string only)
       if (service.minioBucket && typeof service.minioBucket === "string") {
-        derived[`${prefix}_MINIO_BUCKET_NAME`] = service.minioBucket;
+        result[`${prefix}_MINIO_BUCKET_NAME`] = service.minioBucket;
       }
 
-      // Per-service config — non-secret settings (IDs, flags, model names, etc.)
-      // NOTE: When multiple projects define the same key (e.g. AUTH_URL) with
-      // different values, the last project in the list wins. Services that need
-      // project-specific values should use prefixed env vars (e.g. PORTAL_SERVICE_PUBLIC_URL)
-      // or explicit .env overrides to avoid collisions.
-      if (service.config) {
-        for (const [key, value] of Object.entries(service.config)) {
-          if (secrets[key] === undefined) {
-            derived[key] = String(value);
-          }
-        }
-      }
-
-      // AUTH_URL auto-derivation — for projects with a domain, derive
-      // AUTH_URL as https://{domain} unless explicitly overridden in
-      // the project's config block or the master .env.
-      if (service.domain && !secrets.AUTH_URL && !service.config?.AUTH_URL) {
-        derived.AUTH_URL = `https://${service.domain}`;
+      // AUTH_URL auto-derivation
+      if (service.domain && !service.config?.AUTH_URL) {
+        result.AUTH_URL = `https://${service.domain}`;
       }
     }
 
-    // Infrastructure config (e.g. MinIO public URL)
+    // Layer 2: Infrastructure config
     for (const infra of registry.infrastructure || []) {
       if (infra.config) {
         for (const [key, value] of Object.entries(infra.config)) {
-          if (secrets[key] === undefined) {
-            derived[key] = String(value);
-          }
+          result[key] = String(value);
         }
       }
     }
 
-    // Top-level config — entries not tied to a specific service (e.g. stickers)
+    // Layer 3: Per-project config
+    for (const service of registry.projects || []) {
+      if (service.config) {
+        for (const [key, value] of Object.entries(service.config)) {
+          result[key] = String(value);
+        }
+      }
+    }
+
+    // Layer 4: Top-level config (highest priority — secrets + shared config)
     if (registry.config) {
       for (const [key, value] of Object.entries(registry.config)) {
-        if (secrets[key] === undefined) {
-          derived[key] = String(value);
-        }
+        result[key] = String(value);
       }
     }
 
-    return derived;
+    return result;
   }
 
   // Initial load
@@ -232,6 +212,6 @@ export function createRegistryStore(
     resolveDefaultHost,
     enrichService,
     enrichInfrastructure,
-    deriveRegistrySecrets,
+    deriveSecrets,
   };
 }

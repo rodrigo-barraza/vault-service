@@ -93,7 +93,6 @@ export interface HealthResponse {
   service: string;
   secretCount: number;
   projectCount: number;
-  lastLoadedAt: string | null;
   registryLoadedAt: string | null;
   uptime: number;
 }

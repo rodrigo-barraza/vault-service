@@ -1,28 +1,26 @@
 // ─── Vault Routes ────────────────────────────────────────────
 
 import type { Router, Request, Response, RequestHandler } from "express";
-import type { SecretsStore } from "./secretsStore.ts";
 import type { RegistryStore } from "./registryStore.ts";
 import type { SecretsQuery, RegistryQuery, RegistryProjectsQuery, HealthResponse, SecretsMap } from "./types.ts";
 
 export interface RoutesOptions {
   router: Router;
-  secretsStore: SecretsStore;
   registryStore: RegistryStore;
   requireAuth: RequestHandler;
 }
 
 export function mountRoutes(options: RoutesOptions): void {
-  const { router, secretsStore, registryStore, requireAuth } = options;
+  const { router, registryStore, requireAuth } = options;
 
   router.get("/health", (_req: Request, res: Response) => {
     const reg = registryStore.registry;
+    const secrets = registryStore.deriveSecrets();
     const body: HealthResponse = {
       status: "ok",
       service: "vault",
-      secretCount: Object.keys(secretsStore.secrets).length,
+      secretCount: Object.keys(secrets).length,
       projectCount: reg.projects?.length || 0,
-      lastLoadedAt: secretsStore.lastLoadedAt,
       registryLoadedAt: registryStore.loadedAt,
       uptime: Math.floor(process.uptime()),
     };
@@ -31,8 +29,7 @@ export function mountRoutes(options: RoutesOptions): void {
 
   router.get("/secrets", requireAuth, (req: Request<object, SecretsMap, unknown, SecretsQuery>, res: Response) => {
     const { keys, prefix, exclude } = req.query;
-    const registryDerived = registryStore.deriveRegistrySecrets(secretsStore.secrets);
-    let result: SecretsMap = { ...registryDerived, ...secretsStore.secrets };
+    let result: SecretsMap = registryStore.deriveSecrets();
 
     if (keys) {
       const keyList = keys.split(",").map((k) => k.trim());
@@ -63,30 +60,27 @@ export function mountRoutes(options: RoutesOptions): void {
   });
 
   router.post("/reload", requireAuth, (_req: Request, res: Response) => {
-    secretsStore.reload();
     registryStore.reload();
+    const secrets = registryStore.deriveSecrets();
     res.json({
       status: "reloaded",
-      secretCount: Object.keys(secretsStore.secrets).length,
+      secretCount: Object.keys(secrets).length,
       projectCount: registryStore.registry.projects?.length || 0,
-      lastLoadedAt: secretsStore.lastLoadedAt,
       registryLoadedAt: registryStore.loadedAt,
     });
   });
 
   router.get("/keys", requireAuth, (_req: Request, res: Response) => {
-    const registryDerived = registryStore.deriveRegistrySecrets(secretsStore.secrets);
-    const merged = { ...registryDerived, ...secretsStore.secrets };
-    res.json(Object.keys(merged));
+    const secrets = registryStore.deriveSecrets();
+    res.json(Object.keys(secrets));
   });
 
   router.get("/registry", requireAuth, (req: Request<object, unknown, unknown, RegistryQuery>, res: Response) => {
     const shouldResolve = req.query.resolve !== "false";
     const reg = registryStore.registry;
-    const secrets = secretsStore.secrets;
     res.json({
       version: reg.version,
-      projects: shouldResolve ? (reg.projects || []).map((s) => registryStore.enrichService(s, secrets)) : reg.projects || [],
+      projects: shouldResolve ? (reg.projects || []).map((s) => registryStore.enrichService(s)) : reg.projects || [],
       infrastructure: shouldResolve ? (reg.infrastructure || []).map((i) => registryStore.enrichInfrastructure(i)) : reg.infrastructure || [],
       devices: reg.devices || [],
     });
@@ -95,7 +89,6 @@ export function mountRoutes(options: RoutesOptions): void {
   router.get("/registry/projects", requireAuth, (req: Request<object, unknown, unknown, RegistryProjectsQuery>, res: Response) => {
     const { id, type, deployTier, resolve: resolveParam } = req.query;
     const shouldResolve = resolveParam !== "false";
-    const secrets = secretsStore.secrets;
     let services = registryStore.registry.projects || [];
 
     if (id) services = services.filter((s) => s.id === id);
@@ -107,7 +100,7 @@ export function mountRoutes(options: RoutesOptions): void {
       const tier = parseInt(deployTier, 10);
       services = services.filter((s) => s.deployTier === tier);
     }
-    if (shouldResolve) services = services.map((s) => registryStore.enrichService(s, secrets));
+    if (shouldResolve) services = services.map((s) => registryStore.enrichService(s));
 
     res.json(services);
   });
@@ -119,7 +112,7 @@ export function mountRoutes(options: RoutesOptions): void {
       return;
     }
     const shouldResolve = req.query.resolve !== "false";
-    res.json(shouldResolve ? registryStore.enrichService(service, secretsStore.secrets) : service);
+    res.json(shouldResolve ? registryStore.enrichService(service) : service);
   });
 
   router.get("/registry/infrastructure", requireAuth, (req: Request<object, unknown, unknown, RegistryQuery>, res: Response) => {

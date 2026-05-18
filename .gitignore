@@ -1,6 +1,5 @@
 node_modules/
 dist/
-.env
 .vscode/settings.json
 
 *:Zone.Identifier
@@ -9,7 +8,6 @@ dist/
 vault.key
 env/
 projects.json
-!.env.example
 !projects.example.json
 
 # logs

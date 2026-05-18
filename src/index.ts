@@ -1,12 +1,11 @@
 // ─── Vault Service — Public API ──────────────────────────────
 
-export { parseEnvFile, envPrefix } from "./envParser.ts";
-export { createSecretsStore, loadBearerToken } from "./secretsStore.ts";
+export { envPrefix } from "./envParser.ts";
+export { loadBearerToken } from "./secretsStore.ts";
 export { createRegistryStore } from "./registryStore.ts";
 export { createAuthMiddleware } from "./authMiddleware.ts";
 export { mountRoutes } from "./routes.ts";
 
-export type { SecretsStore, SecretsStoreOptions } from "./secretsStore.ts";
 export type { RegistryStore, RegistryStoreOptions } from "./registryStore.ts";
 export type { RoutesOptions } from "./routes.ts";
 export type {
