@@ -1,3 +1,4 @@
+import { errorMessage } from "./utils.ts";
 // ─── Registry Store — Single Source of Truth ─────────────────
 
 import { readFileSync, watchFile } from "fs";
@@ -61,7 +62,7 @@ export function createRegistryStore(
       );
     } catch (error) {
       logger.error(
-        `Failed to load projects.json: ${(error as Error).message}`,
+        `Failed to load projects.json: ${errorMessage(error)}`,
       );
     }
   }
