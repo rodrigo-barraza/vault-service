@@ -1,4 +1,4 @@
-import { errorMessage } from "./utils.ts";
+import { errorMessage } from "@rodrigo-barraza/utilities-library";
 // ─── Registry Store — Single Source of Truth ─────────────────
 
 import { readFileSync, watchFile } from "fs";
