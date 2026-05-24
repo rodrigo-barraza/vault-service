@@ -1,3 +1,1 @@
-export function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
+export { errorMessage } from "@rodrigo-barraza/utilities-library";
