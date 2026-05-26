@@ -32,7 +32,7 @@ export function mountRoutes(options: RoutesOptions): void {
     let result: SecretsMap = registryStore.deriveSecrets();
 
     if (keys) {
-      const keyList = keys.split(",").map((k) => k.trim());
+      const keyList = keys.split(",").map((keyItem) => keyItem.trim());
       const filtered: SecretsMap = {};
       for (const key of keyList) {
         if (result[key] !== undefined) filtered[key] = result[key];
@@ -41,18 +41,18 @@ export function mountRoutes(options: RoutesOptions): void {
     }
 
     if (prefix) {
-      const prefixes = prefix.split(",").map((p) => p.trim());
+      const prefixes = prefix.split(",").map((prefixItem) => prefixItem.trim());
       const filtered: SecretsMap = {};
       for (const [key, value] of Object.entries(result)) {
-        if (prefixes.some((p) => key.startsWith(p))) filtered[key] = value;
+        if (prefixes.some((prefixItem) => key.startsWith(prefixItem))) filtered[key] = value;
       }
       result = filtered;
     }
 
     if (exclude) {
-      const excludePrefixes = exclude.split(",").map((p) => p.trim());
+      const excludePrefixes = exclude.split(",").map((excludePrefix) => excludePrefix.trim());
       for (const key of Object.keys(result)) {
-        if (excludePrefixes.some((p) => key.startsWith(p))) delete result[key];
+        if (excludePrefixes.some((excludePrefix) => key.startsWith(excludePrefix))) delete result[key];
       }
     }
 
@@ -80,8 +80,8 @@ export function mountRoutes(options: RoutesOptions): void {
     const reg = registryStore.registry;
     res.json({
       version: reg.version,
-      projects: shouldResolve ? (reg.projects || []).map((s) => registryStore.enrichService(s)) : reg.projects || [],
-      infrastructure: shouldResolve ? (reg.infrastructure || []).map((i) => registryStore.enrichInfrastructure(i)) : reg.infrastructure || [],
+      projects: shouldResolve ? (reg.projects || []).map((project) => registryStore.enrichService(project)) : reg.projects || [],
+      infrastructure: shouldResolve ? (reg.infrastructure || []).map((infraItem) => registryStore.enrichInfrastructure(infraItem)) : reg.infrastructure || [],
       devices: reg.devices || [],
     });
   });
@@ -91,22 +91,22 @@ export function mountRoutes(options: RoutesOptions): void {
     const shouldResolve = resolveParam !== "false";
     let services = registryStore.registry.projects || [];
 
-    if (id) services = services.filter((s) => s.id === id);
+    if (id) services = services.filter((project) => project.id === id);
     if (type) {
-      const types = type.split(",").map((t) => t.trim());
-      services = services.filter((s) => types.includes(s.type as string));
+      const types = type.split(",").map((typeItem) => typeItem.trim());
+      services = services.filter((project) => types.includes(project.type as string));
     }
     if (deployTier !== undefined) {
       const tier = parseInt(deployTier, 10);
-      services = services.filter((s) => s.deployTier === tier);
+      services = services.filter((project) => project.deployTier === tier);
     }
-    if (shouldResolve) services = services.map((s) => registryStore.enrichService(s));
+    if (shouldResolve) services = services.map((project) => registryStore.enrichService(project));
 
     res.json(services);
   });
 
   router.get("/registry/projects/:id", requireAuth, (req: Request<{ id: string }, unknown, unknown, RegistryQuery>, res: Response) => {
-    const service = (registryStore.registry.projects || []).find((s) => s.id === req.params.id);
+    const service = (registryStore.registry.projects || []).find((project) => project.id === req.params.id);
     if (!service) {
       res.status(404).json({ error: `Project "${req.params.id}" not found` });
       return;
@@ -118,6 +118,6 @@ export function mountRoutes(options: RoutesOptions): void {
   router.get("/registry/infrastructure", requireAuth, (req: Request<object, unknown, unknown, RegistryQuery>, res: Response) => {
     const shouldResolve = req.query.resolve !== "false";
     const infra = registryStore.registry.infrastructure || [];
-    res.json(shouldResolve ? infra.map((i) => registryStore.enrichInfrastructure(i)) : infra);
+    res.json(shouldResolve ? infra.map((infraItem) => registryStore.enrichInfrastructure(infraItem)) : infra);
   });
 }
