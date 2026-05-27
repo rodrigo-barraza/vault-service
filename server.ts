@@ -248,12 +248,10 @@ function deriveRegistrySecrets() {
       }
     }
 
-    // AUTH_URL auto-derivation — for projects with a domain, derive
-    // AUTH_URL as https://{domain} unless explicitly overridden in
-    // the project's config block or the master .env.
-    if (service.domain && !secrets.AUTH_URL && !service.config?.AUTH_URL) {
-      derived.AUTH_URL = `https://${service.domain}`;
-    }
+    // Global AUTH_URL auto-derivation was removed to prevent a Shared Namespace Collision
+    // where the last project with a domain in projects.json would overwrite AUTH_URL
+    // for all services. Instead, clients rely on NextAuth's `trustHost: true` to dynamically
+    // resolve their own origin from incoming request headers.
   }
 
   // Infrastructure config (e.g. MinIO public URL)

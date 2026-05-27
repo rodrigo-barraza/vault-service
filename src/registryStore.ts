@@ -164,10 +164,10 @@ export function createRegistryStore(
         result[`${prefix}_MINIO_BUCKET_NAME`] = service.minioBucket;
       }
 
-      // AUTH_URL auto-derivation
-      if (service.domain && !service.config?.AUTH_URL) {
-        result.AUTH_URL = `https://${service.domain}`;
-      }
+      // Global AUTH_URL auto-derivation was removed to prevent a Shared Namespace Collision
+      // where the last project with a domain in projects.json would overwrite AUTH_URL
+      // for all services. Instead, clients rely on NextAuth's `trustHost: true` to dynamically
+      // resolve their own origin from incoming request headers.
     }
 
     // Layer 2: Infrastructure config
