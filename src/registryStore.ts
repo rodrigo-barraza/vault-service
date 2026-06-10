@@ -149,6 +149,11 @@ export function createRegistryStore(
         result[urlKey] = `http://${host}:${service.port}`;
       }
 
+      // Public URL — auto-derive from domain when set
+      if (service.domain) {
+        result[`${prefix}_PUBLIC_URL`] = `https://${service.domain}`;
+      }
+
       // WebSocket URL
       if (service.wsPort) {
         result[`${prefix}_WS_URL`] = `ws://${host}:${service.wsPort}`;
