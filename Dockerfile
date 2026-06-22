@@ -8,18 +8,22 @@
 # ── Stage 1: Install dependencies + build TypeScript ──────────
 FROM node:26-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json tsconfig.json ./
+RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
 COPY src ./src
 RUN apk add --no-cache git
-RUN npm ci
-RUN npx tsc
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+RUN pnpm exec tsc
 
 # ── Stage 2: Production dependencies ─────────────────────────
 FROM node:26-alpine AS prod-deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN apk add --no-cache git
-RUN npm ci --omit=dev
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile --prod
 
 # ── Stage 3: Runtime ─────────────────────────────────────────
 FROM node:26-alpine
