@@ -8,7 +8,7 @@
 # ── Stage 1: Install dependencies + build TypeScript ──────────
 FROM node:26-alpine AS deps
 WORKDIR /app
-RUN npm install -g pnpm
+RUN npm install -g pnpm@11.8.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
 COPY src ./src
 RUN apk add --no-cache git
@@ -19,7 +19,7 @@ RUN pnpm exec tsc
 # ── Stage 2: Production dependencies ─────────────────────────
 FROM node:26-alpine AS prod-deps
 WORKDIR /app
-RUN npm install -g pnpm
+RUN npm install -g pnpm@11.8.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN apk add --no-cache git
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
