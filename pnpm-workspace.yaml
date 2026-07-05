@@ -1,4 +1,7 @@
 allowBuilds:
-  "@rodrigo-barraza/utilities-library": true
-  '@rodrigo-barraza/utilities-library@https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/ebe4694b449eeba9be49e198ed98950a975528bc': set this to true or false
+  '@rodrigo-barraza/utilities-library@https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/ebe4694b449eeba9be49e198ed98950a975528bc': true
   esbuild: true
+  protobufjs: true
+  canvas: true
+  unrs-resolver: true
+  sharp: true
