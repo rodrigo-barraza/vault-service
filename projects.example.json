@@ -598,7 +598,9 @@
         "LANGUAGE_MODEL_TEMPERATURE": "",
         "LANGUAGE_MODEL_OPENAI_LOW": "",
         "FAST_LANGUAGE_MODEL_OPENAI": "",
-        "FAST_LANGUAGE_MODEL_LOCAL": ""
+        "FAST_LANGUAGE_MODEL_LOCAL": "",
+        "COUNTDOWN_ICON_GUILD_ID": "",
+        "COUNTDOWN_ICON_TARGET_DATE": ""
       }
     },
     {
