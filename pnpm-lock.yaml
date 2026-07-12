@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@rodrigo-barraza/utilities-library':
         specifier: github:rodrigo-barraza/utilities-library
-        version: https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/e37b7ba85208245ba6f648ef0d8dfdc584651084
+        version: https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/612955936322518d802e19112975b38d1c4cce5a
       express:
         specifier: ^5.2.1
         version: 5.2.1
@@ -285,8 +285,8 @@ packages:
   '@oxc-project/types@0.133.0':
     resolution: {integrity: sha512-KzkdCd6Uxqnf6l3HOw1xfatAlUURA0g14cvBYFyJ5SaNOQbOUvBr9PKArcPcrNIeRsBdgcUzOGrhKveVpvOIGA==}
 
-  '@rodrigo-barraza/utilities-library@https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/e37b7ba85208245ba6f648ef0d8dfdc584651084':
-    resolution: {gitHosted: true, integrity: sha512-Xf0ccD7jkciNSVpmWiDsqEC/QbgL2G3wUDZHo8+rqxAFEBJGf4AmKxDyFoh2jFkwO/7/NGNfI/WZ3ghjOkgi+g==, tarball: https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/e37b7ba85208245ba6f648ef0d8dfdc584651084}
+  '@rodrigo-barraza/utilities-library@https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/612955936322518d802e19112975b38d1c4cce5a':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/612955936322518d802e19112975b38d1c4cce5a}
     version: 0.2.0
 
   '@rolldown/binding-android-arm64@1.0.3':
@@ -1579,7 +1579,7 @@ snapshots:
 
   '@oxc-project/types@0.133.0': {}
 
-  '@rodrigo-barraza/utilities-library@https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/e37b7ba85208245ba6f648ef0d8dfdc584651084':
+  '@rodrigo-barraza/utilities-library@https://codeload.github.com/rodrigo-barraza/utilities-library/tar.gz/612955936322518d802e19112975b38d1c4cce5a':
     dependencies:
       mongodb: 7.3.0
       nanoid: 5.1.16
