@@ -185,9 +185,21 @@ export function createRegistryStore(
     }
 
     // Layer 3: Per-project config
+    // Secrets share ONE flat namespace — a key repeated across projects is
+    // silently last-writer-wins (this shipped clankerbox's GA_MEASUREMENT_ID
+    // inside rod.dev). Warn whenever a project overwrites another project's
+    // value so the collision is visible before it reaches a build.
+    const configKeyOwners = new Map<string, string>();
     for (const service of registry.projects || []) {
       if (service.config) {
         for (const [key, value] of Object.entries(service.config)) {
+          const owner = configKeyOwners.get(key);
+          if (owner && result[key] !== String(value)) {
+            logger.warn(
+              `Secret key collision: "${key}" from ${service.id} overwrites ${owner}'s value — prefix per-project keys to disambiguate`,
+            );
+          }
+          configKeyOwners.set(key, service.id);
           result[key] = String(value);
         }
       }

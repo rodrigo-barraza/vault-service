@@ -516,7 +516,7 @@
         "ASSETS_PUBLIC_URL": "",
         "ROD_DEV_SERVICE_URL": "",
         "PRISM_SERVICE_PUBLIC_URL": "",
-        "GA_MEASUREMENT_ID": ""
+        "ROD_DEV_GA_MEASUREMENT_ID": ""
       }
     },
     {
