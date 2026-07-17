@@ -2,14 +2,17 @@
   "version": 1,
   "defaultHost": "192.168.1.100",
   "config": {
+    "SESSIONS_STATS_API_SECRET": "",
     "MONGO_URI": "",
-    "MINIO_ENDPOINT": "",
+    "MINIO_ENDPOINT": "http://192.168.1.100:9000",
+    "MINIO_PUBLIC_URL": "",
     "MINIO_ACCESS_KEY": "",
     "MINIO_SECRET_KEY": "",
-    "VAULT_SERVICE_URL": "",
+    "VAULT_SERVICE_URL": "http://192.168.1.100:5599",
     "AUTH_GOOGLE_ID": "",
     "AUTH_GOOGLE_SECRET": "",
     "AUTH_SECRET": "",
+    "ACCOUNTS_SERVICE_API_SECRET": "",
     "OPENAI_API_KEY": "",
     "ANTHROPIC_API_KEY": "",
     "GOOGLE_CLOUD_GEMINI_API_KEY": "",
@@ -23,12 +26,15 @@
     "TMDB_API_KEY": "",
     "FINNHUB_API_KEY": "",
     "FRED_API_KEY": "",
+    "BESTBUY_API_KEY": "",
     "PRODUCTHUNT_API_KEY": "",
     "PRODUCTHUNT_API_SECRET": "",
     "EBAY_CLIENT_ID": "",
     "EBAY_CLIENT_SECRET": "",
     "ETSY_API_KEY": "",
     "ETSY_SHARED_SECRET": "",
+    "SPOTIFY_CLIENT_ID": "",
+    "SPOTIFY_CLIENT_SECRET": "",
     "REDDIT_CLIENT_ID": "",
     "REDDIT_CLIENT_SECRET": "",
     "X_BEARER_TOKEN": "",
@@ -44,24 +50,35 @@
     "LIFX_BEARER_TOKEN": "",
     "VENDER_TOKEN": "",
     "LUPOS_TOKEN": "",
-    "LUPOS_URL": "",
+    "LUPOS_URL": "http://192.168.1.100:1337",
     "STICKERS_DISCORD_TOKEN": "",
     "GOOGLE_ANALYTICS_CREDENTIALS": "",
-    "MESSAGES_SERVICE_URL": "",
+    "MESSAGES_SERVICE_URL": "http://192.168.1.100:5602",
     "MESSAGES_SERVICE_PUBLIC_URL": "",
+    "SESSIONS_SERVICE_PUBLIC_URL": "",
     "STICKERS_CLIENT_ID": "",
     "STICKERS_GUILD_ID": "",
     "OPENAI_VISION_MODEL": "gpt-4o",
-    "STICKERS_NODE_SERVER": "http://localhost:7100",
-    "STICKERS_NODE_SERVER_WEBSOCKET": "ws://localhost:7100/ws",
-    "STICKERS_PYTHON_SERVER": "http://localhost:8100",
-    "STICKERS_PYTHON_SERVER_WEBSOCKET": "ws://localhost:8100/ws",
-    "STICKERS_PRISM_SERVER": "http://localhost:3000"
+    "STICKERS_NODE_SERVER": "",
+    "STICKERS_NODE_SERVER_WEBSOCKET": "",
+    "STICKERS_PYTHON_SERVER": "",
+    "STICKERS_PYTHON_SERVER_WEBSOCKET": "",
+    "STICKERS_PRISM_SERVER": "",
+    "PAYMENTS_SERVICE_API_SECRET": "",
+    "PAYMENTS_DEFAULT_PROVIDER": "",
+    "PAYMENTS_DEFAULT_CURRENCY": "usd",
+    "PAYMENTS_STRIPE_SECRET_KEY": "",
+    "PAYMENTS_STRIPE_WEBHOOK_SECRET": "",
+    "PAYMENTS_PAYPAL_CLIENT_ID": "",
+    "PAYMENTS_PAYPAL_CLIENT_SECRET": "",
+    "PAYMENTS_PAYPAL_WEBHOOK_ID": "",
+    "PAYMENTS_PAYPAL_ENVIRONMENT": "sandbox"
   },
   "projects": [
     {
       "id": "vault-service",
       "label": "Vault Service",
+      "emoji": "🔐",
       "essential": true,
       "port": 5599,
       "healthPath": "/health",
@@ -79,25 +96,13 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
-        }
-      ]
-    },
-    {
-      "id": "lm-studio",
-      "label": "LM Studio",
-      "port": 1234,
-      "healthPath": "/v1/models",
-      "description": "Local LLM inference server \u2014 primary workstation",
-      "db": null,
-      "visibility": "internal",
-      "repo": null,
-      "dockerProject": null,
-      "deployTier": 0,
-      "url": "http://localhost:1234",
-      "device": "workstation",
-      "dependsOn": [
+        },
         {
-          "id": "deploy-kit",
+          "id": "prism-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "minio",
           "criticality": "optional"
         }
       ]
@@ -105,20 +110,15 @@
     {
       "id": "tools-service",
       "label": "Tools Service",
+      "emoji": "🧰",
       "port": 5590,
       "healthPath": "/health",
-      "description": "Tool execution hub \u2014 agentic tools, data fetchers, caches, compute",
+      "description": "Tool execution hub — agentic tools, data fetchers, caches, compute",
       "db": "tools",
       "visibility": "external",
-      "domain": "",
       "repo": "",
       "dockerProject": "tools-service",
-      "deployTier": 1,
       "dependsOn": [
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
         {
           "id": "vault-service",
           "criticality": "required"
@@ -140,42 +140,34 @@
         "GOOGLE_CSE_CX": "",
         "WORKSPACE_ROOTS": "",
         "WORKTREE_DIR": "",
-        "REDDIT_USER_AGENT": "",
-        "TOOLS_IMAGE_MODEL": "",
-        "TOOLS_VISION_MODEL": "",
-        "AGENT_SECRET": "",
-        "AGENT_MAX_CONNECTIONS": ""
-      }
+        "REDDIT_USER_AGENT": "sun:tools:v0.1.0 (by /u/YOUR_USERNAME)",
+        "TOOLS_IMAGE_MODEL": "gemini-3.1-flash-image-preview",
+        "TOOLS_VISION_MODEL": "gemini-3-flash-preview",
+        "AGENT_MAX_CONNECTIONS": "5",
+        "QBITTORRENT_URL": "http://192.168.1.100:8080",
+        "QBITTORRENT_USERNAME": "admin",
+        "QBITTORRENT_PASSWORD": "",
+        "PORTAL_SERVICE_URL": "http://192.168.1.100:4001"
+      },
+      "domain": ""
     },
     {
       "id": "portal-service",
       "label": "Portal Service",
+      "emoji": "🌀",
       "essential": true,
       "port": 4001,
       "healthPath": "/health",
-      "description": "Portal backend API \u2014 user data, content management",
+      "description": "Portal backend API — user data, content management",
       "db": "portal",
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "portal-service",
-      "deployTier": 1,
       "dependsOn": [
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
         {
           "id": "vault-service",
           "criticality": "required"
-        },
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "tools-service",
-          "criticality": "optional"
         },
         {
           "id": "minio",
@@ -188,30 +180,37 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "prism-service",
+          "criticality": "optional"
         }
       ],
       "config": {
-        "AUTH_ALLOWED_EMAILS": ""
+        "AUTH_ALLOWED_EMAILS": "",
+        "GOOGLE_CLOUD_MONITORING_PROJECT_ID": "",
+        "WATCHDOG_PUSH_TOKEN": "",
+        "WATCHDOG_DISCORD_WEBHOOK_URL": ""
       }
     },
     {
       "id": "lights-service",
       "label": "Lights Service",
+      "emoji": "💡",
       "port": 4444,
       "healthPath": "/health",
-      "description": "Smart light control \u2014 LIFX, Philips Hue",
+      "description": "Smart light control — LIFX, Philips Hue",
       "db": null,
       "visibility": "internal",
       "repo": "",
       "dockerProject": "lights-service",
-      "deployTier": 1,
       "dependsOn": [
         {
           "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "mongodb",
           "criticality": "required"
         },
         {
@@ -224,13 +223,14 @@
         }
       ],
       "config": {
-        "DST_ENABLED": "",
+        "DST_ENABLED": "false",
         "PRIMARY_LIGHT_ID": ""
       }
     },
     {
       "id": "clock-crew-service",
       "label": "Clock Crew Service",
+      "emoji": "⏰",
       "port": 5593,
       "healthPath": "/health",
       "description": "Clock Crew + Newgrounds community archive, scraping, asset management",
@@ -238,12 +238,7 @@
       "visibility": "internal",
       "repo": "",
       "dockerProject": "clock-crew-service",
-      "deployTier": 1,
       "dependsOn": [
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
         {
           "id": "vault-service",
           "criticality": "required"
@@ -255,50 +250,46 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "prism-service",
+          "criticality": "optional"
         }
       ]
     },
     {
       "id": "prism-service",
       "label": "Prism Service",
+      "emoji": "🔮",
       "port": 7777,
       "wsPort": 7777,
       "healthPath": "/health",
-      "description": "AI Gateway \u2014 multi-provider routing, agentic loop, memory, coordination",
+      "description": "AI Gateway — multi-provider routing, agentic loop, memory, coordination",
       "db": "prism",
       "minioBucket": "prism",
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "prism-service",
-      "deployTier": 1,
       "dependsOn": [
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
         {
           "id": "vault-service",
           "criticality": "required"
-        },
-        {
-          "id": "tools-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "minio",
-          "criticality": "optional"
         },
         {
           "id": "lm-studio",
           "criticality": "optional"
         },
         {
-          "id": "utilities-library",
-          "criticality": "required"
+          "id": "lm-studio-2",
+          "criticality": "optional"
         },
         {
-          "id": "service-library",
+          "id": "llama-cpp",
+          "criticality": "optional"
+        },
+        {
+          "id": "utilities-library",
           "criticality": "required"
         },
         {
@@ -307,35 +298,42 @@
         }
       ],
       "config": {
-        "PROVIDER_LM_STUDIO_1_URL": "",
-        "PROVIDER_LM_STUDIO_1_CONCURRENCY": "",
-        "PROVIDER_LM_STUDIO_1_NICKNAME": "",
-        "PROVIDER_LM_STUDIO_2_URL": "",
-        "PROVIDER_LM_STUDIO_2_CONCURRENCY": "",
-        "PROVIDER_LM_STUDIO_2_NICKNAME": "",
-        "PROVIDER_VLLM_1_URL": "",
-        "PROVIDER_VLLM_1_CONCURRENCY": "",
-        "COORDINATOR_DECOMPOSITION_MODEL": "",
-        "LIVE_AUDIO_MODEL": "",
-        "OPENAI_TRANSCRIPTION_MODEL": "",
-        "GOOGLE_TTS_MODEL": "",
-        "GOOGLE_EMBEDDING_MODEL": "",
-        "LM_STUDIO_EVAL_BATCH_SIZE": "",
-        "LM_STUDIO_DEFAULT_MAX_CONTEXT": ""
+        "PROVIDER_LM_STUDIO_1_URL": "http://192.168.1.101:1234",
+        "PROVIDER_LM_STUDIO_1_CONCURRENCY": "3",
+        "PROVIDER_LM_STUDIO_1_NICKNAME": "Desktop",
+        "PROVIDER_LM_STUDIO_2_URL": "http://192.168.1.102:1234",
+        "PROVIDER_LM_STUDIO_2_CONCURRENCY": "3",
+        "PROVIDER_LM_STUDIO_2_NICKNAME": "Server",
+        "PROVIDER_VLLM_1_URL": "http://192.168.1.101:8080",
+        "PROVIDER_VLLM_1_CONCURRENCY": "3",
+        "PROVIDER_VLLM_1_NICKNAME": "Desktop",
+        "PROVIDER_VLLM_2_URL": "http://192.168.1.102:8080",
+        "PROVIDER_VLLM_2_CONCURRENCY": "3",
+        "PROVIDER_VLLM_2_NICKNAME": "Server",
+        "PROVIDER_LLAMA_CPP_1_URL": "http://192.168.1.101:8081",
+        "PROVIDER_LLAMA_CPP_1_CONCURRENCY": "2",
+        "PROVIDER_LLAMA_CPP_1_NICKNAME": "LlamaCpp",
+        "COORDINATOR_DECOMPOSITION_MODEL": "claude-sonnet-4-20250514",
+        "LIVE_AUDIO_MODEL": "gemini-3.1-flash-live-preview",
+        "OPENAI_TRANSCRIPTION_MODEL": "gpt-4o-transcribe",
+        "GOOGLE_TTS_MODEL": "gemini-3-flash-preview",
+        "GOOGLE_EMBEDDING_MODEL": "gemini-embedding-2-preview",
+        "LM_STUDIO_EVAL_BATCH_SIZE": "512",
+        "LM_STUDIO_DEFAULT_MAX_CONTEXT": "262144"
       }
     },
     {
       "id": "prism-client",
       "label": "Prism Client",
+      "emoji": "🔮",
       "port": 3333,
       "healthPath": "/",
-      "description": "Developer playground \u2014 chat, agents, admin dashboard, benchmarks",
+      "description": "Developer playground — chat, agents, admin dashboard, benchmarks",
       "db": null,
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "prism-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "prism-service",
@@ -356,6 +354,10 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
         }
       ],
       "config": {
@@ -367,15 +369,17 @@
     {
       "id": "portal-client",
       "label": "Portal Client",
+      "emoji": "🌀",
       "essential": true,
+      "libImpact": "all",
       "port": 4000,
       "healthPath": "/",
-      "description": "Portal frontend \u2014 public-facing website",
+      "description": "Portal frontend — public-facing website",
       "db": null,
-      "visibility": "internal",
+      "visibility": "external",
+      "domain": "",
       "repo": "",
       "dockerProject": "portal-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "portal-service",
@@ -392,6 +396,14 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
         }
       ],
       "config": {
@@ -401,26 +413,26 @@
     {
       "id": "clock-crew-client",
       "label": "Clock Crew Client",
+      "emoji": "⏰",
       "port": 3001,
       "healthPath": "/",
-      "description": "Clock Crew community portal \u2014 wiki, member profiles, Flash archive",
+      "description": "Clock Crew community portal — wiki, member profiles, Flash archive",
       "db": null,
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "clock-crew-client",
-      "deployTier": 2,
       "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
         {
           "id": "clock-crew-service",
           "criticality": "required"
         },
         {
-          "id": "tools-service",
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "sessions-service",
           "criticality": "optional"
         },
         {
@@ -443,14 +455,14 @@
     {
       "id": "lights-client",
       "label": "Lights Client",
+      "emoji": "💡",
       "port": 4445,
       "healthPath": "/",
-      "description": "Smart lighting dashboard \u2014 controls, scenes, automation",
+      "description": "Smart lighting dashboard — controls, scenes, automation",
       "db": null,
       "visibility": "internal",
       "repo": "",
       "dockerProject": "lights-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "lights-service",
@@ -467,12 +479,21 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
         }
       ]
     },
     {
       "id": "rod-dev-client",
       "label": "Rod Dev Client",
+      "emoji": "👤",
       "port": 3000,
       "healthPath": "/",
       "description": "Personal portfolio / dev site",
@@ -487,7 +508,6 @@
       "analyticsMeasurementId": "",
       "repo": "",
       "dockerProject": "rod-dev-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "prism-service",
@@ -495,6 +515,10 @@
         },
         {
           "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
           "criticality": "optional"
         },
         {
@@ -511,10 +535,10 @@
         }
       ],
       "config": {
-        "ROD_DEV_MINIO_BUCKET_NAME": "",
-        "ROD_DEV_ASSETS_MINIO_BUCKET_NAME": "",
+        "ROD_DEV_MINIO_BUCKET_NAME": "rod-dev-generations",
+        "ROD_DEV_ASSETS_MINIO_BUCKET_NAME": "rod-dev-assets",
         "ASSETS_PUBLIC_URL": "",
-        "ROD_DEV_SERVICE_URL": "",
+        "ROD_DEV_SERVICE_URL": "http://192.168.1.101:6666",
         "PRISM_SERVICE_PUBLIC_URL": "",
         "ROD_DEV_GA_MEASUREMENT_ID": ""
       }
@@ -522,26 +546,26 @@
     {
       "id": "lupos-bot",
       "label": "Lupos Bot",
+      "emoji": "🐺",
       "port": 1337,
       "healthPath": "/health",
-      "description": "Discord bot \u2014 AI chat, memory, media archival, guild management",
+      "description": "Discord bot — AI chat, memory, media archival, guild management",
       "db": "lupos",
       "minioBucket": "discord-media",
       "visibility": "internal",
       "repo": "",
       "dockerProject": "lupos-bot",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "prism-service",
           "criticality": "required"
         },
         {
-          "id": "mongodb",
-          "criticality": "required"
+          "id": "vault-service",
+          "criticality": "optional"
         },
         {
-          "id": "vault-service",
+          "id": "minio",
           "criticality": "optional"
         },
         {
@@ -554,7 +578,7 @@
         }
       ],
       "config": {
-        "UNDER_MAINTENANCE": "",
+        "UNDER_MAINTENANCE": "false",
         "ROLES_IDS_IGNORE": "",
         "USER_IDS_IGNORE": "",
         "CHANNEL_IDS_JUKEBOX": "",
@@ -585,38 +609,54 @@
         "USER_IDS_TIMED_OUT": "",
         "USER_IDS_POLITICS_MUTED": "",
         "USER_IDS_NEW_ACCOUNT_WHITELIST": "",
-        "DEATHROLL_SEASON": "",
+        "DEATHROLL_SEASON": "1",
         "ASSISTANT_MESSAGE": "",
-        "LANGUAGE_MODEL_PERFORMANCE": "",
-        "ANTHROPIC_LANGUAGE_MODEL_SMART": "",
-        "ANTHROPIC_LANGUAGE_MODEL_FAST": "",
-        "OPENAI_LANGUAGE_MODEL_GPT4_1_NANO": "",
-        "LANGUAGE_MODEL_OPENAI": "",
-        "LANGUAGE_MODEL_LOCAL": "",
-        "LANGUAGE_MODEL_TYPE": "",
+        "LANGUAGE_MODEL_PERFORMANCE": "POWERFUL",
+        "ANTHROPIC_LANGUAGE_MODEL_SMART": "claude-sonnet-4-6",
+        "ANTHROPIC_LANGUAGE_MODEL_FAST": "claude-haiku-4-5-20251001",
+        "GOOGLE_LANGUAGE_MODEL_FAST": "gemini-3.5-flash",
+        "GOOGLE_LANGUAGE_MODEL_SMART": "gemini-3.5-flash",
+        "OPENAI_LANGUAGE_MODEL_GPT4_1_NANO": "gpt-4.1-nano",
+        "LANGUAGE_MODEL_OPENAI": "gpt-4",
+        "LANGUAGE_MODEL_LOCAL": "deepseek-r1-distill-qwen-32b-abliterated@q3_k_s",
+        "LANGUAGE_MODEL_TYPE": "GOOGLE",
         "LANGUAGE_MODEL_MAX_TOKENS": "",
-        "LANGUAGE_MODEL_TEMPERATURE": "",
-        "LANGUAGE_MODEL_OPENAI_LOW": "",
-        "FAST_LANGUAGE_MODEL_OPENAI": "",
-        "FAST_LANGUAGE_MODEL_LOCAL": "",
-        "COUNTDOWN_ICON_TARGET_DATE": ""
-      }
+        "LANGUAGE_MODEL_TEMPERATURE": "0.55",
+        "LANGUAGE_MODEL_OPENAI_LOW": "gpt-4.1-nano",
+        "FAST_LANGUAGE_MODEL_OPENAI": "gpt-4o",
+        "FAST_LANGUAGE_MODEL_LOCAL": "deepseek-r1-distill-qwen-32b-abliterated@q3_k_s",
+        "COUNTDOWN_ICON_TARGET_DATE": "2026-09-12",
+        "HEARTBEAT_URL": ""
+      },
+      "watchdog": "push"
     },
     {
       "id": "meepothegeomancer-client",
       "label": "Meepo Client",
+      "emoji": "🧙",
       "port": 5570,
       "healthPath": "/",
-      "description": "Meepothegeomancer \u2014 Dota 2 Meepo fan site with chat interface",
+      "description": "Meepothegeomancer — Dota 2 Meepo fan site with chat interface",
       "db": null,
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "meepothegeomancer-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "messages-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "prism-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
           "criticality": "optional"
         },
         {
@@ -640,23 +680,19 @@
     {
       "id": "classic-whitemane-client",
       "label": "Classic Whitemane Client",
+      "emoji": "⚔️",
       "port": 3002,
       "healthPath": "/",
-      "description": "Classic Whitemane \u2014 WoW Classic community Discord portal",
+      "description": "Classic Whitemane — WoW Classic community Discord portal",
       "db": null,
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "classic-whitemane-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "vault-service",
           "criticality": "required"
-        },
-        {
-          "id": "tools-service",
-          "criticality": "optional"
         },
         {
           "id": "components-library",
@@ -669,6 +705,10 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
         }
       ],
       "config": {
@@ -679,20 +719,16 @@
     {
       "id": "messages-service",
       "label": "Messages Service",
+      "emoji": "💬",
       "port": 5602,
       "healthPath": "/health",
-      "description": "Omnichannel messaging backend \u2014 web chat, SMS (Twilio), AI agent auto-replies",
+      "description": "Omnichannel messaging backend — web chat, SMS (Twilio), AI agent auto-replies via Prism",
       "db": "messages",
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "messages-service",
-      "deployTier": 1,
       "dependsOn": [
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
         {
           "id": "vault-service",
           "criticality": "required"
@@ -706,31 +742,28 @@
           "criticality": "required"
         },
         {
-          "id": "service-library",
-          "criticality": "required"
-        },
-        {
           "id": "deploy-kit",
           "criticality": "optional"
         }
       ],
       "config": {
-        "MESSAGES_DEFAULT_AGENT_MODEL": "",
-        "MESSAGES_FALLBACK_AGENT_MODEL": ""
+        "MESSAGES_DEFAULT_AGENT_MODEL": "claude-haiku-4-5-20251001",
+        "MESSAGES_FALLBACK_AGENT_MODEL": "gpt-4.1-mini",
+        "MEEPO_CLIENT_ORIGIN": ""
       }
     },
     {
       "id": "messages-client",
       "label": "Messages Client",
+      "emoji": "💬",
       "port": 3003,
       "healthPath": "/",
-      "description": "Omnichannel messaging dashboard \u2014 web chat, SMS, AI agent config",
+      "description": "Omnichannel messaging dashboard — web chat, SMS, AI agent config, widget settings",
       "db": null,
       "visibility": "external",
       "domain": "",
       "repo": "",
       "dockerProject": "messages-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "messages-service",
@@ -751,6 +784,10 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
         }
       ],
       "config": {
@@ -761,29 +798,22 @@
     {
       "id": "ledger-service",
       "label": "Ledger Service",
+      "emoji": "📒",
       "port": 5603,
       "healthPath": "/health",
-      "description": "Tax management backend \u2014 fiscal years, contracts, invoices, expenses, CCPC tax calculations",
+      "description": "Tax management backend — fiscal years, contracts, invoices, expenses, CCPC tax calculations",
       "db": "ledger",
-      "visibility": "internal",
+      "visibility": "external",
+      "domain": "",
       "repo": "",
       "dockerProject": "ledger-service",
-      "deployTier": 1,
       "dependsOn": [
-        {
-          "id": "mongodb",
-          "criticality": "required"
-        },
         {
           "id": "vault-service",
           "criticality": "required"
         },
         {
           "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "service-library",
           "criticality": "required"
         },
         {
@@ -795,14 +825,15 @@
     {
       "id": "ledger-client",
       "label": "Ledger Client",
+      "emoji": "📒",
       "port": 3004,
       "healthPath": "/",
-      "description": "Tax management dashboard \u2014 invoices, expenses, GST/corporate tax tracking",
+      "description": "Tax management dashboard — invoices, expenses, GST/corporate tax tracking",
       "db": null,
-      "visibility": "internal",
+      "visibility": "external",
+      "domain": "",
       "repo": "",
       "dockerProject": "ledger-client",
-      "deployTier": 2,
       "dependsOn": [
         {
           "id": "ledger-service",
@@ -823,6 +854,10 @@
         {
           "id": "deploy-kit",
           "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
         }
       ],
       "config": {
@@ -831,20 +866,86 @@
       }
     },
     {
-      "id": "workspace-service",
-      "label": "Workspace Service",
-      "essential": true,
-      "port": null,
-      "healthPath": null,
-      "description": "Remote development sidecar \u2014 connects local workspace to tools-service via WebSocket",
-      "db": null,
-      "visibility": "internal",
+      "id": "sessions-service",
+      "label": "Sessions Service",
+      "emoji": "📊",
+      "port": 5580,
+      "healthPath": "/health",
+      "description": "Visitor analytics — device fingerprinting, session telemetry, IP geolocation",
+      "db": "sessions",
+      "visibility": "external",
+      "domain": "",
       "repo": "",
-      "dockerProject": null,
-      "deployTier": 2,
+      "dockerProject": "sessions-service",
       "dependsOn": [
         {
-          "id": "tools-service",
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "dygest-service",
+      "label": "Dygest Service",
+      "emoji": "🥗",
+      "port": 5606,
+      "healthPath": "/health",
+      "description": "Online nutritionist API — clients, meal plans, nutrition logs, goals, macros",
+      "db": "dygest",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "dygest-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "dygest-client",
+      "label": "Dygest Client",
+      "emoji": "🥗",
+      "port": 3005,
+      "healthPath": "/",
+      "description": "Online nutritionist dashboard — meal planning, macro tracking, goal progress",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "dygest-client",
+      "dependsOn": [
+        {
+          "id": "dygest-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
           "criticality": "required"
         },
         {
@@ -857,16 +958,370 @@
         }
       ],
       "config": {
-        "WORKSPACE_BACKEND": "",
-        "WORKSPACE_ROOTS": "",
-        "WORKSPACE_SERVICE_SECRET": ""
+        "DYGEST_CLIENT_DOMAIN": "",
+        "DYGEST_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "gauge-service",
+      "label": "Gauge Service",
+      "emoji": "🌡️",
+      "port": 5607,
+      "healthPath": "/health",
+      "description": "Weather and sensor monitoring API — sensors, readings, alerts, weather proxy",
+      "db": "gauge",
+      "visibility": "internal",
+      "repo": "",
+      "dockerProject": "gauge-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "gauge-client",
+      "label": "Gauge Client",
+      "emoji": "🌡️",
+      "port": 3006,
+      "healthPath": "/",
+      "description": "Weather and sensor monitoring dashboard — sensor management, live readings, alerts",
+      "db": null,
+      "visibility": "internal",
+      "repo": "",
+      "dockerProject": "gauge-client",
+      "dependsOn": [
+        {
+          "id": "gauge-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "GAUGE_CLIENT_DOMAIN": "",
+        "GAUGE_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "reels-service",
+      "label": "Reels Service",
+      "emoji": "🎬",
+      "port": 5608,
+      "healthPath": "/health",
+      "description": "Video streaming backend — local filesystem library indexing, metadata, streaming",
+      "db": "reel",
+      "minioBucket": "reel",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "reels-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "REELS_VIDEO_ROOTS": "/media",
+        "REELS_SCAN_INTERVAL_MINUTES": "60"
+      }
+    },
+    {
+      "id": "reels-client",
+      "label": "Reels Client",
+      "emoji": "🎬",
+      "port": 3007,
+      "healthPath": "/",
+      "description": "Video streaming dashboard — Netflix-style browse, search, and watch interface",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "reels-client",
+      "dependsOn": [
+        {
+          "id": "reels-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "REELS_CLIENT_DOMAIN": "",
+        "REELS_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "clankerbox-service",
+      "label": "Clankerbox Service",
+      "emoji": "🤖",
+      "port": 5609,
+      "healthPath": "/health",
+      "description": "Clankerbox AI agent backend — conversations, agent sessions, configuration",
+      "db": "clankerbox",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "clankerbox-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "clankerbox-client",
+      "label": "Clankerbox Client",
+      "emoji": "🤖",
+      "port": 3008,
+      "healthPath": "/",
+      "description": "Clankerbox AI agent landing page and dashboard",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "analyticsPropertyId": "",
+      "analyticsMeasurementId": "",
+      "repo": "",
+      "dockerProject": "clankerbox-client",
+      "dependsOn": [
+        {
+          "id": "clankerbox-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "CLANKERBOX_CLIENT_DOMAIN": "",
+        "CLANKERBOX_SERVICE_PUBLIC_URL": "",
+        "CLANKERBOX_GA_MEASUREMENT_ID": ""
+      }
+    },
+    {
+      "id": "iron-service",
+      "label": "Iron Service",
+      "emoji": "🏋️",
+      "port": 5610,
+      "healthPath": "/health",
+      "description": "Gym workout tracking API — exercises, workouts, sets, analytics, templates",
+      "db": "iron",
+      "visibility": "internal",
+      "repo": "",
+      "dockerProject": "iron-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "iron-client",
+      "label": "Iron Client",
+      "emoji": "🏋️",
+      "port": 3009,
+      "healthPath": "/",
+      "description": "Gym workout tracking dashboard — exercise library, set logging, progressive overload analytics",
+      "db": null,
+      "visibility": "internal",
+      "repo": "",
+      "dockerProject": "iron-client",
+      "dependsOn": [
+        {
+          "id": "iron-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "IRON_CLIENT_DOMAIN": "",
+        "IRON_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "games-service",
+      "label": "Games Service",
+      "emoji": "🎮",
+      "port": 5611,
+      "healthPath": "/health",
+      "description": "Multiplayer games backend — game definitions, sessions, scores, leaderboards",
+      "db": "games",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "games-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "games-client",
+      "label": "Games Client",
+      "emoji": "🎮",
+      "port": 3010,
+      "healthPath": "/",
+      "description": "Multiplayer games dashboard — game browser, session management, leaderboards",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "games-client",
+      "dependsOn": [
+        {
+          "id": "games-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "GAMES_CLIENT_DOMAIN": "",
+        "GAMES_SERVICE_PUBLIC_URL": ""
       }
     },
     {
       "id": "components-library",
       "label": "Components Library",
+      "emoji": "🧩",
       "essential": true,
-      "description": "Shared React component library \u2014 reusable UI primitives across all clients",
+      "description": "Shared React component library — reusable UI primitives across all clients",
       "projectType": "Library",
       "repo": "",
       "npmPackage": "@your-org/components-library",
@@ -875,41 +1330,40 @@
         {
           "id": "utilities-library",
           "criticality": "required"
+        },
+        {
+          "id": "messages-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
         }
       ]
     },
     {
       "id": "utilities-library",
       "label": "Utilities Library",
+      "emoji": "🔧",
       "essential": true,
-      "description": "Shared JavaScript utility functions \u2014 formatters, parsers, validators",
+      "description": "Shared JavaScript utility functions — formatters, parsers, validators",
       "projectType": "Library",
       "repo": "",
       "npmPackage": "@your-org/utilities-library",
       "visibility": "internal",
-      "dependsOn": []
-    },
-    {
-      "id": "service-library",
-      "label": "Service Library",
-      "essential": true,
-      "description": "Service chassis \u2014 shared Express bootstrap, MongoDB, MinIO, auth, health, and graceful shutdown",
-      "projectType": "Library",
-      "repo": "",
-      "npmPackage": "@your-org/service-library",
-      "visibility": "internal",
       "dependsOn": [
         {
-          "id": "utilities-library",
-          "criticality": "required"
+          "id": "prism-service",
+          "criticality": "optional"
         }
       ]
     },
     {
       "id": "deploy-kit",
       "label": "Deploy Kit",
+      "emoji": "🚀",
       "essential": true,
-      "description": "Orchestrated multi-service deployment \u2014 builds, tests, and deploys containers to production",
+      "description": "Orchestrated multi-service deployment — builds, tests, and deploys containers to production",
       "projectType": "Kit",
       "repo": "",
       "visibility": "internal",
@@ -919,6 +1373,526 @@
           "criticality": "required"
         }
       ]
+    },
+    {
+      "id": "deduplicator",
+      "label": "Deduplicator",
+      "emoji": "🧹",
+      "description": "File duplicate finder and cleanup utility",
+      "projectType": "Tool",
+      "visibility": "internal",
+      "dependsOn": [
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "playlist-ripper",
+      "label": "Playlist Ripper",
+      "emoji": "🎵",
+      "description": "YouTube playlist ripper — extracts videos and MP3s with clean metadata",
+      "projectType": "Tool",
+      "visibility": "internal",
+      "dependsOn": [
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "qbittorrent-service",
+      "label": "qBittorrent Service",
+      "emoji": "🧲",
+      "port": 8080,
+      "healthPath": "/",
+      "description": "BitTorrent client with search plugin system — torrent search and download",
+      "db": null,
+      "visibility": "internal",
+      "repo": "",
+      "dockerProject": "qbittorrent-service",
+      "prebuiltImage": true,
+      "dependsOn": [],
+      "config": {
+        "QBITTORRENT_URL": "http://192.168.1.100:8080",
+        "QBITTORRENT_USERNAME": "admin",
+        "WEBUI_USERNAME": "admin",
+        "WEBUI_PASSWORD": ""
+      }
+    },
+    {
+      "id": "lupos-client",
+      "label": "Lupos Client",
+      "emoji": "🐺",
+      "port": 3011,
+      "healthPath": "/",
+      "description": "Lupos companion client — real-time somatic state, bot stats, active channel data, and server activity charts",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "lupos-client",
+      "dependsOn": [
+        {
+          "id": "lupos-bot",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "LUPOS_CLIENT_DOMAIN": "",
+        "LUPOS_BOT_URL": "http://192.168.1.100:1337"
+      }
+    },
+    {
+      "id": "notes-service",
+      "label": "Notes Service",
+      "emoji": "📝",
+      "port": 5612,
+      "healthPath": "/health",
+      "description": "Personal notes API — notebooks, notes, tags, search",
+      "db": "notes",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "notes-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "notes-client",
+      "label": "Notes Client",
+      "emoji": "📝",
+      "port": 3012,
+      "healthPath": "/",
+      "description": "Personal notes dashboard — notebook management, rich-text editing, search",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "notes-client",
+      "dependsOn": [
+        {
+          "id": "notes-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "NOTES_CLIENT_DOMAIN": "",
+        "NOTES_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "images-service",
+      "label": "Images Service",
+      "emoji": "🖼️",
+      "port": 5613,
+      "healthPath": "/health",
+      "description": "Image library backend — filesystem indexing, metadata extraction, EXIF/RAW processing, organization",
+      "db": "images",
+      "minioBucket": "images",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "images-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "IMAGES_IMAGE_ROOTS": "/media",
+        "IMAGES_SCAN_INTERVAL_MINUTES": "60"
+      }
+    },
+    {
+      "id": "images-client",
+      "label": "Images Client",
+      "emoji": "🖼️",
+      "port": 3013,
+      "healthPath": "/",
+      "description": "Image library dashboard — browse, organize, view metadata, manage albums and tags",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "images-client",
+      "dependsOn": [
+        {
+          "id": "images-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "IMAGES_CLIENT_DOMAIN": "",
+        "IMAGES_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "music-service",
+      "label": "Music Service",
+      "emoji": "🎵",
+      "port": 5614,
+      "healthPath": "/health",
+      "description": "Audio streaming backend — local filesystem library indexing, metadata extraction, streaming, playlists",
+      "db": "music",
+      "minioBucket": "music",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "music-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "MUSIC_AUDIO_ROOTS": "/media",
+        "MUSIC_SCAN_INTERVAL_MINUTES": "60"
+      }
+    },
+    {
+      "id": "music-client",
+      "label": "Music Client",
+      "emoji": "🎵",
+      "port": 3014,
+      "healthPath": "/",
+      "description": "Music streaming dashboard — browse albums, artists, playlists with premium listening experience",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "music-client",
+      "dependsOn": [
+        {
+          "id": "music-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "MUSIC_CLIENT_DOMAIN": "",
+        "MUSIC_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "accounts-service",
+      "label": "Accounts Service",
+      "emoji": "👤",
+      "port": 5615,
+      "healthPath": "/health",
+      "description": "Accounts Service — unified credentials registration, login, and user profiles database",
+      "db": "accounts",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "accounts-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "accounts-client",
+      "label": "Accounts Client",
+      "emoji": "👥",
+      "port": 3015,
+      "healthPath": "/",
+      "description": "User accounts and profiles management dashboard",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "accounts-client",
+      "dependsOn": [
+        {
+          "id": "accounts-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "ACCOUNTS_CLIENT_DOMAIN": "",
+        "ACCOUNTS_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "animals-service",
+      "label": "Animals Service",
+      "emoji": "🐾",
+      "port": 5616,
+      "healthPath": "/health",
+      "description": "Animals backend — species catalog, sightings, habitats, tracking",
+      "db": "animals",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "animals-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ]
+    },
+    {
+      "id": "animals-client",
+      "label": "Animals Client",
+      "emoji": "🐾",
+      "port": 3016,
+      "healthPath": "/",
+      "description": "Wildlife species tracker — species encyclopedia, sightings, habitats, and conservation",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "animals-client",
+      "dependsOn": [
+        {
+          "id": "animals-service",
+          "criticality": "required"
+        },
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "ANIMALS_CLIENT_DOMAIN": "",
+        "ANIMALS_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "payments-service",
+      "label": "Payments Service",
+      "emoji": "💳",
+      "port": 5617,
+      "healthPath": "/health",
+      "description": "Provider-agnostic payment gateway (Stripe, PayPal, …) with a unified transaction ledger",
+      "db": "payments",
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "payments-service",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "PAYMENTS_SERVICE_PUBLIC_URL": ""
+      }
+    },
+    {
+      "id": "payments-client",
+      "label": "Payments Client",
+      "emoji": "💳",
+      "port": 3017,
+      "healthPath": "/",
+      "description": "Payments dashboard — transactions, refunds, providers, and webhooks across Stripe, PayPal, and more",
+      "db": null,
+      "visibility": "external",
+      "domain": "",
+      "repo": "",
+      "dockerProject": "payments-client",
+      "dependsOn": [
+        {
+          "id": "vault-service",
+          "criticality": "optional"
+        },
+        {
+          "id": "components-library",
+          "criticality": "required"
+        },
+        {
+          "id": "utilities-library",
+          "criticality": "required"
+        },
+        {
+          "id": "payments-service",
+          "criticality": "required"
+        },
+        {
+          "id": "deploy-kit",
+          "criticality": "optional"
+        },
+        {
+          "id": "sessions-service",
+          "criticality": "optional"
+        }
+      ],
+      "config": {
+        "PAYMENTS_CLIENT_DOMAIN": "",
+        "PAYMENTS_SERVICE_PUBLIC_URL": ""
+      }
     }
   ],
   "infrastructure": [
@@ -928,7 +1902,8 @@
       "type": "database",
       "defaultPort": 27017,
       "urlEnv": "MONGO_URI",
-      "description": "Primary data store \u2014 shared across all services"
+      "deployTier": 0,
+      "description": "Primary data store — shared across all services"
     },
     {
       "id": "minio",
@@ -937,25 +1912,130 @@
       "defaultPort": 9000,
       "urlEnv": "MINIO_ENDPOINT",
       "domain": "",
+      "deployTier": 0,
       "description": "S3-compatible object storage for media and files",
       "config": {
         "MINIO_PUBLIC_URL": "",
-        "MINIO_INTERNAL_URL": ""
+        "MINIO_INTERNAL_URL": "http://192.168.1.100:9000"
       }
+    },
+    {
+      "id": "lm-studio",
+      "label": "LM Studio",
+      "type": "inference",
+      "defaultPort": 1234,
+      "healthPath": "/v1/models",
+      "url": "http://192.168.1.101:1234",
+      "device": "workstation",
+      "deployTier": 0,
+      "description": "Local LLM inference server — primary workstation (RTX 4090)"
+    },
+    {
+      "id": "lm-studio-2",
+      "label": "LM Studio 2",
+      "type": "inference",
+      "defaultPort": 1234,
+      "healthPath": "/v1/models",
+      "url": "http://192.168.1.102:1234",
+      "device": "workstation2",
+      "deployTier": 0,
+      "description": "Local LLM inference server — secondary workstation (RTX 3090)"
+    },
+    {
+      "id": "llama-cpp",
+      "label": "Llama.cpp",
+      "type": "inference",
+      "defaultPort": 8080,
+      "healthPath": "/health",
+      "url": "http://192.168.1.101:8080",
+      "device": "workstation",
+      "deployTier": 0,
+      "description": "Local LLM inference server via Llama.cpp"
     }
   ],
   "devices": [
     {
-      "id": "server",
-      "label": "Server",
+      "id": "workstation",
+      "label": "Workstation",
+      "type": "Desktop",
+      "hostname": "192.168.1.101",
+      "os": "Windows 11 (WSL2)",
+      "notes": "Primary development machine — runs most services locally.",
+      "specs": {
+        "cpu": "AMD Ryzen 9 7950X",
+        "cores": 16,
+        "threads": 32,
+        "memoryGB": 64,
+        "storageGB": 2000,
+        "storageType": "NVMe SSD",
+        "gpu": "NVIDIA RTX 4090 24GB"
+      }
+    },
+    {
+      "id": "workstation2",
+      "label": "Workstation 2",
+      "type": "Desktop",
+      "hostname": "192.168.1.102",
+      "os": "Windows 11",
+      "dockerApi": "tcp://192.168.1.102:2375",
+      "notes": "Secondary workstation — runs LM Studio for local inference.",
+      "deploy": {
+        "method": "docker-api"
+      },
+      "specs": {
+        "cpu": "AMD Ryzen 9 5950X",
+        "cores": 16,
+        "threads": 32,
+        "memoryGB": 128,
+        "storageGB": 2000,
+        "storageType": "NVMe SSD",
+        "gpu": "NVIDIA RTX 3090 24GB"
+      }
+    },
+    {
+      "id": "raspi",
+      "label": "Raspberry Pi",
+      "type": "SBC",
+      "hostname": "192.168.1.103",
+      "os": "Raspberry Pi OS",
+      "notes": "Always-on LAN device — runs Lupos Discord bot.",
+      "specs": {
+        "cpu": "Broadcom BCM2711",
+        "cores": 4,
+        "threads": 4,
+        "memoryGB": 8,
+        "storageGB": 64,
+        "storageType": "microSD"
+      }
+    },
+    {
+      "id": "synology",
+      "label": "Synology NAS",
       "type": "NAS",
       "hostname": "192.168.1.100",
-      "os": "Linux",
+      "os": "DSM 7",
+      "sshAlias": "nas",
+      "dockerBin": "/usr/local/bin/docker",
       "dockerApi": "unix:///var/run/docker.sock",
-      "notes": "Primary server \u2014 runs containerized services."
+      "notes": "Self-hosted production server — runs containerized services.",
+      "deploy": {
+        "method": "ssh",
+        "composeRoot": "/volume1/docker",
+        "smbRoot": "/mnt/k"
+      },
+      "specs": {
+        "cpu": "Intel Celeron J4125",
+        "cores": 4,
+        "threads": 4,
+        "memoryGB": 20,
+        "storageGB": 16000,
+        "storageType": "HDD (RAID)"
+      }
     }
   ],
-  "domains": [],
+  "domains": [
+    "example.com"
+  ],
   "projectTypeColors": {
     "Service": {
       "color": "#3b82f6",
@@ -976,6 +2056,38 @@
     "Store": {
       "color": "#f97316",
       "subtle": "rgba(249, 115, 22, 0.12)"
+    },
+    "Library": {
+      "color": "#06b6d4",
+      "subtle": "rgba(6, 182, 212, 0.12)"
+    },
+    "Kit": {
+      "color": "#f59e0b",
+      "subtle": "rgba(245, 158, 11, 0.12)"
+    },
+    "Tool": {
+      "color": "#8b5cf6",
+      "subtle": "rgba(139, 92, 246, 0.12)"
+    }
+  },
+  "deployTierColors": {
+    "0": {
+      "color": "#f97316",
+      "subtle": "rgba(249, 115, 22, 0.12)",
+      "stroke": "rgba(249, 115, 22, 0.35)",
+      "fill": "rgba(249, 115, 22, 0.04)"
+    },
+    "1": {
+      "color": "#3b82f6",
+      "subtle": "rgba(59, 130, 246, 0.12)",
+      "stroke": "rgba(59, 130, 246, 0.35)",
+      "fill": "rgba(59, 130, 246, 0.04)"
+    },
+    "2": {
+      "color": "#22c55e",
+      "subtle": "rgba(34, 197, 94, 0.12)",
+      "stroke": "rgba(34, 197, 94, 0.35)",
+      "fill": "rgba(34, 197, 94, 0.04)"
     }
   }
 }
