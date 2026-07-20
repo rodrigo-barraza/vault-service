@@ -14,7 +14,7 @@ COPY src ./src
 RUN apk add --no-cache git
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile
-RUN pnpm exec tsc
+RUN pnpm run typecheck
 
 # ── Stage 2: Production dependencies ─────────────────────────
 FROM node:26-alpine AS prod-deps
@@ -31,7 +31,7 @@ WORKDIR /app
 
 # Copy pre-built artifacts
 COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=deps /app/dist ./dist
+COPY --from=deps /app/src ./src
 
 # Copy non-source files needed at runtime
 COPY package.json ./
@@ -47,4 +47,4 @@ EXPOSE 5599
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
   CMD wget --no-verbose --tries=1 -O /dev/null http://127.0.0.1:5599/health || exit 1
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "src/server.ts"]

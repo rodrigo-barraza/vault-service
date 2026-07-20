@@ -27,7 +27,7 @@ describe("vault-service smoke", () => {
 
     expect(pkg.name).toBe("vault-service");
     expect(pkg.type).toBe("module");
-    expect(pkg.scripts.start).toBe("node dist/server.js");
+    expect(pkg.scripts.start).toBe("node src/server.ts");
     expect(pkg.scripts.deploy).toBe("bash deploy.sh");
     expect(pkg.dependencies.express).toBeTruthy();
   });
