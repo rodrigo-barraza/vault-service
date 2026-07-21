@@ -17,6 +17,7 @@
     "ANTHROPIC_API_KEY": "",
     "GOOGLE_CLOUD_GEMINI_API_KEY": "",
     "ELEVENLABS_API_KEY": "",
+    "MOONSHOT_API_KEY": "",
     "INWORLD_BASIC": "",
     "INWORLD_JWT_KEY": "",
     "INWORLD_JWT_SECRET": "",
