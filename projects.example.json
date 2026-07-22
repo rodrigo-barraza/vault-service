@@ -2119,28 +2119,24 @@
     }
   },
   "edge": {
+    "$comment": "Reverse proxy (Caddy) + DNS automation — see deploy-kit/edge/README.md. deploy-kit/edge/edge.config.json ships neutral defaults (everything off); YOUR deployment's values go in THIS block, which overrides it. Which sites get routed/DNS-managed comes from projects[] entries with visibility:'external' + a 'domain'. Keys starting with $ are comments and ignored.",
+    "enabled": false,
+    "$enabled": "Master switch. While false nothing deploys and no DNS is written — dry-runs (edge:dns:check, edge:generate, edge:preflight) all still work. Flip to true once the dry-run output looks right.",
     "proxyMode": "caddy",
-    "zoneProviders": {
-      "clankerbox.example.com": "cloudflare"
-    },
-    "publicIp": "203.0.113.10",
-    "enabled": true,
-    "extraSites": [
-      {
-        "domain": "storage.example.com",
-        "upstream": "192.168.1.100:9000",
-        "healthPath": "/minio/health/live"
-      },
-      {
-        "domain": "assets.example.com",
-        "upstream": "192.168.1.100:9000",
-        "healthPath": "/minio/health/live"
-      },
-      {
-        "domain": "clocktopia.example.com",
-        "upstream": "192.168.1.100:3001"
-      }
-    ],
-    "tlsMode": "auto"
+    "$proxyMode": "'caddy' = the managed Caddy container deploy-kit ships. 'dsm' = keep your own reverse proxy; DNS automation, DDNS, and preflight verification still run against it.",
+    "dnsProvider": "none",
+    "$dnsProvider": "Who hosts your domains' DNS: 'porkbun' and 'cloudflare' are built in (add others as deploy-kit/edge/dns/<name>.js). Needs that provider's API keys in config above: PORKBUN_API_KEY + PORKBUN_API_SECRET_KEY, or CLOUDFLARE_API_TOKEN (scoped Zone→DNS→Edit). 'none' = you manage DNS records by hand; certs then use HTTP-01, which needs public port 80 forwarded.",
+    "anchorRecord": null,
+    "$anchorRecord": "OPTIONAL, e.g. 'home.example.com'. Set: that one A record holds your public IP and every managed subdomain becomes a CNAME to it, so an IP change is a single DNS write. Unset (null): every domain gets its own direct A record and ddns-update rewrites each on an IP change — simplest, fine for a few domains.",
+    "publicIp": "auto",
+    "$publicIp": "'auto' = detect the egress IP each run (dynamic home connection — schedule ddns-update.js on cron). Or declare your static IP, e.g. '203.0.113.10' — records are then enforced to it.",
+    "tlsMode": "internal",
+    "$tlsMode": "'internal' = Caddy self-signed certs (pre-cutover testing). 'auto' = real ACME certs; uses DNS-01 when dnsProvider != 'none', else HTTP-01.",
+    "zoneProviders": {},
+    "$zoneProviders": "Per-ZONE overrides for domains registered elsewhere than the default provider, e.g. { \"another-domain.com\": \"cloudflare\" }. Keys are zones (registrable domains), not subdomains.",
+    "extraSites": [],
+    "$extraSites": "Routes for things that are not projects[] entries (NAS apps, MinIO, ...): [{ \"domain\": \"storage.example.com\", \"upstream\": \"192.168.1.100:9000\", \"healthPath\": \"/minio/health/live\" }]",
+    "wsChecks": [],
+    "$wsChecks": "Preflight asserts a real WebSocket 101 upgrade through the proxy for these: [{ \"domain\": \"api.prism.example.com\", \"path\": \"/ws/chat\" }]"
   }
 }
