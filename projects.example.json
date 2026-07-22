@@ -5,7 +5,7 @@
     "SESSIONS_STATS_API_SECRET": "",
     "MONGO_URI": "",
     "MINIO_ENDPOINT": "http://192.168.1.100:9000",
-    "MINIO_PUBLIC_URL": "",
+    "MINIO_PUBLIC_URL": "https://storage.example.com",
     "MINIO_ACCESS_KEY": "",
     "MINIO_SECRET_KEY": "",
     "VAULT_SERVICE_URL": "http://192.168.1.100:5599",
@@ -55,16 +55,16 @@
     "STICKERS_DISCORD_TOKEN": "",
     "GOOGLE_ANALYTICS_CREDENTIALS": "",
     "MESSAGES_SERVICE_URL": "http://192.168.1.100:5602",
-    "MESSAGES_SERVICE_PUBLIC_URL": "",
-    "SESSIONS_SERVICE_PUBLIC_URL": "",
+    "MESSAGES_SERVICE_PUBLIC_URL": "https://api.messages.example.com",
+    "SESSIONS_SERVICE_PUBLIC_URL": "https://api.sessions.example.com",
     "STICKERS_CLIENT_ID": "",
     "STICKERS_GUILD_ID": "",
     "OPENAI_VISION_MODEL": "gpt-4o",
-    "STICKERS_NODE_SERVER": "",
-    "STICKERS_NODE_SERVER_WEBSOCKET": "",
-    "STICKERS_PYTHON_SERVER": "",
-    "STICKERS_PYTHON_SERVER_WEBSOCKET": "",
-    "STICKERS_PRISM_SERVER": "",
+    "STICKERS_NODE_SERVER": "https://backend.clankerbox.example.com",
+    "STICKERS_NODE_SERVER_WEBSOCKET": "wss://backend.clankerbox.example.com/ws",
+    "STICKERS_PYTHON_SERVER": "https://neural.clankerbox.example.com",
+    "STICKERS_PYTHON_SERVER_WEBSOCKET": "wss://neural.clankerbox.example.com/ws",
+    "STICKERS_PRISM_SERVER": "https://prism.clankerbox.example.com",
     "PAYMENTS_SERVICE_API_SECRET": "",
     "PAYMENTS_DEFAULT_PROVIDER": "",
     "PAYMENTS_DEFAULT_CURRENCY": "usd",
@@ -73,7 +73,13 @@
     "PAYMENTS_PAYPAL_CLIENT_ID": "",
     "PAYMENTS_PAYPAL_CLIENT_SECRET": "",
     "PAYMENTS_PAYPAL_WEBHOOK_ID": "",
-    "PAYMENTS_PAYPAL_ENVIRONMENT": "sandbox"
+    "PAYMENTS_PAYPAL_ENVIRONMENT": "sandbox",
+    "PORKBUN_API_KEY": "",
+    "PORKBUN_API_SECRET_KEY": "",
+    "CLOUDFLARE_API_TOKEN": "",
+    "LIGHTS_SERVICE_PUBLIC_URL": "https://api.lights.example.com",
+    "GAUGE_SERVICE_PUBLIC_URL": "https://api.gauge.example.com",
+    "IRON_SERVICE_PUBLIC_URL": "https://api.iron.example.com"
   },
   "projects": [
     {
@@ -86,7 +92,7 @@
       "description": "Centralized secret store and project registry",
       "db": null,
       "visibility": "internal",
-      "repo": "",
+      "repo": "https://github.com/your-org/vault-service",
       "dockerProject": "vault-service",
       "deployTier": 0,
       "dependsOn": [
@@ -117,7 +123,7 @@
       "description": "Tool execution hub — agentic tools, data fetchers, caches, compute",
       "db": "tools",
       "visibility": "external",
-      "repo": "",
+      "repo": "https://github.com/your-org/tools-service",
       "dockerProject": "tools-service",
       "dependsOn": [
         {
@@ -141,7 +147,7 @@
         "GOOGLE_CSE_CX": "",
         "WORKSPACE_ROOTS": "",
         "WORKTREE_DIR": "",
-        "REDDIT_USER_AGENT": "sun:tools:v0.1.0 (by /u/YOUR_USERNAME)",
+        "REDDIT_USER_AGENT": "web:tools:v0.1.0 (by /u/YOUR_USERNAME)",
         "TOOLS_IMAGE_MODEL": "gemini-3.1-flash-image-preview",
         "TOOLS_VISION_MODEL": "gemini-3-flash-preview",
         "AGENT_MAX_CONNECTIONS": "5",
@@ -150,7 +156,7 @@
         "QBITTORRENT_PASSWORD": "",
         "PORTAL_SERVICE_URL": "http://192.168.1.100:4001"
       },
-      "domain": ""
+      "domain": "api.tools.example.com"
     },
     {
       "id": "portal-service",
@@ -162,8 +168,8 @@
       "description": "Portal backend API — user data, content management",
       "db": "portal",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.portal.example.com",
+      "repo": "https://github.com/your-org/portal-service",
       "dockerProject": "portal-service",
       "dependsOn": [
         {
@@ -192,7 +198,7 @@
         }
       ],
       "config": {
-        "AUTH_ALLOWED_EMAILS": "",
+        "AUTH_ALLOWED_EMAILS": "you@example.com",
         "GOOGLE_CLOUD_MONITORING_PROJECT_ID": "",
         "WATCHDOG_PUSH_TOKEN": "",
         "WATCHDOG_DISCORD_WEBHOOK_URL": ""
@@ -206,8 +212,8 @@
       "healthPath": "/health",
       "description": "Smart light control — LIFX, Philips Hue",
       "db": null,
-      "visibility": "internal",
-      "repo": "",
+      "visibility": "external",
+      "repo": "https://github.com/your-org/lights-service",
       "dockerProject": "lights-service",
       "dependsOn": [
         {
@@ -226,7 +232,8 @@
       "config": {
         "DST_ENABLED": "false",
         "PRIMARY_LIGHT_ID": ""
-      }
+      },
+      "domain": "api.lights.example.com"
     },
     {
       "id": "clock-crew-service",
@@ -237,7 +244,7 @@
       "description": "Clock Crew + Newgrounds community archive, scraping, asset management",
       "db": "clockcrew",
       "visibility": "internal",
-      "repo": "",
+      "repo": "https://github.com/your-org/clock-crew-service",
       "dockerProject": "clock-crew-service",
       "dependsOn": [
         {
@@ -269,8 +276,8 @@
       "db": "prism",
       "minioBucket": "prism",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.prism.example.com",
+      "repo": "https://github.com/your-org/prism-service",
       "dockerProject": "prism-service",
       "dependsOn": [
         {
@@ -320,7 +327,8 @@
         "GOOGLE_TTS_MODEL": "gemini-3-flash-preview",
         "GOOGLE_EMBEDDING_MODEL": "gemini-embedding-2-preview",
         "LM_STUDIO_EVAL_BATCH_SIZE": "512",
-        "LM_STUDIO_DEFAULT_MAX_CONTEXT": "262144"
+        "LM_STUDIO_DEFAULT_MAX_CONTEXT": "262144",
+        "DEFAULT_MCP_SERVERS": "[{\"name\":\"playwright\",\"displayName\":\"Playwright Browser\",\"transport\":\"streamable-http\",\"url\":\"http://playwright-mcp:8931/mcp\",\"enabled\":true},{\"name\":\"markitdown\",\"displayName\":\"MarkItDown\",\"transport\":\"streamable-http\",\"url\":\"http://markitdown-mcp:3001/mcp\",\"enabled\":true}]"
       }
     },
     {
@@ -332,8 +340,8 @@
       "description": "Developer playground — chat, agents, admin dashboard, benchmarks",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "prism.example.com",
+      "repo": "https://github.com/your-org/prism-client",
       "dockerProject": "prism-client",
       "dependsOn": [
         {
@@ -362,9 +370,10 @@
         }
       ],
       "config": {
-        "PRISM_CLIENT_DOMAIN": "",
-        "PRISM_SERVICE_PUBLIC_URL": "",
-        "PRISM_WS_PUBLIC_URL": ""
+        "PRISM_CLIENT_DOMAIN": "prism.example.com",
+        "PRISM_SERVICE_PUBLIC_URL": "https://api.prism.example.com",
+        "PRISM_WS_PUBLIC_URL": "wss://api.prism.example.com",
+        "PRISM_WS_URL": "ws://192.168.1.100:7777"
       }
     },
     {
@@ -378,8 +387,8 @@
       "description": "Portal frontend — public-facing website",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "portal.example.com",
+      "repo": "https://github.com/your-org/portal-client",
       "dockerProject": "portal-client",
       "dependsOn": [
         {
@@ -408,7 +417,7 @@
         }
       ],
       "config": {
-        "PORTAL_SERVICE_PUBLIC_URL": ""
+        "PORTAL_SERVICE_PUBLIC_URL": "https://api.portal.example.com"
       }
     },
     {
@@ -420,8 +429,8 @@
       "description": "Clock Crew community portal — wiki, member profiles, Flash archive",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "clockcrew.example.com",
+      "repo": "https://github.com/your-org/clock-crew-client",
       "dockerProject": "clock-crew-client",
       "dependsOn": [
         {
@@ -461,8 +470,8 @@
       "healthPath": "/",
       "description": "Smart lighting dashboard — controls, scenes, automation",
       "db": null,
-      "visibility": "internal",
-      "repo": "",
+      "visibility": "external",
+      "repo": "https://github.com/your-org/lights-client",
       "dockerProject": "lights-client",
       "dependsOn": [
         {
@@ -489,7 +498,8 @@
           "id": "vault-service",
           "criticality": "optional"
         }
-      ]
+      ],
+      "domain": "lights.example.com"
     },
     {
       "id": "rod-dev-client",
@@ -504,10 +514,10 @@
         "rod-dev-assets"
       ],
       "visibility": "external",
-      "domain": "",
-      "analyticsPropertyId": "",
-      "analyticsMeasurementId": "",
-      "repo": "",
+      "domain": "example.com",
+      "analyticsPropertyId": "123456789",
+      "analyticsMeasurementId": "G-XXXXXXXXXX",
+      "repo": "https://github.com/your-org/rod-dev-client",
       "dockerProject": "rod-dev-client",
       "dependsOn": [
         {
@@ -538,10 +548,10 @@
       "config": {
         "ROD_DEV_MINIO_BUCKET_NAME": "rod-dev-generations",
         "ROD_DEV_ASSETS_MINIO_BUCKET_NAME": "rod-dev-assets",
-        "ASSETS_PUBLIC_URL": "",
+        "ASSETS_PUBLIC_URL": "https://assets.example.com",
         "ROD_DEV_SERVICE_URL": "http://192.168.1.101:6666",
-        "PRISM_SERVICE_PUBLIC_URL": "",
-        "ROD_DEV_GA_MEASUREMENT_ID": ""
+        "PRISM_SERVICE_PUBLIC_URL": "https://api.prism.example.com",
+        "ROD_DEV_GA_MEASUREMENT_ID": "G-XXXXXXXXXX"
       }
     },
     {
@@ -554,7 +564,7 @@
       "db": "lupos",
       "minioBucket": "discord-media",
       "visibility": "internal",
-      "repo": "",
+      "repo": "https://github.com/your-org/lupos-bot",
       "dockerProject": "lupos-bot",
       "dependsOn": [
         {
@@ -587,6 +597,8 @@
         "GUILD_ID_TESTING": "",
         "GUILD_ID_GROBBULUS": "",
         "GUILD_ID_CLOCK_CREW": "",
+        "GUILD_ID_CRUSADER_STRIKE": "",
+        "OWNER_USER_ID": "",
         "EMOJI_ID_FLAG": "",
         "ROLE_ID_BIRTHDAY_MONTH": "",
         "ROLE_ID_YAPPER": "",
@@ -615,8 +627,8 @@
         "LANGUAGE_MODEL_PERFORMANCE": "POWERFUL",
         "ANTHROPIC_LANGUAGE_MODEL_SMART": "claude-sonnet-4-6",
         "ANTHROPIC_LANGUAGE_MODEL_FAST": "claude-haiku-4-5-20251001",
-        "GOOGLE_LANGUAGE_MODEL_FAST": "gemini-3.5-flash",
-        "GOOGLE_LANGUAGE_MODEL_SMART": "gemini-3.5-flash",
+        "GOOGLE_LANGUAGE_MODEL_FAST": "gemini-3.6-flash",
+        "GOOGLE_LANGUAGE_MODEL_SMART": "gemini-3.6-flash",
         "OPENAI_LANGUAGE_MODEL_GPT4_1_NANO": "gpt-4.1-nano",
         "LANGUAGE_MODEL_OPENAI": "gpt-4",
         "LANGUAGE_MODEL_LOCAL": "deepseek-r1-distill-qwen-32b-abliterated@q3_k_s",
@@ -627,7 +639,8 @@
         "FAST_LANGUAGE_MODEL_OPENAI": "gpt-4o",
         "FAST_LANGUAGE_MODEL_LOCAL": "deepseek-r1-distill-qwen-32b-abliterated@q3_k_s",
         "COUNTDOWN_ICON_TARGET_DATE": "2026-09-12",
-        "HEARTBEAT_URL": ""
+        "COUNTDOWN_ICON_TARGET_DATE_CLOCK_CREW": "2026-08-15",
+        "HEARTBEAT_URL": "http://192.168.1.100:4001/watchdog/heartbeat/YOUR_PUSH_TOKEN/lupos-bot"
       },
       "watchdog": "push"
     },
@@ -640,8 +653,8 @@
       "description": "Meepothegeomancer — Dota 2 Meepo fan site with chat interface",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "meepo.example.com",
+      "repo": "https://github.com/your-org/meepothegeomancer-client",
       "dockerProject": "meepothegeomancer-client",
       "dependsOn": [
         {
@@ -674,8 +687,8 @@
         }
       ],
       "config": {
-        "MESSAGES_SERVICE_PUBLIC_URL": "",
-        "PRISM_SERVICE_PUBLIC_URL": ""
+        "MESSAGES_SERVICE_PUBLIC_URL": "https://api.messages.example.com",
+        "PRISM_SERVICE_PUBLIC_URL": "https://api.prism.example.com"
       }
     },
     {
@@ -687,8 +700,8 @@
       "description": "Classic Whitemane — WoW Classic community Discord portal",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "whitemane.example.com",
+      "repo": "https://github.com/your-org/classic-whitemane-client",
       "dockerProject": "classic-whitemane-client",
       "dependsOn": [
         {
@@ -714,7 +727,7 @@
       ],
       "config": {
         "GUILD_ID": "",
-        "DISCORD_INVITE_URL": ""
+        "DISCORD_INVITE_URL": "https://discord.com/invite/classicwhitemane"
       }
     },
     {
@@ -726,8 +739,8 @@
       "description": "Omnichannel messaging backend — web chat, SMS (Twilio), AI agent auto-replies via Prism",
       "db": "messages",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.messages.example.com",
+      "repo": "https://github.com/your-org/messages-service",
       "dockerProject": "messages-service",
       "dependsOn": [
         {
@@ -750,7 +763,9 @@
       "config": {
         "MESSAGES_DEFAULT_AGENT_MODEL": "claude-haiku-4-5-20251001",
         "MESSAGES_FALLBACK_AGENT_MODEL": "gpt-4.1-mini",
-        "MEEPO_CLIENT_ORIGIN": ""
+        "MEEPO_CLIENT_ORIGIN": "https://meepo.example.com",
+        "SENDGRID_FROM_EMAIL": "noreply@example.com",
+        "SENDGRID_FROM_NAME": "Messages"
       }
     },
     {
@@ -762,8 +777,8 @@
       "description": "Omnichannel messaging dashboard — web chat, SMS, AI agent config, widget settings",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "messages.example.com",
+      "repo": "https://github.com/your-org/messages-client",
       "dockerProject": "messages-client",
       "dependsOn": [
         {
@@ -792,8 +807,8 @@
         }
       ],
       "config": {
-        "MESSAGES_CLIENT_DOMAIN": "",
-        "MESSAGES_SERVICE_PUBLIC_URL": ""
+        "MESSAGES_CLIENT_DOMAIN": "messages.example.com",
+        "MESSAGES_SERVICE_PUBLIC_URL": "https://api.messages.example.com"
       }
     },
     {
@@ -805,8 +820,8 @@
       "description": "Tax management backend — fiscal years, contracts, invoices, expenses, CCPC tax calculations",
       "db": "ledger",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.ledger.example.com",
+      "repo": "https://github.com/your-org/ledger-service",
       "dockerProject": "ledger-service",
       "dependsOn": [
         {
@@ -832,8 +847,8 @@
       "description": "Tax management dashboard — invoices, expenses, GST/corporate tax tracking",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "ledger.example.com",
+      "repo": "https://github.com/your-org/ledger-client",
       "dockerProject": "ledger-client",
       "dependsOn": [
         {
@@ -862,8 +877,8 @@
         }
       ],
       "config": {
-        "LEDGER_CLIENT_DOMAIN": "",
-        "LEDGER_SERVICE_PUBLIC_URL": ""
+        "LEDGER_CLIENT_DOMAIN": "ledger.example.com",
+        "LEDGER_SERVICE_PUBLIC_URL": "https://api.ledger.example.com"
       }
     },
     {
@@ -875,8 +890,8 @@
       "description": "Visitor analytics — device fingerprinting, session telemetry, IP geolocation",
       "db": "sessions",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.sessions.example.com",
+      "repo": "https://github.com/your-org/sessions-service",
       "dockerProject": "sessions-service",
       "dependsOn": [
         {
@@ -902,8 +917,8 @@
       "description": "Online nutritionist API — clients, meal plans, nutrition logs, goals, macros",
       "db": "dygest",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.dygest.example.com",
+      "repo": "https://github.com/your-org/dygest-service",
       "dockerProject": "dygest-service",
       "dependsOn": [
         {
@@ -929,8 +944,8 @@
       "description": "Online nutritionist dashboard — meal planning, macro tracking, goal progress",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "dygest.example.com",
+      "repo": "https://github.com/your-org/dygest-client",
       "dockerProject": "dygest-client",
       "dependsOn": [
         {
@@ -959,8 +974,8 @@
         }
       ],
       "config": {
-        "DYGEST_CLIENT_DOMAIN": "",
-        "DYGEST_SERVICE_PUBLIC_URL": ""
+        "DYGEST_CLIENT_DOMAIN": "dygest.example.com",
+        "DYGEST_SERVICE_PUBLIC_URL": "https://api.dygest.example.com"
       }
     },
     {
@@ -971,8 +986,8 @@
       "healthPath": "/health",
       "description": "Weather and sensor monitoring API — sensors, readings, alerts, weather proxy",
       "db": "gauge",
-      "visibility": "internal",
-      "repo": "",
+      "visibility": "external",
+      "repo": "https://github.com/your-org/gauge-service",
       "dockerProject": "gauge-service",
       "dependsOn": [
         {
@@ -987,7 +1002,8 @@
           "id": "deploy-kit",
           "criticality": "optional"
         }
-      ]
+      ],
+      "domain": "api.gauge.example.com"
     },
     {
       "id": "gauge-client",
@@ -997,8 +1013,8 @@
       "healthPath": "/",
       "description": "Weather and sensor monitoring dashboard — sensor management, live readings, alerts",
       "db": null,
-      "visibility": "internal",
-      "repo": "",
+      "visibility": "external",
+      "repo": "https://github.com/your-org/gauge-client",
       "dockerProject": "gauge-client",
       "dependsOn": [
         {
@@ -1029,7 +1045,8 @@
       "config": {
         "GAUGE_CLIENT_DOMAIN": "",
         "GAUGE_SERVICE_PUBLIC_URL": ""
-      }
+      },
+      "domain": "gauge.example.com"
     },
     {
       "id": "reels-service",
@@ -1041,8 +1058,8 @@
       "db": "reel",
       "minioBucket": "reel",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.reels.example.com",
+      "repo": "https://github.com/your-org/reels-service",
       "dockerProject": "reels-service",
       "dependsOn": [
         {
@@ -1072,8 +1089,8 @@
       "description": "Video streaming dashboard — Netflix-style browse, search, and watch interface",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "reels.example.com",
+      "repo": "https://github.com/your-org/reels-client",
       "dockerProject": "reels-client",
       "dependsOn": [
         {
@@ -1102,8 +1119,8 @@
         }
       ],
       "config": {
-        "REELS_CLIENT_DOMAIN": "",
-        "REELS_SERVICE_PUBLIC_URL": ""
+        "REELS_CLIENT_DOMAIN": "reels.example.com",
+        "REELS_SERVICE_PUBLIC_URL": "https://api.reels.example.com"
       }
     },
     {
@@ -1115,8 +1132,8 @@
       "description": "Clankerbox AI agent backend — conversations, agent sessions, configuration",
       "db": "clankerbox",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.clankerbox.example.com",
+      "repo": "https://github.com/your-org/clankerbox-service",
       "dockerProject": "clankerbox-service",
       "dependsOn": [
         {
@@ -1142,10 +1159,10 @@
       "description": "Clankerbox AI agent landing page and dashboard",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "analyticsPropertyId": "",
-      "analyticsMeasurementId": "",
-      "repo": "",
+      "domain": "clankerbox.example.com",
+      "analyticsPropertyId": "123456789",
+      "analyticsMeasurementId": "G-XXXXXXXXXX",
+      "repo": "https://github.com/your-org/clankerbox-client",
       "dockerProject": "clankerbox-client",
       "dependsOn": [
         {
@@ -1174,9 +1191,9 @@
         }
       ],
       "config": {
-        "CLANKERBOX_CLIENT_DOMAIN": "",
-        "CLANKERBOX_SERVICE_PUBLIC_URL": "",
-        "CLANKERBOX_GA_MEASUREMENT_ID": ""
+        "CLANKERBOX_CLIENT_DOMAIN": "clankerbox.example.com",
+        "CLANKERBOX_SERVICE_PUBLIC_URL": "https://api.clankerbox.example.com",
+        "CLANKERBOX_GA_MEASUREMENT_ID": "G-XXXXXXXXXX"
       }
     },
     {
@@ -1187,8 +1204,8 @@
       "healthPath": "/health",
       "description": "Gym workout tracking API — exercises, workouts, sets, analytics, templates",
       "db": "iron",
-      "visibility": "internal",
-      "repo": "",
+      "visibility": "external",
+      "repo": "https://github.com/your-org/iron-service",
       "dockerProject": "iron-service",
       "dependsOn": [
         {
@@ -1203,7 +1220,8 @@
           "id": "deploy-kit",
           "criticality": "optional"
         }
-      ]
+      ],
+      "domain": "api.iron.example.com"
     },
     {
       "id": "iron-client",
@@ -1213,8 +1231,8 @@
       "healthPath": "/",
       "description": "Gym workout tracking dashboard — exercise library, set logging, progressive overload analytics",
       "db": null,
-      "visibility": "internal",
-      "repo": "",
+      "visibility": "external",
+      "repo": "https://github.com/your-org/iron-client",
       "dockerProject": "iron-client",
       "dependsOn": [
         {
@@ -1245,7 +1263,8 @@
       "config": {
         "IRON_CLIENT_DOMAIN": "",
         "IRON_SERVICE_PUBLIC_URL": ""
-      }
+      },
+      "domain": "iron.example.com"
     },
     {
       "id": "games-service",
@@ -1256,8 +1275,8 @@
       "description": "Multiplayer games backend — game definitions, sessions, scores, leaderboards",
       "db": "games",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.games.example.com",
+      "repo": "https://github.com/your-org/games-service",
       "dockerProject": "games-service",
       "dependsOn": [
         {
@@ -1283,8 +1302,8 @@
       "description": "Multiplayer games dashboard — game browser, session management, leaderboards",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "games.example.com",
+      "repo": "https://github.com/your-org/games-client",
       "dockerProject": "games-client",
       "dependsOn": [
         {
@@ -1313,8 +1332,8 @@
         }
       ],
       "config": {
-        "GAMES_CLIENT_DOMAIN": "",
-        "GAMES_SERVICE_PUBLIC_URL": ""
+        "GAMES_CLIENT_DOMAIN": "games.example.com",
+        "GAMES_SERVICE_PUBLIC_URL": "https://api.games.example.com"
       }
     },
     {
@@ -1324,7 +1343,7 @@
       "essential": true,
       "description": "Shared React component library — reusable UI primitives across all clients",
       "projectType": "Library",
-      "repo": "",
+      "repo": "https://github.com/your-org/components-library",
       "npmPackage": "@your-org/components-library",
       "visibility": "internal",
       "dependsOn": [
@@ -1349,7 +1368,7 @@
       "essential": true,
       "description": "Shared JavaScript utility functions — formatters, parsers, validators",
       "projectType": "Library",
-      "repo": "",
+      "repo": "https://github.com/your-org/utilities-library",
       "npmPackage": "@your-org/utilities-library",
       "visibility": "internal",
       "dependsOn": [
@@ -1366,7 +1385,7 @@
       "essential": true,
       "description": "Orchestrated multi-service deployment — builds, tests, and deploys containers to production",
       "projectType": "Kit",
-      "repo": "",
+      "repo": "https://github.com/your-org/deploy-kit",
       "visibility": "internal",
       "dependsOn": [
         {
@@ -1420,7 +1439,7 @@
       "description": "BitTorrent client with search plugin system — torrent search and download",
       "db": null,
       "visibility": "internal",
-      "repo": "",
+      "repo": "https://github.com/your-org/qbittorrent-service",
       "dockerProject": "qbittorrent-service",
       "prebuiltImage": true,
       "dependsOn": [],
@@ -1440,8 +1459,8 @@
       "description": "Lupos companion client — real-time somatic state, bot stats, active channel data, and server activity charts",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "lupos.example.com",
+      "repo": "https://github.com/your-org/lupos-client",
       "dockerProject": "lupos-client",
       "dependsOn": [
         {
@@ -1470,7 +1489,7 @@
         }
       ],
       "config": {
-        "LUPOS_CLIENT_DOMAIN": "",
+        "LUPOS_CLIENT_DOMAIN": "lupos.example.com",
         "LUPOS_BOT_URL": "http://192.168.1.100:1337"
       }
     },
@@ -1483,8 +1502,8 @@
       "description": "Personal notes API — notebooks, notes, tags, search",
       "db": "notes",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.notes.example.com",
+      "repo": "https://github.com/your-org/notes-service",
       "dockerProject": "notes-service",
       "dependsOn": [
         {
@@ -1510,8 +1529,8 @@
       "description": "Personal notes dashboard — notebook management, rich-text editing, search",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "notes.example.com",
+      "repo": "https://github.com/your-org/notes-client",
       "dockerProject": "notes-client",
       "dependsOn": [
         {
@@ -1536,8 +1555,8 @@
         }
       ],
       "config": {
-        "NOTES_CLIENT_DOMAIN": "",
-        "NOTES_SERVICE_PUBLIC_URL": ""
+        "NOTES_CLIENT_DOMAIN": "notes.example.com",
+        "NOTES_SERVICE_PUBLIC_URL": "https://api.notes.example.com"
       }
     },
     {
@@ -1550,8 +1569,8 @@
       "db": "images",
       "minioBucket": "images",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.images.example.com",
+      "repo": "https://github.com/your-org/images-service",
       "dockerProject": "images-service",
       "dependsOn": [
         {
@@ -1581,8 +1600,8 @@
       "description": "Image library dashboard — browse, organize, view metadata, manage albums and tags",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "images.example.com",
+      "repo": "https://github.com/your-org/images-client",
       "dockerProject": "images-client",
       "dependsOn": [
         {
@@ -1607,8 +1626,8 @@
         }
       ],
       "config": {
-        "IMAGES_CLIENT_DOMAIN": "",
-        "IMAGES_SERVICE_PUBLIC_URL": ""
+        "IMAGES_CLIENT_DOMAIN": "images.example.com",
+        "IMAGES_SERVICE_PUBLIC_URL": "https://api.images.example.com"
       }
     },
     {
@@ -1621,8 +1640,8 @@
       "db": "music",
       "minioBucket": "music",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.music.example.com",
+      "repo": "https://github.com/your-org/music-service",
       "dockerProject": "music-service",
       "dependsOn": [
         {
@@ -1652,8 +1671,8 @@
       "description": "Music streaming dashboard — browse albums, artists, playlists with premium listening experience",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "music.example.com",
+      "repo": "https://github.com/your-org/music-client",
       "dockerProject": "music-client",
       "dependsOn": [
         {
@@ -1678,8 +1697,8 @@
         }
       ],
       "config": {
-        "MUSIC_CLIENT_DOMAIN": "",
-        "MUSIC_SERVICE_PUBLIC_URL": ""
+        "MUSIC_CLIENT_DOMAIN": "music.example.com",
+        "MUSIC_SERVICE_PUBLIC_URL": "https://api.music.example.com"
       }
     },
     {
@@ -1691,9 +1710,12 @@
       "description": "Accounts Service — unified credentials registration, login, and user profiles database",
       "db": "accounts",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.accounts.example.com",
+      "repo": "https://github.com/your-org/accounts-service",
       "dockerProject": "accounts-service",
+      "config": {
+        "ADMIN_EMAILS": "you@example.com"
+      },
       "dependsOn": [
         {
           "id": "vault-service",
@@ -1718,8 +1740,8 @@
       "description": "User accounts and profiles management dashboard",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "accounts.example.com",
+      "repo": "https://github.com/your-org/accounts-client",
       "dockerProject": "accounts-client",
       "dependsOn": [
         {
@@ -1748,8 +1770,8 @@
         }
       ],
       "config": {
-        "ACCOUNTS_CLIENT_DOMAIN": "",
-        "ACCOUNTS_SERVICE_PUBLIC_URL": ""
+        "ACCOUNTS_CLIENT_DOMAIN": "accounts.example.com",
+        "ACCOUNTS_SERVICE_PUBLIC_URL": "https://api.accounts.example.com"
       }
     },
     {
@@ -1761,8 +1783,8 @@
       "description": "Animals backend — species catalog, sightings, habitats, tracking",
       "db": "animals",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.animals.example.com",
+      "repo": "https://github.com/your-org/animals-service",
       "dockerProject": "animals-service",
       "dependsOn": [
         {
@@ -1788,8 +1810,8 @@
       "description": "Wildlife species tracker — species encyclopedia, sightings, habitats, and conservation",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "animals.example.com",
+      "repo": "https://github.com/your-org/animals-client",
       "dockerProject": "animals-client",
       "dependsOn": [
         {
@@ -1818,8 +1840,8 @@
         }
       ],
       "config": {
-        "ANIMALS_CLIENT_DOMAIN": "",
-        "ANIMALS_SERVICE_PUBLIC_URL": ""
+        "ANIMALS_CLIENT_DOMAIN": "animals.example.com",
+        "ANIMALS_SERVICE_PUBLIC_URL": "https://api.animals.example.com"
       }
     },
     {
@@ -1831,8 +1853,8 @@
       "description": "Provider-agnostic payment gateway (Stripe, PayPal, …) with a unified transaction ledger",
       "db": "payments",
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "api.payments.example.com",
+      "repo": "https://github.com/your-org/payments-service",
       "dockerProject": "payments-service",
       "dependsOn": [
         {
@@ -1849,7 +1871,7 @@
         }
       ],
       "config": {
-        "PAYMENTS_SERVICE_PUBLIC_URL": ""
+        "PAYMENTS_SERVICE_PUBLIC_URL": "https://api.payments.example.com"
       }
     },
     {
@@ -1861,8 +1883,8 @@
       "description": "Payments dashboard — transactions, refunds, providers, and webhooks across Stripe, PayPal, and more",
       "db": null,
       "visibility": "external",
-      "domain": "",
-      "repo": "",
+      "domain": "payments.example.com",
+      "repo": "https://github.com/your-org/payments-client",
       "dockerProject": "payments-client",
       "dependsOn": [
         {
@@ -1891,8 +1913,8 @@
         }
       ],
       "config": {
-        "PAYMENTS_CLIENT_DOMAIN": "",
-        "PAYMENTS_SERVICE_PUBLIC_URL": ""
+        "PAYMENTS_CLIENT_DOMAIN": "payments.example.com",
+        "PAYMENTS_SERVICE_PUBLIC_URL": "https://api.payments.example.com"
       }
     }
   ],
@@ -1912,11 +1934,11 @@
       "type": "object-store",
       "defaultPort": 9000,
       "urlEnv": "MINIO_ENDPOINT",
-      "domain": "",
+      "domain": "storage.example.com",
       "deployTier": 0,
       "description": "S3-compatible object storage for media and files",
       "config": {
-        "MINIO_PUBLIC_URL": "",
+        "MINIO_PUBLIC_URL": "https://storage.example.com",
         "MINIO_INTERNAL_URL": "http://192.168.1.100:9000"
       }
     },
@@ -1961,6 +1983,7 @@
       "type": "Desktop",
       "hostname": "192.168.1.101",
       "os": "Windows 11 (WSL2)",
+      "arch": "amd64",
       "notes": "Primary development machine — runs most services locally.",
       "specs": {
         "cpu": "AMD Ryzen 9 7950X",
@@ -1978,6 +2001,7 @@
       "type": "Desktop",
       "hostname": "192.168.1.102",
       "os": "Windows 11",
+      "arch": "amd64",
       "dockerApi": "tcp://192.168.1.102:2375",
       "notes": "Secondary workstation — runs LM Studio for local inference.",
       "deploy": {
@@ -1997,8 +2021,9 @@
       "id": "raspi",
       "label": "Raspberry Pi",
       "type": "SBC",
-      "hostname": "192.168.1.103",
+      "hostname": "192.168.1.10047",
       "os": "Raspberry Pi OS",
+      "arch": "arm64",
       "notes": "Always-on LAN device — runs Lupos Discord bot.",
       "specs": {
         "cpu": "Broadcom BCM2711",
@@ -2015,6 +2040,7 @@
       "type": "NAS",
       "hostname": "192.168.1.100",
       "os": "DSM 7",
+      "arch": "amd64",
       "sshAlias": "nas",
       "dockerBin": "/usr/local/bin/docker",
       "dockerApi": "unix:///var/run/docker.sock",
@@ -2035,7 +2061,8 @@
     }
   ],
   "domains": [
-    "example.com"
+    "example.com",
+    "another-domain.com"
   ],
   "projectTypeColors": {
     "Service": {
@@ -2090,5 +2117,30 @@
       "stroke": "rgba(34, 197, 94, 0.35)",
       "fill": "rgba(34, 197, 94, 0.04)"
     }
+  },
+  "edge": {
+    "proxyMode": "caddy",
+    "zoneProviders": {
+      "clankerbox.example.com": "cloudflare"
+    },
+    "publicIp": "203.0.113.10",
+    "enabled": true,
+    "extraSites": [
+      {
+        "domain": "storage.example.com",
+        "upstream": "192.168.1.100:9000",
+        "healthPath": "/minio/health/live"
+      },
+      {
+        "domain": "assets.example.com",
+        "upstream": "192.168.1.100:9000",
+        "healthPath": "/minio/health/live"
+      },
+      {
+        "domain": "clocktopia.example.com",
+        "upstream": "192.168.1.100:3001"
+      }
+    ],
+    "tlsMode": "auto"
   }
 }
