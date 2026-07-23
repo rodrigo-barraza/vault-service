@@ -10,6 +10,10 @@ env/
 projects.json
 !projects.example.json
 
+# Code-derived registry data (regenerated per deployment — as private as
+# projects.json itself; deploy.sh syncs it to the host alongside it)
+dependencies.generated.json
+
 # logs
 *.log
 

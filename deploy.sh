@@ -25,6 +25,13 @@ EXTRA_VALIDATE() {
     fail "vault.key not found at ${vault_key} — run: npm run generate-key > vault.key"
   fi
   ok "vault.key found"
+
+  info "Regenerating dependencies.generated.json from code..."
+  if node "${SCRIPT_DIR}/scripts/generate-dependencies.js" > /dev/null; then
+    ok "dependencies.generated.json up to date"
+  else
+    fail "dependency generation failed — see scripts/generate-dependencies.js"
+  fi
 }
 
 # ── Vault-specific SSH sync (master .env + vault.key) ─────────
@@ -38,6 +45,10 @@ EXTRA_SSH_SYNC() {
   info "Syncing projects.json..."
   cat "${SCRIPT_DIR}/projects.json" | ssh "$DEPLOY_SSH_HOST" "cat > '${DEPLOY_COMPOSE_DIR}/projects.json'"
   ok "projects.json synced"
+
+  info "Syncing dependencies.generated.json..."
+  cat "${SCRIPT_DIR}/dependencies.generated.json" | ssh "$DEPLOY_SSH_HOST" "cat > '${DEPLOY_COMPOSE_DIR}/dependencies.generated.json'"
+  ok "dependencies.generated.json synced"
 }
 
 # ── Vault-specific SMB fallback sync ──────────────────────────
@@ -45,6 +56,7 @@ EXTRA_SMB_SYNC() {
   mkdir -p "${DEPLOY_SMB_DIR}/env"
   cp "${SCRIPT_DIR}/vault.key" "${DEPLOY_SMB_DIR}/env/vault.key"
   cp "${SCRIPT_DIR}/projects.json" "${DEPLOY_SMB_DIR}/projects.json"
+  cp "${SCRIPT_DIR}/dependencies.generated.json" "${DEPLOY_SMB_DIR}/dependencies.generated.json"
 }
 
 source "${SCRIPT_DIR}/../deploy-kit/lib.sh"

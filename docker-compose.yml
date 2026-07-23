@@ -10,6 +10,7 @@ services:
       # These are copied to the NAS by deploy.sh.
       - ./env:/app/env:ro
       - ./projects.json:/app/projects.json:ro
+      - ./dependencies.generated.json:/app/dependencies.generated.json:ro
       - /usr/share/zoneinfo/America/Los_Angeles:/etc/localtime:ro
     environment:
       - VAULT_PORT=5599

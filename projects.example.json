@@ -8,7 +8,6 @@
     "MINIO_PUBLIC_URL": "https://storage.example.com",
     "MINIO_ACCESS_KEY": "",
     "MINIO_SECRET_KEY": "",
-    "VAULT_SERVICE_URL": "http://192.168.1.100:5599",
     "AUTH_GOOGLE_ID": "",
     "AUTH_GOOGLE_SECRET": "",
     "AUTH_SECRET": "",
@@ -49,22 +48,9 @@
     "TWILIO_ACCOUNT_SID": "",
     "TWILIO_AUTH_TOKEN": "",
     "LIFX_BEARER_TOKEN": "",
-    "VENDER_TOKEN": "",
     "LUPOS_TOKEN": "",
-    "LUPOS_URL": "http://192.168.1.100:1337",
     "STICKERS_DISCORD_TOKEN": "",
     "GOOGLE_ANALYTICS_CREDENTIALS": "",
-    "MESSAGES_SERVICE_URL": "http://192.168.1.100:5602",
-    "MESSAGES_SERVICE_PUBLIC_URL": "https://api.messages.example.com",
-    "SESSIONS_SERVICE_PUBLIC_URL": "https://api.sessions.example.com",
-    "STICKERS_CLIENT_ID": "",
-    "STICKERS_GUILD_ID": "",
-    "OPENAI_VISION_MODEL": "gpt-4o",
-    "STICKERS_NODE_SERVER": "https://backend.clankerbox.example.com",
-    "STICKERS_NODE_SERVER_WEBSOCKET": "wss://backend.clankerbox.example.com/ws",
-    "STICKERS_PYTHON_SERVER": "https://neural.clankerbox.example.com",
-    "STICKERS_PYTHON_SERVER_WEBSOCKET": "wss://neural.clankerbox.example.com/ws",
-    "STICKERS_PRISM_SERVER": "https://prism.clankerbox.example.com",
     "PAYMENTS_SERVICE_API_SECRET": "",
     "PAYMENTS_DEFAULT_PROVIDER": "",
     "PAYMENTS_DEFAULT_CURRENCY": "usd",
@@ -76,10 +62,7 @@
     "PAYMENTS_PAYPAL_ENVIRONMENT": "sandbox",
     "PORKBUN_API_KEY": "",
     "PORKBUN_API_SECRET_KEY": "",
-    "CLOUDFLARE_API_TOKEN": "",
-    "LIGHTS_SERVICE_PUBLIC_URL": "https://api.lights.example.com",
-    "GAUGE_SERVICE_PUBLIC_URL": "https://api.gauge.example.com",
-    "IRON_SERVICE_PUBLIC_URL": "https://api.iron.example.com"
+    "CLOUDFLARE_API_TOKEN": ""
   },
   "projects": [
     {
@@ -94,25 +77,7 @@
       "visibility": "internal",
       "repo": "https://github.com/your-org/vault-service",
       "dockerProject": "vault-service",
-      "deployTier": 0,
-      "dependsOn": [
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "minio",
-          "criticality": "optional"
-        }
-      ]
+      "deployTier": 0
     },
     {
       "id": "tools-service",
@@ -125,24 +90,6 @@
       "visibility": "external",
       "repo": "https://github.com/your-org/tools-service",
       "dockerProject": "tools-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "GOOGLE_CSE_CX": "",
         "WORKSPACE_ROOTS": "",
@@ -151,9 +98,6 @@
         "TOOLS_IMAGE_MODEL": "gemini-3.1-flash-image-preview",
         "TOOLS_VISION_MODEL": "gemini-3-flash-preview",
         "AGENT_MAX_CONNECTIONS": "5",
-        "QBITTORRENT_URL": "http://192.168.1.100:8080",
-        "QBITTORRENT_USERNAME": "admin",
-        "QBITTORRENT_PASSWORD": "",
         "PORTAL_SERVICE_URL": "http://192.168.1.100:4001"
       },
       "domain": "api.tools.example.com"
@@ -171,32 +115,6 @@
       "domain": "api.portal.example.com",
       "repo": "https://github.com/your-org/portal-service",
       "dockerProject": "portal-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "minio",
-          "criticality": "optional"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "AUTH_ALLOWED_EMAILS": "you@example.com",
         "GOOGLE_CLOUD_MONITORING_PROJECT_ID": "",
@@ -215,20 +133,6 @@
       "visibility": "external",
       "repo": "https://github.com/your-org/lights-service",
       "dockerProject": "lights-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "DST_ENABLED": "false",
         "PRIMARY_LIGHT_ID": ""
@@ -245,25 +149,7 @@
       "db": "clockcrew",
       "visibility": "internal",
       "repo": "https://github.com/your-org/clock-crew-service",
-      "dockerProject": "clock-crew-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "clock-crew-service"
     },
     {
       "id": "prism-service",
@@ -279,32 +165,6 @@
       "domain": "api.prism.example.com",
       "repo": "https://github.com/your-org/prism-service",
       "dockerProject": "prism-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "lm-studio",
-          "criticality": "optional"
-        },
-        {
-          "id": "lm-studio-2",
-          "criticality": "optional"
-        },
-        {
-          "id": "llama-cpp",
-          "criticality": "optional"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "PROVIDER_LM_STUDIO_1_URL": "http://192.168.1.101:1234",
         "PROVIDER_LM_STUDIO_1_CONCURRENCY": "3",
@@ -343,35 +203,7 @@
       "domain": "prism.example.com",
       "repo": "https://github.com/your-org/prism-client",
       "dockerProject": "prism-client",
-      "dependsOn": [
-        {
-          "id": "prism-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
       "config": {
-        "PRISM_CLIENT_DOMAIN": "prism.example.com",
-        "PRISM_SERVICE_PUBLIC_URL": "https://api.prism.example.com",
         "PRISM_WS_PUBLIC_URL": "wss://api.prism.example.com",
         "PRISM_WS_URL": "ws://192.168.1.100:7777"
       }
@@ -389,36 +221,7 @@
       "visibility": "external",
       "domain": "portal.example.com",
       "repo": "https://github.com/your-org/portal-client",
-      "dockerProject": "portal-client",
-      "dependsOn": [
-        {
-          "id": "portal-service",
-          "criticality": "required"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "PORTAL_SERVICE_PUBLIC_URL": "https://api.portal.example.com"
-      }
+      "dockerProject": "portal-client"
     },
     {
       "id": "clock-crew-client",
@@ -432,34 +235,8 @@
       "domain": "clockcrew.example.com",
       "repo": "https://github.com/your-org/clock-crew-client",
       "dockerProject": "clock-crew-client",
-      "dependsOn": [
-        {
-          "id": "clock-crew-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
-        "GUILD_ID": ""
+        "CLOCK_CREW_GUILD_ID": ""
       }
     },
     {
@@ -473,32 +250,6 @@
       "visibility": "external",
       "repo": "https://github.com/your-org/lights-client",
       "dockerProject": "lights-client",
-      "dependsOn": [
-        {
-          "id": "lights-service",
-          "criticality": "required"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        }
-      ],
       "domain": "lights.example.com"
     },
     {
@@ -519,38 +270,11 @@
       "analyticsMeasurementId": "G-XXXXXXXXXX",
       "repo": "https://github.com/your-org/rod-dev-client",
       "dockerProject": "rod-dev-client",
-      "dependsOn": [
-        {
-          "id": "prism-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "ROD_DEV_MINIO_BUCKET_NAME": "rod-dev-generations",
         "ROD_DEV_ASSETS_MINIO_BUCKET_NAME": "rod-dev-assets",
         "ASSETS_PUBLIC_URL": "https://assets.example.com",
         "ROD_DEV_SERVICE_URL": "http://192.168.1.101:6666",
-        "PRISM_SERVICE_PUBLIC_URL": "https://api.prism.example.com",
         "ROD_DEV_GA_MEASUREMENT_ID": "G-XXXXXXXXXX"
       }
     },
@@ -566,28 +290,6 @@
       "visibility": "internal",
       "repo": "https://github.com/your-org/lupos-bot",
       "dockerProject": "lupos-bot",
-      "dependsOn": [
-        {
-          "id": "prism-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "minio",
-          "criticality": "optional"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "UNDER_MAINTENANCE": "false",
         "ROLES_IDS_IGNORE": "",
@@ -655,41 +357,7 @@
       "visibility": "external",
       "domain": "meepo.example.com",
       "repo": "https://github.com/your-org/meepothegeomancer-client",
-      "dockerProject": "meepothegeomancer-client",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "messages-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "MESSAGES_SERVICE_PUBLIC_URL": "https://api.messages.example.com",
-        "PRISM_SERVICE_PUBLIC_URL": "https://api.prism.example.com"
-      }
+      "dockerProject": "meepothegeomancer-client"
     },
     {
       "id": "classic-whitemane-client",
@@ -703,31 +371,9 @@
       "domain": "whitemane.example.com",
       "repo": "https://github.com/your-org/classic-whitemane-client",
       "dockerProject": "classic-whitemane-client",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
       "config": {
-        "GUILD_ID": "",
-        "DISCORD_INVITE_URL": "https://discord.com/invite/classicwhitemane"
+        "DISCORD_INVITE_URL": "https://discord.com/invite/classicwhitemane",
+        "WHITEMANE_GUILD_ID": ""
       }
     },
     {
@@ -742,24 +388,6 @@
       "domain": "api.messages.example.com",
       "repo": "https://github.com/your-org/messages-service",
       "dockerProject": "messages-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "MESSAGES_DEFAULT_AGENT_MODEL": "claude-haiku-4-5-20251001",
         "MESSAGES_FALLBACK_AGENT_MODEL": "gpt-4.1-mini",
@@ -779,37 +407,7 @@
       "visibility": "external",
       "domain": "messages.example.com",
       "repo": "https://github.com/your-org/messages-client",
-      "dockerProject": "messages-client",
-      "dependsOn": [
-        {
-          "id": "messages-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "MESSAGES_CLIENT_DOMAIN": "messages.example.com",
-        "MESSAGES_SERVICE_PUBLIC_URL": "https://api.messages.example.com"
-      }
+      "dockerProject": "messages-client"
     },
     {
       "id": "ledger-service",
@@ -822,21 +420,7 @@
       "visibility": "external",
       "domain": "api.ledger.example.com",
       "repo": "https://github.com/your-org/ledger-service",
-      "dockerProject": "ledger-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "ledger-service"
     },
     {
       "id": "ledger-client",
@@ -849,37 +433,7 @@
       "visibility": "external",
       "domain": "ledger.example.com",
       "repo": "https://github.com/your-org/ledger-client",
-      "dockerProject": "ledger-client",
-      "dependsOn": [
-        {
-          "id": "ledger-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "LEDGER_CLIENT_DOMAIN": "ledger.example.com",
-        "LEDGER_SERVICE_PUBLIC_URL": "https://api.ledger.example.com"
-      }
+      "dockerProject": "ledger-client"
     },
     {
       "id": "sessions-service",
@@ -892,21 +446,7 @@
       "visibility": "external",
       "domain": "api.sessions.example.com",
       "repo": "https://github.com/your-org/sessions-service",
-      "dockerProject": "sessions-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "sessions-service"
     },
     {
       "id": "dygest-service",
@@ -919,21 +459,7 @@
       "visibility": "external",
       "domain": "api.dygest.example.com",
       "repo": "https://github.com/your-org/dygest-service",
-      "dockerProject": "dygest-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "dygest-service"
     },
     {
       "id": "dygest-client",
@@ -946,37 +472,7 @@
       "visibility": "external",
       "domain": "dygest.example.com",
       "repo": "https://github.com/your-org/dygest-client",
-      "dockerProject": "dygest-client",
-      "dependsOn": [
-        {
-          "id": "dygest-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "DYGEST_CLIENT_DOMAIN": "dygest.example.com",
-        "DYGEST_SERVICE_PUBLIC_URL": "https://api.dygest.example.com"
-      }
+      "dockerProject": "dygest-client"
     },
     {
       "id": "gauge-service",
@@ -989,20 +485,6 @@
       "visibility": "external",
       "repo": "https://github.com/your-org/gauge-service",
       "dockerProject": "gauge-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "domain": "api.gauge.example.com"
     },
     {
@@ -1016,36 +498,6 @@
       "visibility": "external",
       "repo": "https://github.com/your-org/gauge-client",
       "dockerProject": "gauge-client",
-      "dependsOn": [
-        {
-          "id": "gauge-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "GAUGE_CLIENT_DOMAIN": "",
-        "GAUGE_SERVICE_PUBLIC_URL": ""
-      },
       "domain": "gauge.example.com"
     },
     {
@@ -1061,20 +513,6 @@
       "domain": "api.reels.example.com",
       "repo": "https://github.com/your-org/reels-service",
       "dockerProject": "reels-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "REELS_VIDEO_ROOTS": "/media",
         "REELS_SCAN_INTERVAL_MINUTES": "60"
@@ -1091,37 +529,7 @@
       "visibility": "external",
       "domain": "reels.example.com",
       "repo": "https://github.com/your-org/reels-client",
-      "dockerProject": "reels-client",
-      "dependsOn": [
-        {
-          "id": "reels-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "REELS_CLIENT_DOMAIN": "reels.example.com",
-        "REELS_SERVICE_PUBLIC_URL": "https://api.reels.example.com"
-      }
+      "dockerProject": "reels-client"
     },
     {
       "id": "clankerbox-service",
@@ -1134,21 +542,7 @@
       "visibility": "external",
       "domain": "api.clankerbox.example.com",
       "repo": "https://github.com/your-org/clankerbox-service",
-      "dockerProject": "clankerbox-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "clankerbox-service"
     },
     {
       "id": "clankerbox-client",
@@ -1164,35 +558,7 @@
       "analyticsMeasurementId": "G-XXXXXXXXXX",
       "repo": "https://github.com/your-org/clankerbox-client",
       "dockerProject": "clankerbox-client",
-      "dependsOn": [
-        {
-          "id": "clankerbox-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
-        "CLANKERBOX_CLIENT_DOMAIN": "clankerbox.example.com",
-        "CLANKERBOX_SERVICE_PUBLIC_URL": "https://api.clankerbox.example.com",
         "CLANKERBOX_GA_MEASUREMENT_ID": "G-XXXXXXXXXX"
       }
     },
@@ -1207,20 +573,6 @@
       "visibility": "external",
       "repo": "https://github.com/your-org/iron-service",
       "dockerProject": "iron-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "domain": "api.iron.example.com"
     },
     {
@@ -1234,36 +586,6 @@
       "visibility": "external",
       "repo": "https://github.com/your-org/iron-client",
       "dockerProject": "iron-client",
-      "dependsOn": [
-        {
-          "id": "iron-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "IRON_CLIENT_DOMAIN": "",
-        "IRON_SERVICE_PUBLIC_URL": ""
-      },
       "domain": "iron.example.com"
     },
     {
@@ -1277,21 +599,7 @@
       "visibility": "external",
       "domain": "api.games.example.com",
       "repo": "https://github.com/your-org/games-service",
-      "dockerProject": "games-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "games-service"
     },
     {
       "id": "games-client",
@@ -1304,37 +612,7 @@
       "visibility": "external",
       "domain": "games.example.com",
       "repo": "https://github.com/your-org/games-client",
-      "dockerProject": "games-client",
-      "dependsOn": [
-        {
-          "id": "games-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "GAMES_CLIENT_DOMAIN": "games.example.com",
-        "GAMES_SERVICE_PUBLIC_URL": "https://api.games.example.com"
-      }
+      "dockerProject": "games-client"
     },
     {
       "id": "components-library",
@@ -1345,21 +623,7 @@
       "projectType": "Library",
       "repo": "https://github.com/your-org/components-library",
       "npmPackage": "@your-org/components-library",
-      "visibility": "internal",
-      "dependsOn": [
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "messages-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ]
+      "visibility": "internal"
     },
     {
       "id": "utilities-library",
@@ -1370,13 +634,7 @@
       "projectType": "Library",
       "repo": "https://github.com/your-org/utilities-library",
       "npmPackage": "@your-org/utilities-library",
-      "visibility": "internal",
-      "dependsOn": [
-        {
-          "id": "prism-service",
-          "criticality": "optional"
-        }
-      ]
+      "visibility": "internal"
     },
     {
       "id": "deploy-kit",
@@ -1386,13 +644,7 @@
       "description": "Orchestrated multi-service deployment — builds, tests, and deploys containers to production",
       "projectType": "Kit",
       "repo": "https://github.com/your-org/deploy-kit",
-      "visibility": "internal",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        }
-      ]
+      "visibility": "internal"
     },
     {
       "id": "deduplicator",
@@ -1400,17 +652,7 @@
       "emoji": "🧹",
       "description": "File duplicate finder and cleanup utility",
       "projectType": "Tool",
-      "visibility": "internal",
-      "dependsOn": [
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        }
-      ]
+      "visibility": "internal"
     },
     {
       "id": "playlist-ripper",
@@ -1418,17 +660,7 @@
       "emoji": "🎵",
       "description": "YouTube playlist ripper — extracts videos and MP3s with clean metadata",
       "projectType": "Tool",
-      "visibility": "internal",
-      "dependsOn": [
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        }
-      ]
+      "visibility": "internal"
     },
     {
       "id": "qbittorrent-service",
@@ -1442,12 +674,12 @@
       "repo": "https://github.com/your-org/qbittorrent-service",
       "dockerProject": "qbittorrent-service",
       "prebuiltImage": true,
-      "dependsOn": [],
       "config": {
         "QBITTORRENT_URL": "http://192.168.1.100:8080",
         "QBITTORRENT_USERNAME": "admin",
         "WEBUI_USERNAME": "admin",
-        "WEBUI_PASSWORD": ""
+        "WEBUI_PASSWORD": "",
+        "QBITTORRENT_PASSWORD": "admin"
       }
     },
     {
@@ -1461,37 +693,7 @@
       "visibility": "external",
       "domain": "lupos.example.com",
       "repo": "https://github.com/your-org/lupos-client",
-      "dockerProject": "lupos-client",
-      "dependsOn": [
-        {
-          "id": "lupos-bot",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "LUPOS_CLIENT_DOMAIN": "lupos.example.com",
-        "LUPOS_BOT_URL": "http://192.168.1.100:1337"
-      }
+      "dockerProject": "lupos-client"
     },
     {
       "id": "notes-service",
@@ -1504,21 +706,7 @@
       "visibility": "external",
       "domain": "api.notes.example.com",
       "repo": "https://github.com/your-org/notes-service",
-      "dockerProject": "notes-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "notes-service"
     },
     {
       "id": "notes-client",
@@ -1531,33 +719,7 @@
       "visibility": "external",
       "domain": "notes.example.com",
       "repo": "https://github.com/your-org/notes-client",
-      "dockerProject": "notes-client",
-      "dependsOn": [
-        {
-          "id": "notes-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "NOTES_CLIENT_DOMAIN": "notes.example.com",
-        "NOTES_SERVICE_PUBLIC_URL": "https://api.notes.example.com"
-      }
+      "dockerProject": "notes-client"
     },
     {
       "id": "images-service",
@@ -1572,20 +734,6 @@
       "domain": "api.images.example.com",
       "repo": "https://github.com/your-org/images-service",
       "dockerProject": "images-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "IMAGES_IMAGE_ROOTS": "/media",
         "IMAGES_SCAN_INTERVAL_MINUTES": "60"
@@ -1602,33 +750,7 @@
       "visibility": "external",
       "domain": "images.example.com",
       "repo": "https://github.com/your-org/images-client",
-      "dockerProject": "images-client",
-      "dependsOn": [
-        {
-          "id": "images-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "IMAGES_CLIENT_DOMAIN": "images.example.com",
-        "IMAGES_SERVICE_PUBLIC_URL": "https://api.images.example.com"
-      }
+      "dockerProject": "images-client"
     },
     {
       "id": "music-service",
@@ -1643,20 +765,6 @@
       "domain": "api.music.example.com",
       "repo": "https://github.com/your-org/music-service",
       "dockerProject": "music-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
       "config": {
         "MUSIC_AUDIO_ROOTS": "/media",
         "MUSIC_SCAN_INTERVAL_MINUTES": "60"
@@ -1673,33 +781,7 @@
       "visibility": "external",
       "domain": "music.example.com",
       "repo": "https://github.com/your-org/music-client",
-      "dockerProject": "music-client",
-      "dependsOn": [
-        {
-          "id": "music-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "MUSIC_CLIENT_DOMAIN": "music.example.com",
-        "MUSIC_SERVICE_PUBLIC_URL": "https://api.music.example.com"
-      }
+      "dockerProject": "music-client"
     },
     {
       "id": "accounts-service",
@@ -1715,21 +797,7 @@
       "dockerProject": "accounts-service",
       "config": {
         "ADMIN_EMAILS": "you@example.com"
-      },
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      }
     },
     {
       "id": "accounts-client",
@@ -1742,37 +810,7 @@
       "visibility": "external",
       "domain": "accounts.example.com",
       "repo": "https://github.com/your-org/accounts-client",
-      "dockerProject": "accounts-client",
-      "dependsOn": [
-        {
-          "id": "accounts-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "ACCOUNTS_CLIENT_DOMAIN": "accounts.example.com",
-        "ACCOUNTS_SERVICE_PUBLIC_URL": "https://api.accounts.example.com"
-      }
+      "dockerProject": "accounts-client"
     },
     {
       "id": "animals-service",
@@ -1785,21 +823,7 @@
       "visibility": "external",
       "domain": "api.animals.example.com",
       "repo": "https://github.com/your-org/animals-service",
-      "dockerProject": "animals-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ]
+      "dockerProject": "animals-service"
     },
     {
       "id": "animals-client",
@@ -1812,37 +836,7 @@
       "visibility": "external",
       "domain": "animals.example.com",
       "repo": "https://github.com/your-org/animals-client",
-      "dockerProject": "animals-client",
-      "dependsOn": [
-        {
-          "id": "animals-service",
-          "criticality": "required"
-        },
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "ANIMALS_CLIENT_DOMAIN": "animals.example.com",
-        "ANIMALS_SERVICE_PUBLIC_URL": "https://api.animals.example.com"
-      }
+      "dockerProject": "animals-client"
     },
     {
       "id": "payments-service",
@@ -1855,24 +849,7 @@
       "visibility": "external",
       "domain": "api.payments.example.com",
       "repo": "https://github.com/your-org/payments-service",
-      "dockerProject": "payments-service",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "PAYMENTS_SERVICE_PUBLIC_URL": "https://api.payments.example.com"
-      }
+      "dockerProject": "payments-service"
     },
     {
       "id": "payments-client",
@@ -1885,37 +862,7 @@
       "visibility": "external",
       "domain": "payments.example.com",
       "repo": "https://github.com/your-org/payments-client",
-      "dockerProject": "payments-client",
-      "dependsOn": [
-        {
-          "id": "vault-service",
-          "criticality": "optional"
-        },
-        {
-          "id": "components-library",
-          "criticality": "required"
-        },
-        {
-          "id": "utilities-library",
-          "criticality": "required"
-        },
-        {
-          "id": "payments-service",
-          "criticality": "required"
-        },
-        {
-          "id": "deploy-kit",
-          "criticality": "optional"
-        },
-        {
-          "id": "sessions-service",
-          "criticality": "optional"
-        }
-      ],
-      "config": {
-        "PAYMENTS_CLIENT_DOMAIN": "payments.example.com",
-        "PAYMENTS_SERVICE_PUBLIC_URL": "https://api.payments.example.com"
-      }
+      "dockerProject": "payments-client"
     }
   ],
   "infrastructure": [
@@ -1984,16 +931,7 @@
       "hostname": "192.168.1.101",
       "os": "Windows 11 (WSL2)",
       "arch": "amd64",
-      "notes": "Primary development machine — runs most services locally.",
-      "specs": {
-        "cpu": "AMD Ryzen 9 7950X",
-        "cores": 16,
-        "threads": 32,
-        "memoryGB": 64,
-        "storageGB": 2000,
-        "storageType": "NVMe SSD",
-        "gpu": "NVIDIA RTX 4090 24GB"
-      }
+      "notes": "Primary development machine — runs most services locally. GPU: NVIDIA RTX 4090 24GB."
     },
     {
       "id": "workstation2",
@@ -2003,18 +941,9 @@
       "os": "Windows 11",
       "arch": "amd64",
       "dockerApi": "tcp://192.168.1.102:2375",
-      "notes": "Secondary workstation — runs LM Studio for local inference.",
+      "notes": "Secondary workstation — runs LM Studio for local inference. GPU: NVIDIA RTX 3090 24GB.",
       "deploy": {
         "method": "docker-api"
-      },
-      "specs": {
-        "cpu": "AMD Ryzen 9 5950X",
-        "cores": 16,
-        "threads": 32,
-        "memoryGB": 128,
-        "storageGB": 2000,
-        "storageType": "NVMe SSD",
-        "gpu": "NVIDIA RTX 3090 24GB"
       }
     },
     {
@@ -2024,15 +953,7 @@
       "hostname": "192.168.1.10047",
       "os": "Raspberry Pi OS",
       "arch": "arm64",
-      "notes": "Always-on LAN device — runs Lupos Discord bot.",
-      "specs": {
-        "cpu": "Broadcom BCM2711",
-        "cores": 4,
-        "threads": 4,
-        "memoryGB": 8,
-        "storageGB": 64,
-        "storageType": "microSD"
-      }
+      "notes": "Always-on LAN device — runs Lupos Discord bot."
     },
     {
       "id": "synology",
@@ -2049,75 +970,9 @@
         "method": "ssh",
         "composeRoot": "/volume1/docker",
         "smbRoot": "/mnt/k"
-      },
-      "specs": {
-        "cpu": "Intel Celeron J4125",
-        "cores": 4,
-        "threads": 4,
-        "memoryGB": 20,
-        "storageGB": 16000,
-        "storageType": "HDD (RAID)"
       }
     }
   ],
-  "domains": [
-    "example.com",
-    "another-domain.com"
-  ],
-  "projectTypeColors": {
-    "Service": {
-      "color": "#3b82f6",
-      "subtle": "rgba(59, 130, 246, 0.12)"
-    },
-    "Client": {
-      "color": "#22c55e",
-      "subtle": "rgba(34, 197, 94, 0.12)"
-    },
-    "Bot": {
-      "color": "#eab308",
-      "subtle": "rgba(234, 179, 8, 0.12)"
-    },
-    "Database": {
-      "color": "#a855f7",
-      "subtle": "rgba(168, 85, 247, 0.12)"
-    },
-    "Store": {
-      "color": "#f97316",
-      "subtle": "rgba(249, 115, 22, 0.12)"
-    },
-    "Library": {
-      "color": "#06b6d4",
-      "subtle": "rgba(6, 182, 212, 0.12)"
-    },
-    "Kit": {
-      "color": "#f59e0b",
-      "subtle": "rgba(245, 158, 11, 0.12)"
-    },
-    "Tool": {
-      "color": "#8b5cf6",
-      "subtle": "rgba(139, 92, 246, 0.12)"
-    }
-  },
-  "deployTierColors": {
-    "0": {
-      "color": "#f97316",
-      "subtle": "rgba(249, 115, 22, 0.12)",
-      "stroke": "rgba(249, 115, 22, 0.35)",
-      "fill": "rgba(249, 115, 22, 0.04)"
-    },
-    "1": {
-      "color": "#3b82f6",
-      "subtle": "rgba(59, 130, 246, 0.12)",
-      "stroke": "rgba(59, 130, 246, 0.35)",
-      "fill": "rgba(59, 130, 246, 0.04)"
-    },
-    "2": {
-      "color": "#22c55e",
-      "subtle": "rgba(34, 197, 94, 0.12)",
-      "stroke": "rgba(34, 197, 94, 0.35)",
-      "fill": "rgba(34, 197, 94, 0.04)"
-    }
-  },
   "edge": {
     "$comment": "Reverse proxy (Caddy) + DNS automation — see deploy-kit/edge/README.md. deploy-kit/edge/edge.config.json ships neutral defaults (everything off); YOUR deployment's values go in THIS block, which overrides it. Which sites get routed/DNS-managed comes from projects[] entries with visibility:'external' + a 'domain'. Keys starting with $ are comments and ignored.",
     "enabled": false,

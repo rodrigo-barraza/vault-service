@@ -13,6 +13,16 @@ export interface RegistryDependency {
   criticality: "required" | "optional";
 }
 
+/**
+ * Shape of dependencies.generated.json — code-derived dependsOn edges
+ * produced by scripts/generate-dependencies.js and merged into the
+ * registry at load time. Never hand-edited.
+ */
+export interface GeneratedDependencies {
+  generatedAt?: string;
+  dependencies: Record<string, RegistryDependency[]>;
+}
+
 export interface RegistryProjectConfig {
   [key: string]: string;
 }

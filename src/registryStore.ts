@@ -1,10 +1,12 @@
 import { errorMessage } from "@rodrigo-barraza/utilities-library";
 // ─── Registry Store — Single Source of Truth ─────────────────
 
-import { readFileSync, watchFile } from "fs";
+import { existsSync, readFileSync, watchFile } from "fs";
+import { dirname, join } from "path";
 import { createLogger } from "@rodrigo-barraza/utilities-library/node";
 import { envPrefix } from "./envParser.ts";
 import type {
+  GeneratedDependencies,
   Registry,
   RegistryProject,
   RegistryInfrastructure,
@@ -52,10 +54,43 @@ export function createRegistryStore(
   let registry: Registry = { ...EMPTY_REGISTRY };
   let loadedAt: string | null = null;
 
+  const dependenciesPath = join(
+    dirname(filePath),
+    "dependencies.generated.json",
+  );
+
+  /**
+   * Attach code-derived dependsOn edges from dependencies.generated.json
+   * (written by scripts/generate-dependencies.js — dependencies are scanned
+   * from each repo's code, never hand-declared in projects.json).
+   */
+  function attachGeneratedDependencies(target: Registry): void {
+    if (!existsSync(dependenciesPath)) {
+      logger.warn(
+        "dependencies.generated.json missing — projects served without dependsOn (run scripts/generate-dependencies.js)",
+      );
+      return;
+    }
+    try {
+      const generated = JSON.parse(
+        readFileSync(dependenciesPath, "utf-8"),
+      ) as GeneratedDependencies;
+      for (const project of target.projects || []) {
+        project.dependsOn = generated.dependencies?.[project.id] || [];
+      }
+    } catch (error) {
+      logger.error(
+        `Failed to load dependencies.generated.json: ${errorMessage(error)}`,
+      );
+    }
+  }
+
   function reload(): void {
     try {
       const content = readFileSync(filePath, "utf-8");
-      registry = JSON.parse(content) as Registry;
+      const parsed = JSON.parse(content) as Registry;
+      attachGeneratedDependencies(parsed);
+      registry = parsed;
       loadedAt = new Date().toISOString();
       logger.success(
         `Loaded registry — ${registry.projects?.length || 0} projects, ${registry.infrastructure?.length || 0} infrastructure, ${registry.devices?.length || 0} devices`,
@@ -70,6 +105,10 @@ export function createRegistryStore(
   function startWatching(): void {
     watchFile(filePath, { interval: reloadIntervalMs }, () => {
       logger.info("projects.json changed — reloading");
+      reload();
+    });
+    watchFile(dependenciesPath, { interval: reloadIntervalMs }, () => {
+      logger.info("dependencies.generated.json changed — reloading");
       reload();
     });
   }
@@ -149,9 +188,10 @@ export function createRegistryStore(
         result[urlKey] = `http://${host}:${service.port}`;
       }
 
-      // Public URL — auto-derive from domain when set
+      // Public URL + bare domain — auto-derive from domain when set
       if (service.domain) {
         result[`${prefix}_PUBLIC_URL`] = `https://${service.domain}`;
+        result[`${prefix}_DOMAIN`] = service.domain;
       }
 
       // WebSocket URL

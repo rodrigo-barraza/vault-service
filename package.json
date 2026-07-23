@@ -24,6 +24,8 @@
     "format:check": "prettier --check \"src/**/*.ts\"",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
+    "generate:deps": "node scripts/generate-dependencies.js",
+    "generate:deps:check": "node scripts/generate-dependencies.js --check",
     "deploy": "bash deploy.sh",
     "deploy:dry": "bash deploy.sh --dry-run",
     "generate-key": "node -e \"import('crypto').then(c => console.log(c.randomBytes(48).toString('base64url')))\""
