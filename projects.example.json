@@ -596,19 +596,6 @@
       "dockerProject": "games-service"
     },
     {
-      "id": "games-client",
-      "label": "Games Client",
-      "emoji": "🎮",
-      "port": 3010,
-      "healthPath": "/",
-      "description": "Multiplayer games dashboard — game browser, session management, leaderboards",
-      "db": null,
-      "visibility": "external",
-      "domain": "games.example.com",
-      "repo": "https://github.com/your-org/games-client",
-      "dockerProject": "games-client"
-    },
-    {
       "id": "components-library",
       "label": "Components Library",
       "emoji": "🧩",
