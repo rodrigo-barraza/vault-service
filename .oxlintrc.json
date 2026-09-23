@@ -14,7 +14,8 @@
   },
   "ignorePatterns": [
     "node_modules/",
-    "dist/"
+    "dist/",
+    ".claude/"
   ],
   "rules": {
     "constructor-super": "error",
